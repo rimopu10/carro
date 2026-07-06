@@ -9,7 +9,7 @@ Regla de lectura: ✅ resuelto · 🟡 parcial (existe pero no está listo para 
 |---|---|---|---|
 | Concepto y arquitectura | ✅ | Doc maestro v1.0, todas las decisiones validadas | — |
 | Chasis (estructura) | 🟡 | FEM de vigas (10,868 N·m/°, FS ok), lista de corte 73 tubos, 3 DXF de cartelas, 5 nodos generativos STL, ensamble 3D | FEM formal de validación, jig de soldadura, secuencia de soldadura, decisión nodos impresos vs cartelas |
-| Suspensión delantera | ❌ | Solo los puntos de anclaje en el frame | Geometría completa (camber/caster/kingpin/Ackermann), diseño de horquillas, mangueta donante especificada, spec de coilovers (carrera, tarado, motion ratio) |
+| Suspensión delantera | ✅ 2026-07-06 | Geometría completa con cinemática 3D (`calculos/resultados-suspension-delantera.md`): camber −1°, caster 4.9°, bump steer 0.04°/25mm, resorte 270 lb/in, largos de brazos | Comprar donantes (mangueta ATV, cremallera) y fabricar brazos |
 | Suspensión trasera | ❌ | Puntos de anclaje + cartela de pivote | Diseño del brazo tirado, placa de torque QS273, spec de coilovers traseros |
 | Dirección | ❌ | Decisión: cremallera manual de compacto | Donante exacto, geometría (bump steer, Ackermann), columna y montaje |
 | Frenos | ❌ | Decisión: disco ×4, doble bomba | Cálculo de frenado (650 kg, 1g), selección discos/calipers/bombas, pedalera, balance F/R |
@@ -26,8 +26,8 @@ Regla de lectura: ✅ resuelto · 🟡 parcial (existe pero no está listo para 
 
 En orden de dependencia — cada uno es un entregable concreto tipo los que ya hicimos:
 
-1. **Suspensión delantera** — geometría en código (como el FEM): puntos duros, curvas de camber, largo de horquillas, spec de rótulas y coilover. *Bloquea F1.*
-2. **Suspensión trasera** — brazo tirado + **placa de torque del QS273** (candidata ideal para el optimizador generativo, escala de pieza de dron). *Bloquea F1.*
+1. ~~**Suspensión delantera**~~ ✅ hecho 2026-07-06 (`calculos/suspension_delantera.py`).
+2. **Suspensión trasera** — brazo tirado + **placa de torque del QS273** (candidata ideal para el optimizador generativo, escala de pieza de dron). Verificar aquí si el QS273 cabe en rin 13" o los traseros suben a rin mayor. *Bloquea F1.*
 3. **Cálculo de frenos** — dimensionado real y lista de partes con donantes. *Bloquea F1.*
 4. **Dirección** — geometría Ackermann + verificación de bump steer con la suspensión ya definida. *Bloquea F1.*
 5. **BOM maestro** — hoja con cada pieza, spec exacta de pedido (ej. "BMS 30S LiFePO4 300A continuo con Bluetooth"), proveedor candidato y precio. *Cierra F0: sin esto no se puede pedir nada.*
