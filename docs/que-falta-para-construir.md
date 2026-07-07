@@ -10,7 +10,7 @@ Regla de lectura: ✅ resuelto · 🟡 parcial (existe pero no está listo para 
 | Concepto y arquitectura | ✅ | Doc maestro v1.0, todas las decisiones validadas | — |
 | Chasis (estructura) | 🟡 | FEM de vigas (10,868 N·m/°, FS ok), lista de corte 73 tubos, 3 DXF de cartelas, 5 nodos generativos STL, ensamble 3D | FEM formal de validación, jig de soldadura, secuencia de soldadura, decisión nodos impresos vs cartelas |
 | Suspensión delantera | ✅ 2026-07-06 | Geometría completa con cinemática 3D (`calculos/resultados-suspension-delantera.md`): camber −1°, caster 4.9°, bump steer 0.04°/25mm, resorte 270 lb/in, largos de brazos | Comprar donantes (mangueta ATV, cremallera) y fabricar brazos |
-| Suspensión trasera | ❌ | Puntos de anclaje + cartela de pivote | Diseño del brazo tirado, placa de torque QS273, spec de coilovers traseros |
+| Suspensión trasera | ✅ 2026-07-06 | Brazo tirado resuelto (`calculos/resultados-suspension-trasera.md`): PTR 70×50×4 FS 2.4, MR 0.68, resorte 351 lb/in, anti-squat 258% documentado, rin resuelto (QS273 versión carro 14", 175/70R14) | Placa de torque QS273 (diseño generativo) y compras |
 | Dirección | ❌ | Decisión: cremallera manual de compacto | Donante exacto, geometría (bump steer, Ackermann), columna y montaje |
 | Frenos | ❌ | Decisión: disco ×4, doble bomba | Cálculo de frenado (650 kg, 1g), selección discos/calipers/bombas, pedalera, balance F/R |
 | Batería (pack) | 🟡 | Spec de celdas y BMS, placa de cuna DXF, cuna en el frame | Diseño de la caja completa (arreglo 30S, busbars, compresión, venteo), plano de armado con técnico |
@@ -27,7 +27,7 @@ Regla de lectura: ✅ resuelto · 🟡 parcial (existe pero no está listo para 
 En orden de dependencia — cada uno es un entregable concreto tipo los que ya hicimos:
 
 1. ~~**Suspensión delantera**~~ ✅ hecho 2026-07-06 (`calculos/suspension_delantera.py`).
-2. **Suspensión trasera** — brazo tirado + **placa de torque del QS273** (candidata ideal para el optimizador generativo, escala de pieza de dron). Verificar aquí si el QS273 cabe en rin 13" o los traseros suben a rin mayor. *Bloquea F1.*
+2. ~~**Suspensión trasera**~~ ✅ hecho 2026-07-06 (`calculos/suspension_trasera.py`). Queda su **placa de torque del QS273** (diseño generativo, escala de pieza de dron). Rin resuelto: QS273 versión rin de carro 14" — confirmar por escrito con QS Motor al cotizar. *Bloquea F1.*
 3. **Cálculo de frenos** — dimensionado real y lista de partes con donantes. *Bloquea F1.*
 4. **Dirección** — geometría Ackermann + verificación de bump steer con la suspensión ya definida. *Bloquea F1.*
 5. **BOM maestro** — hoja con cada pieza, spec exacta de pedido (ej. "BMS 30S LiFePO4 300A continuo con Bluetooth"), proveedor candidato y precio. *Cierra F0: sin esto no se puede pedir nada.*
