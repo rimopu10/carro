@@ -1,0 +1,56 @@
+﻿sistema,fase,item,especificacion_de_pedido,cantidad,unidad,precio_est_min,precio_est_max,precio_cotizado,proveedor,entrega,fuente
+Propulsión,F0,Kit 2× motor de cubo + controladores,"QS273 8 kW 96 V, versión rin desmontable de carro 14"" (en 13"" no cabe), 2 controladores tipo APT96600 / Fardriver ND96530 con regen configurable, acelerador de pedal hall, selector F/N/R",1,kit,38700,53700,,,6-10 semanas,doc maestro §6 · resultados-suspension-trasera
+Batería,F0,Celdas LiFePO4,"30 × prismática 105 Ah grado A (EVE/CATL), mismo lote, con busbars y tornillería",30,pza,26000,36000,,,4-8 semanas,doc maestro §6
+Batería,F0,BMS,"30S LiFePO4, 250-300 A de descarga continua (crítico: menos capa los motores), balanceo activo, Bluetooth",1,pza,6000,9000,,,4-6 semanas,doc maestro §6
+Estructura,F1,Tubo PTR 38x38x1.9,"7 tramos de 6 m = 95 kg (62 piezas, 34.7 m netos, +15% de merma)",7,tramo 6 m,3047,4761,,,"local, días",planos/lista-corte-tubos.csv
+Estructura,F1,Tubo RED 44.5x2.1,"2 tramos de 6 m = 28 kg (11 piezas, 7.1 m netos — los arcos requieren ROLADO, +15% de merma)",2,tramo 6 m,1162,1798,,,"local, días",planos/lista-corte-tubos.csv
+Estructura,F1,Tubo PTR 70×50×4,1 tramo de 6 m = 45 kg — brazos tirados traseros (2 × 504 mm) y sobrante para ménsulas,1,tramo 6 m,1447,2261,,,"local, días",resultados-suspension-trasera
+Estructura,F1,Tubo RED 25.4×2.1,1 tramo de 6 m = 8 kg — horquillas delanteras (~2.1 m netos),1,tramo 6 m,331,513,,,"local, días",resultados-suspension-delantera
+Estructura,F1,Placa de acero 8 mm,"1 hoja 300×600 mm = 11 kg — placas de torque (4) y dobladores (4), anidados",1,hoja,362,565,,,"local, días",resultados-placa-torque
+Estructura,F1,Placa de acero 4.7 mm,1 hoja 600×1200 mm = 27 kg — cartelas y ménsulas,1,hoja,850,1328,,,"local, días",planos/*.dxf
+Estructura,F1,Servicio de corte láser,"18 piezas con DXF listo + 10 por dibujar (ver §3). Mandar UN solo pedido: lo que pesa es el arranque, no el metro cortado",1,servicio,1500,3000,,,1-2 semanas,planos/*.dxf
+Estructura,F1,Rolado de arcos,"2 arcos de tubo RED 44.5×2.1 al radio del plano — con dobladora de mandril, NO con dobladora de rodillos (aplasta la sección)",2,pza,1200,2500,,,1-2 semanas,analisis_chasis
+Estructura,F1,Consumibles de soldadura,Alambre MIG ER70S-6 Ø0.9 (5 kg) + gas 75/25 (renta y carga) + discos de corte y desbaste + boquillas de repuesto,1,lote,1800,3000,,,local,—
+Rodaje,F1,Rótula cónica ATV,Tipo Honda TRX300/Rancher — LBJ y UBJ por lado. Verificar el cono contra la mangueta donante antes de comprar,4,pza,1400,2400,,,local/importado,resultados-suspension-delantera
+Rodaje,F1,Buje de poliuretano Ø12 + tubo interno,Pivotes de horquillas delanteras,8,pza,1600,2800,,,local,resultados-suspension-delantera
+Rodaje,F1,Kit buje poliuretano Ø16 + manga,"Pivote de brazo tirado trasero, base ancha ≥150 mm",2,kit,800,1400,,,local,resultados-suspension-trasera
+Rodaje,F1,Coilover delantero,"Resorte 270 lb/in, ojo-a-ojo estático 334 mm, carrera usada 81 mm, amortiguación ajustable por clicks (ζ 0.5-0.7)",2,pza,4000,7000,,,2-4 semanas,resultados-suspension-delantera
+Rodaje,F1,Coilover trasero,"Resorte 351 lb/in, ~590 mm extendido, carrera ≥108 mm, ajustable. Soporta 7,358 N en bache 3g",2,pza,4500,7500,,,2-4 semanas,resultados-suspension-trasera
+Rodaje,F1,Tornillería 10.9 de placa de torque,"16 × M12 10.9 + tuerca autoblocante, y 8 × camisa de acero soldada a través del PTR (sin camisa, el apriete aplasta el tubo)",1,lote,900,1500,,,local,resultados-placa-torque
+Rodaje,F1,Disco de freno delantero,Ø220 × 5 mm macizo. El disco del donante ATV (Ø180-200) NO da el par — con él ninguna pedalera cumple,2,pza,1200,2200,,,local,resultados-frenos §2
+Rodaje,F1,Caliper delantero,Área de pistón ≥ 938 mm² (equivale a un pistón de Ø35 mm) — de compacto o de moto deportiva de 2-4 pistones,2,pza,2000,4000,,,deshuesadero/local,resultados-frenos §2
+Rodaje,F1,Caliper trasero CON palanca de freno de mano,"Área de pistón ≥ 740 mm² (Ø31 mm equivalente), palanca mecánica integrada. Verificar patrón de barrenos: 82 mm a radio 110 o se re-corre placa_torque.py. El disco lo trae el QS273",2,pza,2400,4200,,,deshuesadero/local,resultados-frenos §2 y §6
+Rodaje,F1,Bombas de freno + barra de balance,"2 × bomba Ø14.3 mm (9/16"") + barra de balance ajustable + 2 depósitos. Doble circuito: una bomba por eje",1,kit,3500,6000,,,2-3 semanas,resultados-frenos §3
+Rodaje,F1,Pedal de freno,Relación 6.0:1 (da 428 N de pie para 1g sin booster),1,pza,1200,2500,,,local,resultados-frenos §3
+Rodaje,F1,Pastillas de freno,"Semi-metálicas o sinterizadas, NO las más baratas — con µ 0.45 el pedal baja de 428 a 381 N. Juego para cada caliper elegido",4,juego,1200,2400,,,local,resultados-frenos §3
+Rodaje,F1,Líneas de freno,4 tramos de manguera flexible DOT con malla + línea rígida de acero + niples + líquido DOT4,1,lote,1800,3000,,,local,resultados-frenos
+Rodaje,F1,Palanca de freno de mano + cables,Palanca con trinquete + cable doble + tensores (2.7 kN de apriete necesarios),1,kit,900,1600,,,local,resultados-frenos §6
+Rodaje,F1,Cremallera manual de compacto,Donante. Medir su carrera real y su avance por vuelta antes de comprar — el cálculo supuso ±75 mm y 45 mm/vuelta. Sin servo,1,pza,1500,3000,,,deshuesadero,resultados-direccion §3
+Rodaje,F1,Columna de dirección,"Con 2 crucetas, preferentemente colapsable. Las crucetas en ángulos parecidos y en fase, si no la dirección pulsa al girar",1,pza,1200,2500,,,deshuesadero,resultados-direccion §5
+Rodaje,F1,Volante + maza,"Ø330 mm (con él, 34 N para girar parado en seco)",1,pza,900,2000,,,local,resultados-direccion §4
+Rodaje,F1,Terminales de dirección,2 × terminal (rótula) + 2 × rótula axial de cremallera + tubo roscado derecha/izquierda para ajustar convergencia sin desmontar,1,kit,1200,2200,,,local,resultados-direccion
+Rodaje,F1,Llantas y rines,"2 × 175/70R13 delanteras + rines 13""; las traseras (175/70R14) vienen con el kit QS273 versión rin de carro",2,pza,3000,5200,,,local,resultados-suspension-delantera/trasera
+Propulsión,F2,Protecciones y mando HV,Contactor principal 400 A + fusible 400 A + resistencia de precarga + paro de emergencia + desconectador de servicio,1,kit,4500,8000,,,2-4 semanas,doc maestro §7
+Propulsión,F2,Convertidor DC-DC,"96→12 V, 30 A, aislado (no hay batería de 12 V en el carro)",1,pza,2500,4500,,,2-4 semanas,doc maestro §6
+Batería,F2,Cargador,"LiFePO4 96 V, 15-18 A, enchufable a 120 V",1,pza,5000,8000,,,2-4 semanas,doc maestro §6
+Batería,F2,Caja de batería,Lámina/perfil + compresión de celdas + venteo + aislamiento. CAD pendiente (punto 8 de que-falta-para-construir),1,lote,3000,5500,,,—,PENDIENTE
+Propulsión,F2,Cableado HV + 12 V,"Cable naranja de calibre según el diagrama unifilar, conectores, fundas, pasamuros. Calibres PENDIENTES: no se puede pedir hasta tener el unifilar (punto 7)",1,lote,4000,7000,,,—,PENDIENTE
+Cabina,F3,Butacas,2 × butaca comercial atornillada (deshuesadero o tipo bucket),2,pza,3000,7000,,,local,doc maestro §6
+Cabina,F3,Cinturones,2 × arnés de 4 puntos con anclajes a la barra del frame,2,pza,2400,4000,,,local,doc maestro §7
+Cabina,F3,Parabrisas,Laminado plano o semi-curvo tipo buggy + burlete,1,pza,4000,7000,,,2-3 semanas,doc maestro §6
+Cabina,F3,Laterales y ventanas,"Policarbonato 4 mm, corredizo manual",1,lote,2500,4500,,,local,doc maestro §6
+Cabina,F3,Tablero,"Tablet Android + soporte + fuente 12 V (velocímetro GPS, BMS y controladores por Bluetooth)",1,pza,2500,4500,,,local,doc maestro §6
+Carrocería,F4,Espuma EPS en bloque,Para rebanado CNC de los 10 paneles,1,lote,4000,7000,,,—,doc maestro §6
+Carrocería,F4,Servicio de CNC de espuma,Rebanado de los moldes de panel,1,servicio,6000,12000,,,2-4 semanas,doc maestro §6
+Carrocería,F4,Fibra de vidrio y resina,"Tela, resina, gelcoat, desmoldante, consumibles",1,lote,7000,12000,,,local,doc maestro §6
+Carrocería,F4,Fijaciones de panel,Dzus + insertos roscados + separadores (10 paneles),1,lote,2500,4000,,,local,doc maestro §3
+Carrocería,F5,Wrap satinado,10 paneles — puede esperar a F5,1,servicio,12000,20000,,,1-2 semanas,doc maestro §9
+Luces,F5,Iluminación,Barra LED frontal + cejas + aros y línea trasera + intermitentes + cámara trasera con pantalla,1,lote,7000,12000,,,2-3 semanas,doc maestro §6
+Herramientas,F0,Soldadora MIG,"Inversor 200 A con gas, 110/220 V",1,pza,6000,11000,,,local,doc maestro §9
+Herramientas,F0,Tronzadora de metal,"355 mm, para cortar los 73 tubos a escuadra",1,pza,2000,3500,,,local,doc maestro §9
+Herramientas,F0,Esmeril angular,115 mm + discos de corte y laminares,1,pza,900,1600,,,local,doc maestro §9
+Herramientas,F0,Taladro + brocas,Taladro de banco chico + juego de brocas para acero,1,pza,2500,4500,,,local,doc maestro §9
+Herramientas,F0,Torquímetro,"1/2"", 20-200 N·m — la tornillería 10.9 se aprieta a torque, no a ojo",1,pza,900,1800,,,local,doc maestro §9
+Herramientas,F0,Multímetro CAT III,Obligatorio para trabajar 96 V: CAT III 600 V mínimo,1,pza,800,1800,,,local,doc maestro §9
+Herramientas,F0,Herramienta aislada,Juego de llaves y desarmadores aislados 1000 V para la batería,1,pza,1200,2500,,,local,doc maestro §9
+Herramientas,F0,Equipo de protección,"Careta de soldar automática, guantes, mandil, lentes, extintor ABC",1,pza,2000,3500,,,local,doc maestro §9

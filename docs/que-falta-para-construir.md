@@ -19,7 +19,7 @@ Regla de lectura: ✅ resuelto · 🟡 parcial (existe pero no está listo para 
 | Carrocería | 🟡 | Concepto 3D v2 (visor), método definido, 10 paneles decididos | CAD final de superficie, corte en paneles, archivos CNC de espuma, anclajes Dzus, diseño de puerta mariposa (bisagra/pistón/cerrojo), spec exacta del parabrisas |
 | Cabina/interior | 🟡 | Posición de manejo validada (maniquí 1.75 m, cabeza −5 cm del arco), barra de cinturones en frame | Butacas donantes, pedalera, volante/columna, montaje de tablet |
 | Térmico | ❌ | — | Verificación térmica de motores y controladores a 8 kW sostenidos; ventilación de la nariz |
-| BOM / compras | ❌ | Presupuesto por sistema | Lista de compra ítem por ítem con specs de pedido y 3 cotizaciones (motores y celdas = tiempo de entrega largo, pedir primero) |
+| BOM / compras | ✅ 2026-08-04 | `docs/bom-maestro.md` + `.csv`: 47 renglones con spec exacta de pedido, cantidad, entrega y fuente; acero derivado de la lista de corte real; orden de compra por tiempo de entrega | Pedir 3 cotizaciones de los renglones grandes y **cerrar la lista de confirmaciones con QS Motor antes de pagar** |
 | Herramientas | ❌ | Presupuesto (~$12 mil) | Comprar: soldadora MIG, esmeril, tronzadora, taladro, torquímetro, multímetro CAT III, herramienta aislada |
 | Habilidades | 🟡 | Plan de aprendizaje en el doc | Práctica de soldadura (jig de prueba), práctica de fibra (panel difusor), curso/lectura seguridad HV |
 
@@ -32,8 +32,8 @@ En orden de dependencia — cada uno es un entregable concreto tipo los que ya h
 3. ~~**Placa de torque del QS273**~~ ✅ hecho 2026-08-04 (`calculos/placa_torque.py`). Sándwich de 2 placas de acero 8 mm por rueda, corte láser, con la ménsula del caliper integrada. Falta confirmar con QS Motor el Ø del eje, la entrecaras de los planos y **el largo del eje libre del lado interior (≥78 mm)** antes de cortar.
 4. ~~**Cálculo de frenos**~~ ✅ hecho 2026-08-04 (`calculos/frenos.py`). Hallazgo: el freno del donante ATV **no alcanza** — se reusa mangueta y maza pero con disco de Ø220 y caliper mayor. Y el regen hay que limitarlo a 0.24g o el trasero se bloquea en mojado.
 5. ~~**Dirección**~~ ✅ hecho 2026-08-04 (`calculos/direccion.py`). El Ackermann heredado era de solo +42%; se corrige a +87% **moviendo la cremallera 40 mm**, sin tocar la mangueta del donante ni fabricar ninguna pieza. La altura de la cremallera (207 mm) sigue sin tocarse.
-6. **BOM maestro** — hoja con cada pieza, spec exacta de pedido (ej. "BMS 30S LiFePO4 300A continuo con Bluetooth"), proveedor candidato y precio. *Cierra F0: sin esto no se puede pedir nada.* **Ahora es el camino crítico** — sin él no se pueden pedir motores ni celdas, que son las entregas más largas.
-7. **Diagrama eléctrico HV + 12V** — unifilar completo con calibres y protecciones. *Bloquea F2.*
+6. ~~**BOM maestro**~~ ✅ hecho 2026-08-04 (`calculos/bom.py` → `docs/bom-maestro.md` y `.csv`). **Ya se pueden pedir motores y celdas**, que son las entregas largas — antes hay que cerrar la lista de confirmaciones con QS Motor (§5 del BOM). Hallazgo: el BOM detallado sale ~$190-309 mil contra los $143-219 mil estimados, empujado por los frenos (el donante ATV no alcanzaba).
+7. **Diagrama eléctrico HV + 12V** — unifilar completo con calibres y protecciones. *Bloquea F2.* **Ahora es el camino crítico de ingeniería**: es lo único que impide cotizar y pedir el cableado.
 8. **Caja de batería** — CAD del arreglo 30S con compresión y montaje a la cuna. *Bloquea F2.*
 9. **Jig de soldadura + secuencia** — plano de la mesa de armado y orden de soldeo anti-distorsión. *Bloquea F1.*
 10. **FEM formal del chasis** — modelo de validación independiente (FreeCAD FEM) como marca el doc maestro. *Bloquea F1 (obligatorio antes de soldar).*
