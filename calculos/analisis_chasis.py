@@ -40,14 +40,15 @@ def sec_ptr(b=0.038, t=0.0019):
                 nombre=f"PTR {b*1000:.0f}x{b*1000:.0f}x{t*1000:.1f}")
 
 # Tubo redondo 44.5 x 2.1 mm (1-3/4" cal 14) — arcos de seguridad
-def sec_red():
-    do, t = 0.0445, 0.0021
+def sec_red(do=0.0445, t=0.0032):
+    # Pared 3.2 mm, no 2.1: con 2.1 el chasis no pasa el caso de volcadura (LC5) y
+    # además 2.1 está en el límite bajo de lo que se acepta para un arco principal.
     di = do - 2*t
     A  = np.pi/4*(do**2 - di**2)
     I  = np.pi/64*(do**4 - di**4)
     J  = 2*I
     c  = do/2
-    return dict(A=A, Iy=I, Iz=I, J=J, c=c, nombre="RED 44.5x2.1")
+    return dict(A=A, Iy=I, Iz=I, J=J, c=c, nombre=f"RED {do*1000:.1f}x{t*1000:.1f}")
 
 PTR, RED = sec_ptr(), sec_red()
 # Diagonales de torsión: PTR 25×25×1.5 en vez de 38×38×1.9. Sale de
@@ -126,7 +127,10 @@ CROSS("mh_hi", RED, "safe"); CROSS("mh_belt", PTR, "safe")
 M("mh_loL", "mh_hiR", RED, "safe")   # diagonal del arco
 # bahía trasera (rieles partidos por cuna/pivote/torre)
 MM("mh_lo", "bat_f"); MM("bat_f", "ta"); MM("ta", "bat_r"); MM("bat_r", "r_lo")
-MM("mh_hi", "coil", tag="susp"); MM("coil", "r_hi", tag="susp")
+# Tirantes traseros del arco principal: son los que bajan la carga de volcadura a la
+# estructura trasera. Van en redondo de la célula, no en PTR — sin ellos el FS de LC5
+# se queda en 1.10 y el tubo crítico es justamente éste.
+MM("mh_hi", "coil", RED, "safe"); MM("coil", "r_hi", RED, "safe")
 MM("r_lo", "r_hi", tag="susp")
 MM("mh_lo", "r_hi", tag="tors")
 MM("r_lo", "tail"); MM("r_hi", "tail"); CROSS("tail"); CROSS("r_hi"); CROSS("r_lo")
@@ -257,8 +261,24 @@ def analizar(nombre, F, sup=SUP):
     filas.sort(key=lambda r: r[4])
     return U, filas
 
+def F_vuelco(nv, nl):
+    """LC5 VOLCADURA. El FEM no tenía caso de volcadura, que es justo el trabajo del
+    arco principal. Se aplica en la corona del arco (`mh_hi`) una carga proporcional al
+    peso del carro: nv veces W en vertical hacia abajo y nl veces W lateral, que es el
+    criterio de club para un vehículo de menos de 900 kg. La FIA pide 7.5W/1.5W/5.5W
+    para un arco homologado; aquí se reporta el FS con ambos."""
+    W = MASA_TOTAL_CARRO * g
+    F = np.zeros(ndof)
+    for n, s in [("mh_hiL", 1.0), ("mh_hiR", 1.0)]:
+        i = 6 * idx[n]
+        F[i + 1] -= nv * W / 2
+        F[i + 2] += nl * W / 2
+    return F
+
 resultados = {}
 resultados["LC1 Bache 3g"]   = analizar("LC1", F_vector(0, -3.0, 0))
+resultados["LC5 Volcadura (2.0W vert + 0.75W lat)"] = analizar("LC5", F_vuelco(2.0, 0.75))
+resultados["LC5b Volcadura FIA (7.5W + 5.5W)"] = analizar("LC5b", F_vuelco(7.5, 5.5))
 resultados["LC3 Frenada 1g"] = analizar("LC3", F_vector(-1.0, -1.0, 0))
 resultados["LC4 Curva 1g"]   = analizar("LC4", F_vector(0, -1.0, 1.0))
 
@@ -304,11 +324,40 @@ with open(out_md, "w", encoding="utf-8") as f:
 out_csv = os.path.join(os.path.dirname(__file__), "..", "planos", "lista-corte-tubos.csv")
 with open(out_csv, "w", newline="", encoding="utf-8") as f:
     w = csv.writer(f)
-    w.writerow(["#", "de_nodo", "a_nodo", "seccion", "funcion", "longitud_mm",
+    # Lista de corte DE VERDAD: no la distancia entre centros de nodo (que no se puede
+    # cortar), sino la longitud real de la pieza más el ángulo de cada extremo.
+    # En cada nudo, el tubo se topa contra el más grueso que llega ahí: se descuenta
+    # c_vecino/sen(θ) y se corta a inglete θ/2 (o destaje de silla si el vecino es
+    # redondo). CORREGIDO 2026-08-05: antes solo salía la longitud entre centros.
+    def vecinos(nodo, propio):
+        return [o for o in elems if o is not propio and nodo in (o["a"], o["b"])]
+    def dirv(e, desde):
+        v = NODES[e["b"]] - NODES[e["a"]]
+        return v / np.linalg.norm(v) * (1 if e["a"] == desde else -1)
+    w.writerow(["#", "de_nodo", "a_nodo", "seccion", "funcion",
+                "largo_entre_centros_mm", "largo_de_corte_mm",
+                "extremo_A_topa_contra", "angulo_A_grados", "corte_A",
+                "extremo_B_topa_contra", "angulo_B_grados", "corte_B",
                 "x1", "y1", "z1", "x2", "y2", "z2"])
     for i, e in enumerate(sorted(elems, key=lambda e: (e["sec"]["nombre"], -e["L"])), 1):
         pa, pb = NODES[e["a"]], NODES[e["b"]]
-        w.writerow([i, e["a"], e["b"], e["sec"]["nombre"], e["tag"], f"{e['L']*1000:.0f}",
+        det, desc = [], 0.0
+        for nodo in (e["a"], e["b"]):
+            vs = vecinos(nodo, e)
+            if not vs:
+                det += ["libre", "90", "recto"]
+                continue
+            mio = dirv(e, nodo)
+            # se topa contra el vecino más grueso; si empatan, el más perpendicular
+            best = max(vs, key=lambda o: (o["sec"]["c"], abs(float(np.dot(mio, dirv(o, nodo))))))
+            th = np.degrees(np.arccos(np.clip(abs(float(np.dot(mio, dirv(best, nodo)))), 0, 1)))
+            th = max(th, 12.0)
+            desc += best["sec"]["c"] / np.sin(np.radians(th))
+            redondo = best["sec"]["nombre"].startswith("RED")
+            det += [f'{best["a"]}-{best["b"]}', f"{th:.0f}",
+                    "destaje de silla" if redondo else f"inglete {th/2:.0f}°"]
+        w.writerow([i, e["a"], e["b"], e["sec"]["nombre"], e["tag"],
+                    f"{e['L']*1000:.0f}", f"{(e['L']-desc)*1000:.0f}", *det,
                     *[f"{v*1000:.0f}" for v in pa], *[f"{v*1000:.0f}" for v in pb]])
 
 print(f"OK  {len(elems)} miembros | masa chasis {masa_acero:.1f} kg | "

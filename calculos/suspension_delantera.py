@@ -44,7 +44,10 @@ m_susp = m_esq - M_NOSUSP                  # masa suspendida por esquina
 # el barrido de `direccion.py`, que lleva el Ackermann de +42% a +87% y de paso BAJA el
 # bump steer de 0.043 a 0.028°/25mm. Este archivo es la única fuente de la geometría
 # delantera: `direccion.py` la importa de aquí.
-UA_Y = float(os.environ.get("SUSP_UA_Y", "0.417"))     # altura eje pivote superior
+UA_Y = float(os.environ.get("SUSP_UA_Y", "0.409"))     # altura eje pivote superior
+                                                       # (bajó 8 mm al meter la ménsula
+                                                       # inferior, para recuperar la
+                                                       # ganancia de camber)
 # RESUELTO 2026-08-05. A 207 mm de altura el tie rod atravesaba el larguero inferior
 # del chasis (la rótula quedaba DENTRO del tubo) y no había salida moviendo solo la
 # cremallera: de 1561 posiciones libres, la mejor daba 2.7°/25mm de bump steer.
@@ -57,12 +60,20 @@ UA_Y = float(os.environ.get("SUSP_UA_Y", "0.417"))     # altura eje pivote super
 # `direccion.py` prefiere x=361 por 3 puntos más de Ackermann, pero ahí la holgura
 # queda al filo. Entre Ackermann y poder montar la pieza, gana poder montarla.
 RACK_X = float(os.environ.get("SUSP_RACK_X", "0.430")) # posición longitudinal
-RACK_Y = float(os.environ.get("SUSP_RACK_Y", "0.310")) # altura rótula de cremallera
+RACK_Y = float(os.environ.get("SUSP_RACK_Y", "0.340")) # altura rótula de cremallera
 RACK_Z = float(os.environ.get("SUSP_RACK_Z", "0.520")) # posición lateral de la rótula
-TR_Y   = float(os.environ.get("SUSP_TR_Y",  "0.310"))  # altura del brazo de mangueta
+TR_Y   = float(os.environ.get("SUSP_TR_Y",  "0.350"))  # altura del brazo de mangueta
 
-LA1 = np.array([0.35, 0.200, 0.50])   # pivote brazo inf. delantero (en nodo fb_lo)
-LA2 = np.array([0.75, 0.200, 0.55])   # pivote brazo inf. trasero  (en nodo fx_lo)
+# CORREGIDO 2026-08-05: los pivotes inferiores estaban EN los nodos fb_lo/fx_lo, o sea
+# el buje Ø26 caía dentro del PTR 38×38 del chasis — no cabe. Van en ménsula de dos
+# orejas soldadas al larguero con el eje del perno por DEBAJO del tubo. El offset entra
+# al cálculo porque cambia la ganancia de camber y el centro de balanceo.
+# El offset va HACIA ADENTRO, no hacia abajo: bajarlo invierte la ganancia de camber
+# (el brazo pasaría a subir hacia afuera) y manda el centro de balanceo bajo tierra.
+# Dos orejas soldadas a la cara interior del larguero, con el perno por dentro del tubo.
+LA_DZ = float(os.environ.get("SUSP_LA_DZ", "0.030"))   # cuánto entra el eje del nodo
+LA1 = np.array([0.35, 0.200, 0.50 - LA_DZ])   # ménsula interior en el nodo fb_lo
+LA2 = np.array([0.75, 0.200, 0.55 - LA_DZ])   # ménsula interior en el nodo fx_lo
 UA1 = np.array([0.35, UA_Y, 0.50])    # pivote brazo sup. delantero (ménsula bajo fb_hi)
 UA2 = np.array([0.75, UA_Y, 0.55])    # pivote brazo sup. trasero  (ménsula bajo fx_hi)
 
@@ -141,7 +152,12 @@ for thL in ths:
     camber = -np.degrees(np.arctan2(a[1], a[2]))
     f = np.cross(np.array([0, 1.0, 0]), a)          # dirección de avance de la rueda
     toe = np.degrees(np.arctan2(-f[2], f[0]))       # + = convergencia (toe-in)
-    filas.append(dict(thL=thL, y=W[1], z=W[2], camber=camber, toe=toe,
+    # posición lateral del PARCHE DE CONTACTO (no del centro de rueda): es la que
+    # entra en la fórmula del centro de balanceo. CORREGIDO 2026-08-05 — usar el
+    # centro de rueda daba 8 mm cuando el valor real es ~100 mm.
+    jp = np.array([0.0, 1.0, 0.0]) - a * (a @ np.array([0.0, 1.0, 0.0]))
+    z_par = W[2] + R_RUEDA * (-jp / np.linalg.norm(jp))[2]
+    filas.append(dict(thL=thL, y=W[1], z=W[2], zp=z_par, camber=camber, toe=toe,
                       largo_shk=np.linalg.norm(SHK_SUP - shk)))
 
 # recorte a la carrera útil y referencia estática
@@ -165,8 +181,9 @@ z_suelo = LBJ0[2] - kp[2] / kp[1] * LBJ0[1]
 scrub = (W0[2] - z_suelo) * 1000
 trail = (np.tan(np.radians(caster)) * R_RUEDA) * 1000
 
-# centro de balanceo: RC = semitrocha × d(migración lateral)/d(recorrido vertical)
-dzdy = np.gradient(trocha, viaje)[i0]
+# centro de balanceo: RC = semitrocha × d(migración lateral del PARCHE)/d(recorrido)
+patch = (np.array([f_["zp"] for f_ in filas]) - filas[i0]["zp"]) * 1000   # mm
+dzdy = np.gradient(patch, viaje)[i0]
 h_rc = W0[2] * dzdy * 1000              # mm
 
 # ---------------- resortes y coilover ----------------

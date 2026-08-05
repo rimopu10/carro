@@ -3,8 +3,8 @@ Propulsión,F0,Kit 2× motor de cubo + controladores,"QS273 8 kW 96 V, versión 
 Batería,F0,Celdas LiFePO4,"30 × prismática 105 Ah grado A (EVE/CATL), mismo lote, con busbars y tornillería",30,pza,26000,36000,,,4-8 semanas,doc maestro §6
 Batería,F0,BMS,"30S LiFePO4, 250-300 A de descarga continua (crítico: menos capa los motores), balanceo activo, Bluetooth",1,pza,6000,9000,,,4-6 semanas,doc maestro §6
 Estructura,F1,Tubo PTR 25x25x1.5,"2 tramos de 6 m = 14 kg (9 piezas, 9.0 m netos, +15% de merma)",2,tramo 6 m,452,706,,,"local, días",planos/lista-corte-tubos.csv
-Estructura,F1,Tubo PTR 38x38x1.9,"5 tramos de 6 m = 68 kg (53 piezas, 25.7 m netos, +15% de merma)",5,tramo 6 m,2176,3401,,,"local, días",planos/lista-corte-tubos.csv
-Estructura,F1,Tubo RED 44.5x2.1,"2 tramos de 6 m = 28 kg (11 piezas, 7.1 m netos — los arcos requieren ROLADO, +15% de merma)",2,tramo 6 m,1162,1798,,,"local, días",planos/lista-corte-tubos.csv
+Estructura,F1,Tubo PTR 38x38x1.9,"5 tramos de 6 m = 68 kg (49 piezas, 23.9 m netos, +15% de merma)",5,tramo 6 m,2176,3401,,,"local, días",planos/lista-corte-tubos.csv
+Estructura,F1,Tubo RED 44.5x3.2,"2 tramos de 6 m = 42 kg (15 piezas, 9.0 m netos — los arcos requieren ROLADO, +15% de merma)",2,tramo 6 m,1770,2739,,,"local, días",planos/lista-corte-tubos.csv
 Estructura,F1,Tubo PTR 70×50×4,1 tramo de 6 m = 45 kg — brazos tirados traseros (2 × 504 mm) y sobrante para ménsulas,1,tramo 6 m,1447,2261,,,"local, días",resultados-suspension-trasera
 Estructura,F1,Tubo RED 25.4×2.1,1 tramo de 6 m = 8 kg — horquillas delanteras (~2.1 m netos),1,tramo 6 m,331,513,,,"local, días",resultados-suspension-delantera
 Estructura,F1,Placa de acero 8 mm,"1 hoja 300×600 mm = 11 kg — placas de torque (4) y dobladores (4), anidados",1,hoja,362,565,,,"local, días",resultados-placa-torque

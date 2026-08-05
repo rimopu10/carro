@@ -48,7 +48,7 @@ largos = defaultdict(float)
 piezas = defaultdict(int)
 with open(os.path.join(PLANOS, "lista-corte-tubos.csv"), encoding="utf-8") as fh:
     for r in csv.DictReader(fh):
-        largos[r["seccion"]] += float(r["longitud_mm"]) / 1000.0
+        largos[r["seccion"]] += float(r["largo_entre_centros_mm"]) / 1000.0
         piezas[r["seccion"]] += 1
 
 def tramos(metros):
