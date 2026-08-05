@@ -45,12 +45,19 @@ La línea de empuje pasa por el pivote: anti-squat estático **258%**.
 | 70×50×4 | 31 MPa | 64 MPa | 23 MPa | 104 MPa | **2.4** ✓ |
 | 80×60×4 | 23 MPa | 45 MPa | 17 MPa | 73 MPa | **3.4** ✓ |
 
-Elegida: **PTR 70×50×4** (primera con FS≥2). El brazo es UNA pieza recta de 504 mm con: manga del pivote (buje poli Ø16, base ancha ≥150 mm), oreja del shock al 75%, y la punta recibe la **placa de torque del QS273** (siguiente pieza a diseñar — con el optimizador generativo).
+Elegida: **PTR 70×50×4** (primera con FS≥2). El brazo es UNA pieza recta de 504 mm con: manga del pivote (buje poli Ø16, base ancha ≥150 mm), oreja del shock al 75%, y la punta recibe la **placa de torque del QS273**, resuelta por optimización topológica en `placa_torque.py` (ver `resultados-placa-torque.md`).
 
 ## BOM parcial de esta sección
 
 - 2 × PTR 70×50×4, ~0.5 m c/u (los brazos)
 - 2 × kit buje poliuretano Ø16 + manga de acero (pivote, base 150 mm)
 - 2 × coilover ~590 mm / carrera 108 mm / resorte 351 lb/in
-- 2 × placa de torque QS273 (diseño generativo pendiente) + tornillería 10.9
-- 2 × ménsula de caliper (el QS273 trae disco; caliper mecánico/hidráulico de ATV)
+- 4 × placa de torque QS273 en acero 8 mm — 2 `placa-torque-motor.dxf` (llevan
+  integrada la ménsula del caliper) + 2 `placa-torque-refuerzo.dxf`. Van en
+  sándwich abrazando la punta del PTR. Ver `resultados-placa-torque.md`
+- 4 × doblador del cubo `placa-torque-doblador.dxf`, acero 8 mm (soldado; sin él
+  el aplastamiento en los planos del eje se queda en FS 1.1)
+- 16 × tornillo M12 10.9 + tuerca autoblocante, y 8 × camisa de acero soldada
+  a través del PTR (si no, el apriete aplasta el tubo)
+- 2 × caliper mecánico/hidráulico de ATV (el QS273 trae disco) + separadores
+  para alcanzar el plano del disco

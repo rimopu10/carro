@@ -20,7 +20,7 @@ rueda al brazo, y fija el toe-in con calzas.
 
 | Decisión | Elección | Razón |
 |---|---|---|
-| Unión al brazo | **Atornillada**, 4× M10 10.9 en camisas soldadas a través del PTR | Se cambia sin cortar el brazo; las calzas dan el toe-in de 1-2 mm |
+| Unión al brazo | **Atornillada**, 4× M12 10.9 en camisas soldadas a través del PTR | Se cambia sin cortar el brazo; las calzas dan el toe-in de 1-2 mm. Con M10 el aplastamiento en la placa quedaba en FS 2.0, al filo |
 | Ménsula de caliper | **Integrada** en la placa exterior | Par de motor y de freno al mismo punto; una pieza menos, sin tolerancias acumuladas |
 | Fabricación | **Sándwich de 2 placas de acero 8 mm, corte láser** | Ver §3 |
 
@@ -86,28 +86,48 @@ brazo. Aquí se usa **1g = 630 N·m** porque es el objetivo declarado del cálcu
 ## 6. Motor generativo — qué se construye
 
 Archivo nuevo `calculos/placa_torque.py`. Reutiliza el núcleo SIMP de
-`nodo_generativo.py` (elemento H8, filtro de densidad, actualización por criterio de
-optimalidad) pero necesita tres cosas que aquel no tiene:
+`nodo_generativo.py` (filtro de densidad, actualización por criterio de optimalidad) pero
+en **2D esfuerzo plano** con elemento Q4, no en 3D.
 
-1. **Multi-caso de carga.** Varios vectores de fuerza resueltos en el mismo sistema; la
-   sensibilidad es la suma de las sensibilidades de cada caso.
-2. **Restricción de extrusión.** La topología debe ser idéntica a través del espesor, si
-   no sale una pieza orgánica 3D que el láser no puede cortar. Se impone promediando las
-   densidades y sensibilidades a lo largo del eje del espesor en cada iteración. Esta es
-   la restricción que convierte "diseño generativo bonito" en "archivo que mandas al
-   cortador el lunes".
-3. **Regiones pasivas.** El cubo alrededor del eje, los 4 pads de tornillo y los pads del
-   caliper se fuerzan a densidad 1; el borde exterior del dominio y el hueco del eje se
-   fuerzan a 0. El algoritmo esculpe únicamente el material entre esos anclajes.
+El 2D no es una simplificación: es el modelo correcto de una placa plana cargada en su
+plano, y de paso impone la restricción de fabricación por construcción — lo que sale del
+algoritmo *es* el contorno que corta el láser, sin tener que forzar nada.
 
-Se corre dos veces: `PLACA=motor` (con orejas de caliper) y `PLACA=refuerzo`.
+Sobre eso, tres cosas que el optimizador de nodos no tiene:
+
+1. **Multi-caso de carga.** Los cuatro casos se resuelven en el mismo sistema y la
+   sensibilidad es la suma. Optimizar solo el peor caso da una pieza excelente en ese
+   caso y frágil en los demás.
+2. **Superficies funcionales impuestas.** El cubo del eje, la **brida de la junta
+   atornillada** (banda continua a lo largo de cada hilera de tornillos) y los pads del
+   caliper se fuerzan a material sólido. El algoritmo esculpe solo lo que las conecta.
+   La brida hay que imponerla: minimizar deformación **siempre descarta apoyos
+   redundantes**, así que sin ella el optimizador agarra los dos tornillos más cercanos y
+   deja los otros dos como islas flotantes. El reparto de carga entre tornillos y la cara
+   de apriete son requisitos de la junta, no de la rigidez.
+3. **Apoyos elásticos.** Cada tornillo es un resorte de rigidez `G·A/t`, no un
+   empotramiento rígido — un empotramiento reacciona momento él solo y falsea el reparto.
+4. **Barrido de fracción de volumen.** La masa **no es un resultado del optimizador: es
+   la restricción que se le impone**. Se barre y se elige la más ligera que todavía cumple
+   FS ≥ 2. Sin esto la "masa optimizada" es solo el número que uno eligió de entrada.
+
+Se corre dos veces: placa motor (con orejas de caliper) y placa refuerzo.
 
 ## 7. Verificación
 
 Después de optimizar, chequeo de esfuerzos a escala real contra acero estructural
-(σy = 250 MPa, igual que el resto del proyecto): cortante de aplastamiento en el cubo
-doble-D, cortante en los tornillos M10 10.9, y von Mises en la sección más angosta del
-contorno resultante. **Objetivo FS ≥ 2**, el mismo criterio que el chasis y el brazo.
+(σy = 250 MPa, igual que el resto del proyecto): aplastamiento en los planos del eje,
+cortante y aplastamiento en los tornillos —**con las reacciones que salen del propio FEM**
+(R = K·U − F), no de estática de mano, para ver si los cuatro tornillos de verdad
+trabajan— y von Mises en el material del contorno resultante. **Objetivo FS ≥ 2**, el
+mismo criterio que el chasis y el brazo.
+
+**Hallazgo:** el aplastamiento en los planos del eje es el eslabón débil real. El par se
+transmite como un par de fuerzas sobre las dos caras planas separadas 16 mm, o sea 21.9 kN
+sobre 12 mm de ancho de plano: la placa desnuda de 8 mm da **FS 1.1**. Se resuelve con un
+**doblador de 8 mm** soldado alrededor del cubo (anillo Ø56, misma hoja, mismo corte) →
+FS 2.2. Esta es la razón por la que se arrancan los cables de fase en los montajes de
+motor de cubo mal resueltos.
 
 ## 8. Entregables
 

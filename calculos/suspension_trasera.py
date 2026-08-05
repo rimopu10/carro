@@ -163,14 +163,22 @@ with open(out_md, "w", encoding="utf-8") as f:
         f.write(f"| {nom} | {sv:.0f} MPa | {sl:.0f} MPa | {ta_:.0f} MPa | {svm:.0f} MPa | **{fs:.1f}**{marca} |\n")
     f.write(f"\nElegida: **PTR {elegida}** (primera con FS≥2). El brazo es UNA pieza recta de "
             f"{L_brazo*1000+80:.0f} mm con: manga del pivote (buje poli Ø16, base ancha ≥150 mm), "
-            "oreja del shock al 75%, y la punta recibe la **placa de torque del QS273** (siguiente "
-            "pieza a diseñar — con el optimizador generativo).\n\n")
+            "oreja del shock al 75%, y la punta recibe la **placa de torque del QS273**, "
+            "resuelta por optimización topológica en `placa_torque.py` "
+            "(ver `resultados-placa-torque.md`).\n\n")
     f.write("## BOM parcial de esta sección\n\n")
     f.write(f"- 2 × PTR {elegida}, ~0.5 m c/u (los brazos)\n")
     f.write("- 2 × kit buje poliuretano Ø16 + manga de acero (pivote, base 150 mm)\n")
     f.write(f"- 2 × coilover ~{round(Lshk.max()/10)*10+10:.0f} mm / carrera {(Lshk.max()-Lshk.min())+15:.0f} mm / resorte {lbin:.0f} lb/in\n")
-    f.write("- 2 × placa de torque QS273 (diseño generativo pendiente) + tornillería 10.9\n")
-    f.write("- 2 × ménsula de caliper (el QS273 trae disco; caliper mecánico/hidráulico de ATV)\n")
+    f.write("- 4 × placa de torque QS273 en acero 8 mm — 2 `placa-torque-motor.dxf` (llevan\n"
+            "  integrada la ménsula del caliper) + 2 `placa-torque-refuerzo.dxf`. Van en\n"
+            "  sándwich abrazando la punta del PTR. Ver `resultados-placa-torque.md`\n")
+    f.write("- 4 × doblador del cubo `placa-torque-doblador.dxf`, acero 8 mm (soldado; sin él\n"
+            "  el aplastamiento en los planos del eje se queda en FS 1.1)\n")
+    f.write("- 16 × tornillo M12 10.9 + tuerca autoblocante, y 8 × camisa de acero soldada\n"
+            "  a través del PTR (si no, el apriete aplasta el tubo)\n")
+    f.write("- 2 × caliper mecánico/hidráulico de ATV (el QS273 trae disco) + separadores\n"
+            "  para alcanzar el plano del disco\n")
 
 # ---------------- gráfica ----------------
 import matplotlib
