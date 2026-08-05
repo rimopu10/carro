@@ -147,7 +147,7 @@ y se re-corre.
 |---|---|---|
 | Ø del eje | 20 mm | Tamaño del cubo doble-D |
 | Entrecaras de los planos | 16 mm | Igual |
-| **Largo del eje que sobresale del lado interior** | **≥ 78 mm** | Crítico: se necesita 8 + 50 + 8 + tuerca. Si es menor, las placas se acercan con separadores y se re-corre |
+| **Largo del eje que sobresale del lado interior** | **≥ 84 mm** | Crítico. Corregido al armar el modelo 3D: no son solo 8 + 50 + 8 + tuerca, porque entre la cara del motor y la placa exterior viven el disco y el caliper (30 mm). Si es menor, las placas se acercan con separadores y se re-corre |
 | Ancho del cuerpo del motor | 130 mm | Voladizo de 90 mm → cambia el momento de vuelco |
 | Ø del disco de freno y su patrón | 220 mm | Posición de las orejas del caliper |
 

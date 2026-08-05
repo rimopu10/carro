@@ -435,8 +435,10 @@ with open(md_path, "w", encoding="utf-8") as f:
             "— es la base de toda la suspensión trasera |\n")
     f.write("| Ø del eje y entrecaras de los planos | QS Motor | Definen el cubo de la placa "
             "de torque y su doblador |\n")
-    f.write("| **Largo del eje libre del lado interior (≥78 mm)** | QS Motor | Crítico: si es "
-            "menor, el sándwich de placas no cabe y hay que rediseñar |\n")
+    f.write("| **Largo del eje libre del lado interior (≥84 mm)** | QS Motor | **El más "
+            "crítico.** Si es menor, el sándwich de placas no cabe y hay que rediseñar. "
+            "Incluye los 30 mm que ocupan el disco y el caliper entre la cara del motor y "
+            "la placa |\n")
     f.write("| Ancho del cuerpo del motor (supuesto 130 mm) | QS Motor | Cambia el voladizo y "
             "todo el reparto de carga entre las dos placas |\n")
     f.write("| Ø del disco de freno y patrón del caliper | QS Motor | Fija la posición de las "

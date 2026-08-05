@@ -150,7 +150,7 @@ Todo lo de abajo está parametrizado en los scripts: si un dato cambia se ajusta
 |---|---|---|
 | Versión de rin de carro 14" del QS273 | QS Motor | En rin 13" el motor no cabe — es la base de toda la suspensión trasera |
 | Ø del eje y entrecaras de los planos | QS Motor | Definen el cubo de la placa de torque y su doblador |
-| **Largo del eje libre del lado interior (≥78 mm)** | QS Motor | Crítico: si es menor, el sándwich de placas no cabe y hay que rediseñar |
+| **Largo del eje libre del lado interior (≥84 mm)** | QS Motor | **El más crítico.** Si es menor, el sándwich de placas no cabe y hay que rediseñar. Incluye los 30 mm que ocupan el disco y el caliper entre la cara del motor y la placa |
 | Ancho del cuerpo del motor (supuesto 130 mm) | QS Motor | Cambia el voladizo y todo el reparto de carga entre las dos placas |
 | Ø del disco de freno y patrón del caliper | QS Motor | Fija la posición de las orejas ya cortadas en la placa de torque |
 | Corriente real de descarga del BMS | proveedor | Menos de 250 A continuos capa los motores |

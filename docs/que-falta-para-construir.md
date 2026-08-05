@@ -8,7 +8,8 @@ Regla de lectura: ✅ resuelto · 🟡 parcial (existe pero no está listo para 
 | Sistema | Estado | Qué existe | Qué falta para construir |
 |---|---|---|---|
 | Concepto y arquitectura | ✅ | Doc maestro v1.0, todas las decisiones validadas | — |
-| Chasis (estructura) | 🟡 | FEM de vigas (10,868 N·m/°, FS ok), lista de corte 73 tubos, 3 DXF de cartelas, 5 nodos generativos STL, ensamble 3D | FEM formal de validación, jig de soldadura, secuencia de soldadura, decisión nodos impresos vs cartelas |
+| Chasis (estructura) | 🟡 | FEM de vigas, lista de corte 73 tubos, 3 DXF de cartelas, 5 nodos generativos STL. **Secciones optimizadas 2026-08-04: 90.5 → 81.0 kg** (`resultados-optimizacion-chasis.md`), 10,032 N·m/° y FS 2.14 | FEM formal de validación, jig de soldadura, secuencia de soldadura, decisión nodos impresos vs cartelas |
+| Modelo 3D del carro completo | ✅ 2026-08-04 | `carro-completo-3d.html` (se regenera con `calculos/exportar_carro_3d.py`): 195 piezas en coordenadas reales, explorador por sistema, secuencia de armado en 7 pasos, vista explotada y clic para inspeccionar | — |
 | Suspensión delantera | ✅ 2026-07-06 | Geometría completa con cinemática 3D (`calculos/resultados-suspension-delantera.md`): camber −1°, caster 4.9°, bump steer 0.04°/25mm, resorte 270 lb/in, largos de brazos | Comprar donantes (mangueta ATV, cremallera) y fabricar brazos |
 | Suspensión trasera | ✅ 2026-07-06 | Brazo tirado resuelto (`calculos/resultados-suspension-trasera.md`): PTR 70×50×4 FS 2.4, MR 0.68, resorte 351 lb/in, anti-squat 258% documentado, rin resuelto (QS273 versión carro 14", 175/70R14) | Compras |
 | Placa de torque QS273 | ✅ 2026-08-04 | Sándwich de 2 placas por rueda por optimización topológica (`calculos/resultados-placa-torque.md`): 0.69 + 0.58 kg, FS 2.3/2.8, ménsula de caliper integrada, doblador del cubo. 3 DXF de corte listos | Confirmar cotas del eje con QS Motor y cortar |

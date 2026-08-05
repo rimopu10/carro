@@ -45,7 +45,11 @@ PLANOS = os.path.join(HERE, "..", "planos")
 # --- eje del QS273 (CONFIRMAR POR ESCRITO ANTES DE CORTAR) ---
 EJE_D      = 0.020    # m, diámetro del eje
 EJE_PLANOS = 0.016    # m, entrecaras de los planos maquinados
-EJE_LIBRE  = 0.078    # m, largo del eje que sobresale del lado interior (REQUERIDO)
+EJE_LIBRE  = 0.084    # m, largo del eje que sobresale del lado interior (REQUERIDO).
+                      # Corregido 2026-08-04 al armar el modelo 3D completo: no son
+                      # 8+50+8+tuerca pegados a la cara del motor, porque entre la cara
+                      # y la placa exterior viven el disco y el caliper. Hay 30 mm de
+                      # separación ahí; las orejas del caliper la salvan con separadores.
 MOTOR_W    = 0.130    # m, ancho del cuerpo del motor
 DISCO_R    = 0.110    # m, radio del disco de freno que trae el QS273
 CALIPER_R  = 0.095    # m, radio efectivo de frenado (centro de pastilla)
@@ -721,8 +725,10 @@ if __name__ == "__main__":
         f.write(f"| Entrecaras de los planos | {EJE_PLANOS*1000:.0f} mm | Cambia el "
                 "aplastamiento (va al cuadrado del espesor requerido) |\n")
         f.write(f"| Largo del eje libre del lado interior | **≥ {EJE_LIBRE*1000:.0f} mm** | "
-                f"Crítico: {T_PLACA*1000:.0f}+{GAP*1000:.0f}+{T_PLACA*1000:.0f} + tuerca. Si es "
-                "menor, ver el fallback del spec |\n")
+                f"**El dato crítico.** No es solo {T_PLACA*1000:.0f}+{GAP*1000:.0f}+"
+                f"{T_PLACA*1000:.0f}+tuerca: entre la cara del motor y la placa exterior "
+                "viven el disco y el caliper, que piden 30 mm más. Si el eje es más corto, "
+                "ver el fallback del spec |\n")
         f.write(f"| Ancho del cuerpo del motor | {MOTOR_W*1000:.0f} mm | Cambia el voladizo y "
                 "todo el reparto entre placas |\n")
         f.write(f"| Ø del disco y patrón del caliper | {DISCO_R*2000:.0f} mm / "

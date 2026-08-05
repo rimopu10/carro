@@ -125,6 +125,6 @@ Todos en mm, capa `CORTE`, listos para cotizar. El hueco del eje va con doble-D;
 |---|---|---|
 | Ø del eje | 20 mm | Cambia el cubo y el doblador |
 | Entrecaras de los planos | 16 mm | Cambia el aplastamiento (va al cuadrado del espesor requerido) |
-| Largo del eje libre del lado interior | **≥ 78 mm** | Crítico: 8+50+8 + tuerca. Si es menor, ver el fallback del spec |
+| Largo del eje libre del lado interior | **≥ 84 mm** | **El dato crítico.** No es solo 8+50+8+tuerca: entre la cara del motor y la placa exterior viven el disco y el caliper, que piden 30 mm más. Si el eje es más corto, ver el fallback del spec |
 | Ancho del cuerpo del motor | 130 mm | Cambia el voladizo y todo el reparto entre placas |
 | Ø del disco y patrón del caliper | 220 mm / 82 mm | Cambia la posición de las orejas |
