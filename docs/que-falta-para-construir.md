@@ -13,7 +13,7 @@ Regla de lectura: ✅ resuelto · 🟡 parcial (existe pero no está listo para 
 | Suspensión trasera | ✅ 2026-07-06 | Brazo tirado resuelto (`calculos/resultados-suspension-trasera.md`): PTR 70×50×4 FS 2.4, MR 0.68, resorte 351 lb/in, anti-squat 258% documentado, rin resuelto (QS273 versión carro 14", 175/70R14) | Compras |
 | Placa de torque QS273 | ✅ 2026-08-04 | Sándwich de 2 placas por rueda por optimización topológica (`calculos/resultados-placa-torque.md`): 0.69 + 0.58 kg, FS 2.3/2.8, ménsula de caliper integrada, doblador del cubo. 3 DXF de corte listos | Confirmar cotas del eje con QS Motor y cortar |
 | Dirección | ❌ | Decisión: cremallera manual de compacto | Donante exacto, geometría (bump steer, Ackermann), columna y montaje |
-| Frenos | ❌ | Decisión: disco ×4, doble bomba | Cálculo de frenado (650 kg, 1g), selección discos/calipers/bombas, pedalera, balance F/R |
+| Frenos | ✅ 2026-08-04 | Dimensionado completo (`calculos/resultados-frenos.md`): reparto 57/43, disco Ø220 ×4, pistones 938/740 mm², bombas Ø14.3 con pedal 6:1 → 428 N para 1g, térmico, límite de regen y freno de mano | Conseguir donantes y **limitar el regen a 0.24g en los controladores** (seguridad, F3) |
 | Batería (pack) | 🟡 | Spec de celdas y BMS, placa de cuna DXF, cuna en el frame | Diseño de la caja completa (arreglo 30S, busbars, compresión, venteo), plano de armado con técnico |
 | Eléctrico HV + 12V | ❌ | Lista conceptual de componentes | Diagrama unifilar completo, calibres de cable, lista de conectores, layout en la nariz |
 | Carrocería | 🟡 | Concepto 3D v2 (visor), método definido, 10 paneles decididos | CAD final de superficie, corte en paneles, archivos CNC de espuma, anclajes Dzus, diseño de puerta mariposa (bisagra/pistón/cerrojo), spec exacta del parabrisas |
@@ -30,8 +30,8 @@ En orden de dependencia — cada uno es un entregable concreto tipo los que ya h
 1. ~~**Suspensión delantera**~~ ✅ hecho 2026-07-06 (`calculos/suspension_delantera.py`).
 2. ~~**Suspensión trasera**~~ ✅ hecho 2026-07-06 (`calculos/suspension_trasera.py`). Rin resuelto: QS273 versión rin de carro 14" — confirmar por escrito con QS Motor al cotizar. *Bloquea F1.*
 3. ~~**Placa de torque del QS273**~~ ✅ hecho 2026-08-04 (`calculos/placa_torque.py`). Sándwich de 2 placas de acero 8 mm por rueda, corte láser, con la ménsula del caliper integrada. Falta confirmar con QS Motor el Ø del eje, la entrecaras de los planos y **el largo del eje libre del lado interior (≥78 mm)** antes de cortar.
-4. **Cálculo de frenos** — dimensionado real y lista de partes con donantes. *Bloquea F1.* Ahora es el camino crítico.
-5. **Dirección** — geometría Ackermann + verificación de bump steer con la suspensión ya definida. *Bloquea F1.*
+4. ~~**Cálculo de frenos**~~ ✅ hecho 2026-08-04 (`calculos/frenos.py`). Hallazgo: el freno del donante ATV **no alcanza** — se reusa mangueta y maza pero con disco de Ø220 y caliper mayor. Y el regen hay que limitarlo a 0.24g o el trasero se bloquea en mojado.
+5. **Dirección** — geometría Ackermann + verificación de bump steer con la suspensión ya definida. *Bloquea F1.* Ahora es el camino crítico.
 6. **BOM maestro** — hoja con cada pieza, spec exacta de pedido (ej. "BMS 30S LiFePO4 300A continuo con Bluetooth"), proveedor candidato y precio. *Cierra F0: sin esto no se puede pedir nada.*
 7. **Diagrama eléctrico HV + 12V** — unifilar completo con calibres y protecciones. *Bloquea F2.*
 8. **Caja de batería** — CAD del arreglo 30S con compresión y montaje a la cuna. *Bloquea F2.*
