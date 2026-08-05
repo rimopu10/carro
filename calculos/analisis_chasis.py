@@ -29,15 +29,15 @@ FY = 250e6      # Pa, fluencia acero estructural comercial (A36/PTR)
 RHO = 7850      # kg/m3
 
 # PTR cuadrado 38x38x1.9 mm (calibre 14)
-def sec_ptr():
-    b, t = 0.038, 0.0019
+def sec_ptr(b=0.038, t=0.0019):
     bi = b - 2*t
     A  = b*b - bi*bi
     I  = (b**4 - bi**4) / 12.0
     bm = b - t                      # línea media
     J  = 4 * (bm*bm)**2 * t / (4*bm)   # Bredt, pared delgada cerrada
     c  = b/2
-    return dict(A=A, Iy=I, Iz=I, J=J, c=c, nombre="PTR 38x38x1.9")
+    return dict(A=A, Iy=I, Iz=I, J=J, c=c,
+                nombre=f"PTR {b*1000:.0f}x{b*1000:.0f}x{t*1000:.1f}")
 
 # Tubo redondo 44.5 x 2.1 mm (1-3/4" cal 14) — arcos de seguridad
 def sec_red():
@@ -50,6 +50,11 @@ def sec_red():
     return dict(A=A, Iy=I, Iz=I, J=J, c=c, nombre="RED 44.5x2.1")
 
 PTR, RED = sec_ptr(), sec_red()
+# Diagonales de torsión: PTR 25×25×1.5 en vez de 38×38×1.9. Sale de
+# optimizar_chasis.py — quita 9.5 kg (90.5 → 81.0) agregando UN solo tubo a la lista
+# de compra, y la rigidez torsional apenas baja de 10,868 a 10,032 N·m/°.
+PTR_DIAG = sec_ptr(0.025, 0.0015)
+SEC_POR_TAG = {"tors": PTR_DIAG}
 
 # ---------------- geometría: nodos (x adelante→atrás, y arriba, z lateral) ----------------
 NODES = {}
@@ -85,15 +90,16 @@ NM("r_hi",  2.78, 0.58, 0.42)
 NM("tail",  3.00, 0.35, 0.30)
 
 MEMBERS = []  # (nodoA, nodoB, seccion, etiqueta)
-def M(a, b, sec=PTR, tag="gen"):
-    MEMBERS.append((a, b, sec, tag))
+def M(a, b, sec=None, tag="gen"):
+    """Si no se da sección explícita, la decide la función del tubo (SEC_POR_TAG)."""
+    MEMBERS.append((a, b, sec or SEC_POR_TAG.get(tag, PTR), tag))
 
-def MM(a, b, sec=PTR, tag="gen"):
+def MM(a, b, sec=None, tag="gen"):
     """miembro en ambos lados"""
     M(a + "L", b + "L", sec, tag)
     M(a + "R", b + "R", sec, tag)
 
-def CROSS(a, sec=PTR, tag="gen"):
+def CROSS(a, sec=None, tag="gen"):
     """travesaño entre lados"""
     M(a + "L", a + "R", sec, tag)
 
@@ -104,7 +110,7 @@ MM("fb_lo", "fb_hi", tag="susp"); MM("fx_lo", "fx_hi", tag="susp")
 MM("fb_lo", "fx_lo", tag="susp"); MM("fb_hi", "fx_hi", tag="susp")
 MM("fb_hi", "fx_lo", tag="tors")
 CROSS("fb_lo"); CROSS("fb_hi"); CROSS("fx_hi")
-M("fx_hiL", "fb_hiR", PTR, "tors")  # X superior
+M("fx_hiL", "fb_hiR", None, "tors")  # X superior
 # transición
 MM("fx_lo", "dash_lo"); MM("fx_hi", "dash_hi"); MM("dash_lo", "dash_hi", tag="safe")
 CROSS("dash_lo")
@@ -113,7 +119,7 @@ MM("dash_hi", "hdr", RED, "safe"); CROSS("hdr", RED, "safe")
 MM("hdr", "mh_hi", RED, "safe")
 MM("dash_lo", "seat", tag="gen"); MM("seat", "mh_lo", tag="gen")   # estribo en 2 tramos
 MM("dash_hi", "mh_lo", tag="tors")                                  # diagonal de puerta
-M("dash_loL", "mh_loR", PTR, "tors"); M("dash_loR", "mh_loL", PTR, "tors")  # X piso
+M("dash_loL", "mh_loR", None, "tors"); M("dash_loR", "mh_loL", None, "tors")  # X piso
 # arco principal (2 tramos por la barra de cinturones)
 MM("mh_lo", "mh_belt", RED, "safe"); MM("mh_belt", "mh_hi", RED, "safe")
 CROSS("mh_hi", RED, "safe"); CROSS("mh_belt", PTR, "safe")

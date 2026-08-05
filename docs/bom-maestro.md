@@ -35,11 +35,12 @@ No se compra todo junto. El orden lo dicta el tiempo de entrega, no el gusto:
 | F2 | Cargador | LiFePO4 96 V, 15-18 A, enchufable a 120 V | 1 pza | 2-4 semanas | $5,000–8,000 |
 | F2 | Caja de batería | Lámina/perfil + compresión de celdas + venteo + aislamiento. **CAD pendiente** (punto 8 de que-falta-para-construir) | 1 lote | — | $3,000–5,500 |
 
-### Estructura — $11,699 a $19,726
+### Estructura — $11,280 a $19,072
 
 | Fase | Item | Especificación de pedido | Cant. | Entrega | Estimado |
 |---|---|---|---|---|---|
-| F1 | Tubo PTR 38x38x1.9 | 7 tramos de 6 m = 95 kg (62 piezas, 34.7 m netos, +15% de merma) | 7 tramo 6 m | local, días | $3,047–4,761 |
+| F1 | Tubo PTR 25x25x1.5 | 2 tramos de 6 m = 14 kg (9 piezas, 9.0 m netos, +15% de merma) | 2 tramo 6 m | local, días | $452–706 |
+| F1 | Tubo PTR 38x38x1.9 | 5 tramos de 6 m = 68 kg (53 piezas, 25.7 m netos, +15% de merma) | 5 tramo 6 m | local, días | $2,176–3,401 |
 | F1 | Tubo RED 44.5x2.1 | 2 tramos de 6 m = 28 kg (11 piezas, 7.1 m netos — los arcos requieren ROLADO, +15% de merma) | 2 tramo 6 m | local, días | $1,162–1,798 |
 | F1 | Tubo PTR 70×50×4 | 1 tramo de 6 m = 45 kg — brazos tirados traseros (2 × 504 mm) y sobrante para ménsulas | 1 tramo 6 m | local, días | $1,447–2,261 |
 | F1 | Tubo RED 25.4×2.1 | 1 tramo de 6 m = 8 kg — horquillas delanteras (~2.1 m netos) | 1 tramo 6 m | local, días | $331–513 |
@@ -159,21 +160,21 @@ Todo lo de abajo está parametrizado en los scripts: si un dato cambia se ajusta
 
 | Sistema | BOM (estimado) | Presupuesto doc maestro | |
 |---|---|---|---|
-| Estructura | $11,699–19,726 | $7,200–11,000 | **se pasa** |
+| Estructura | $11,280–19,072 | $7,200–11,000 | **se pasa** |
 | Rodaje | $35,200–63,400 | $20,300–33,500 | **se pasa** |
 | Propulsión | $49,700–73,200 | $38,700–53,700 | dentro |
 | Batería | $40,000–58,500 | $35,000–49,000 | dentro |
 | Carrocería | $31,500–55,000 | $21,000–36,000 | dentro |
 | Cabina | $14,400–27,000 | $14,400–24,100 | dentro |
 | Luces | $7,000–12,000 | $7,000–12,000 | dentro |
-| **Total del carro** | **$189,500–308,800** | $143,600–219,300 | |
+| **Total del carro** | **$189,100–308,200** | $143,600–219,300 | |
 | Herramientas | $16,300–30,200 | $10,000–15,000 | |
 
 El rango es ancho a propósito: el **mínimo** es comprando bien y usando deshuesadero donde se puede; el **máximo** es todo nuevo a precio de mostrador. La realidad cae en medio y depende sobre todo de la suerte en el deshuesadero.
 
 ### De dónde viene el sobrecosto
 
-El BOM detallado sale **$189,500–308,800** contra los $143,600–219,300 del doc maestro. Solo se pasan dos sistemas, y hay una razón concreta en cada uno:
+El BOM detallado sale **$189,100–308,200** contra los $143,600–219,300 del doc maestro. Solo se pasan dos sistemas, y hay una razón concreta en cada uno:
 
 **Rodaje** es el grande. Desglosado por entregable:
 
@@ -186,9 +187,9 @@ El BOM detallado sale **$189,500–308,800** contra los $143,600–219,300 del d
 
 Los **frenos solos se comen casi la mitad del rodaje**, y es consecuencia directa de un hallazgo del cálculo: el freno del donante ATV no alcanza para 690 kg, así que hay que comprar discos de Ø220 y calipers de mayor área en vez de reusar los del donante. El doc maestro presupuestó dando por hecho que el freno venía con la mangueta.
 
-**Estructura** se pasa por los servicios, no por el acero: el acero puro son ~214 kg ($6,843–10,692), y lo que empuja son el corte láser, el rolado de los arcos y los consumibles de soldadura — que el presupuesto original no tenía desglosados.
+**Estructura** se pasa por los servicios, no por el acero: el acero puro son ~201 kg ($6,425–10,039), y lo que empuja son el corte láser, el rolado de los arcos y los consumibles de soldadura — que el presupuesto original no tenía desglosados.
 
-> Ojo con ese número: **214 kg es lo que se COMPRA**, no lo que pesa el carro. El frame soldado son 90.5 kg (`analisis_chasis.py`); la diferencia son los tramos comerciales de 6 m que sobran, la merma de corte y las placas. El sobrante sirve para el jig de soldadura y las ménsulas, así que no se tira.
+> Ojo con ese número: **201 kg es lo que se COMPRA**, no lo que pesa el carro. El frame soldado son 90.5 kg (`analisis_chasis.py`); la diferencia son los tramos comerciales de 6 m que sobran, la merma de corte y las placas. El sobrante sirve para el jig de soldadura y las ménsulas, así que no se tira.
 
 **Qué hacer con esto.** No es motivo de alarma: el carro sigue siendo un proyecto de rango medio y **se construye por fases**, así que el desembolso se reparte. Las palancas reales para bajarlo, en orden de efecto:
 
@@ -202,7 +203,7 @@ Los **frenos solos se comen casi la mitad del rodaje**, y es consecuencia direct
 | Fase | Qué es | Estimado |
 |---|---|---|
 | F0 | pedidos largos (motores y celdas) — **primero** | $70,700–98,700 |
-| F1 | chasis rodante: acero, suspensión, frenos, dirección | $46,900–83,100 |
+| F1 | chasis rodante: acero, suspensión, frenos, dirección | $46,500–82,500 |
 | F2 | tren eléctrico | $19,000–33,000 |
 | F3 | pruebas y cabina | $14,400–27,000 |
 | F4 | carrocería | $19,500–35,000 |
