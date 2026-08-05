@@ -12,8 +12,8 @@ Horquillas dobles + coilover a la torre `fx_hi`. Cinemática 3D exacta de cuerpo
 | Pivote sup. tras. | 750 | 417 | 550 | ménsula 63 mm bajo fx_hi |
 | Rótula inferior LBJ | 545 | 190 | 710 | cónica tipo ATV |
 | Rótula superior UBJ | 565 | 425 | 685 | cónica tipo ATV |
-| Extremo cremallera | 385 | 207 | 505 | rótula axial |
-| Terminal dirección | 430 | 198 | 695 | en brazo de mangueta |
+| Extremo cremallera | 430 | 310 | 520 | rótula axial |
+| Terminal dirección | 430 | 310 | 695 | en brazo de mangueta |
 | Centro de rueda | 550 | 288 | 750 | 175/70R13 |
 | Coilover inferior | 580 | 215 | 660 | sobre brazo inf., 75% a la rótula |
 | Coilover superior | 700 | 480 | 480 | torre fx_hi (nodo del FEM) |
@@ -33,7 +33,7 @@ Horquillas dobles + coilover a la torre `fx_hi`. Cinemática 3D exacta de cuerpo
 ## Cinemática en el recorrido (±70 mm)
 
 - Ganancia de camber: **-0.49°/25 mm** en compresión (la rueda se inclina hacia adentro al comprimir: correcto).
-- Bump steer máximo: **0.018°/25 mm** en ±50 mm — excelente (<0.1).
+- Bump steer máximo: **0.074°/25 mm** en ±50 mm — excelente (<0.1).
 - Cambio de semitrocha: -14.4 a 0.0 mm.
 - Motion ratio del coilover: **0.58** (shock/rueda) — casi constante en el recorrido.
 
@@ -51,7 +51,7 @@ Horquillas dobles + coilover a la torre `fx_hi`. Cinemática 3D exacta de cuerpo
 - brazo inf. tubo tras.: **260 mm**
 - brazo sup. tubo del.: **284 mm**
 - brazo sup. tubo tras.: **229 mm**
-- tie rod (centro-centro): **195 mm**
+- tie rod (centro-centro): **175 mm**
 
 ## Piezas (BOM parcial de esta sección)
 

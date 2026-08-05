@@ -45,15 +45,21 @@ m_susp = m_esq - M_NOSUSP                  # masa suspendida por esquina
 # bump steer de 0.043 a 0.028°/25mm. Este archivo es la única fuente de la geometría
 # delantera: `direccion.py` la importa de aquí.
 UA_Y = float(os.environ.get("SUSP_UA_Y", "0.417"))     # altura eje pivote superior
-# AVISO 2026-08-05: esta posición es la de mejor cinemática (bump steer 0.018°/25mm,
-# Ackermann +68%) pero **INTERFIERE con el larguero inferior del chasis por 29 mm**.
-# `direccion.py` barrió 1561 posiciones libres de interferencia y la mejor da 2.7°/25mm
-# de bump steer — cien veces peor. El conflicto no se resuelve moviendo la cremallera:
-# hay que bajar los pivotes de la horquilla inferior a ménsulas. NO CORTAR la ménsula
-# de cremallera hasta resolverlo. Ver §0 de resultados-direccion.md.
-RACK_X = float(os.environ.get("SUSP_RACK_X", "0.385")) # posición longitudinal
-RACK_Y = float(os.environ.get("SUSP_RACK_Y", "0.207")) # altura rótula de cremallera
-RACK_Z = float(os.environ.get("SUSP_RACK_Z", "0.505")) # posición lateral de la rótula
+# RESUELTO 2026-08-05. A 207 mm de altura el tie rod atravesaba el larguero inferior
+# del chasis (la rótula quedaba DENTRO del tubo) y no había salida moviendo solo la
+# cremallera: de 1561 posiciones libres, la mejor daba 2.7°/25mm de bump steer.
+# La salida fue subir TODO el plano de dirección —rótula de cremallera Y terminal en la
+# mangueta— por encima del larguero. El tie rod sigue el mismo arco que el brazo, así
+# que el bump steer se conserva: **0.057°/25mm con 46.5 mm de holgura**. Cuesta un
+# brazo de dirección fabricado en la mangueta (que ya hacía falta por el Ackermann).
+# Se toma la posición que certifica `holguras.py`, que es el chequeo MÁS ESTRICTO
+# (revisa todos los tubos del chasis, no solo los de la caja frontal). El barrido de
+# `direccion.py` prefiere x=361 por 3 puntos más de Ackermann, pero ahí la holgura
+# queda al filo. Entre Ackermann y poder montar la pieza, gana poder montarla.
+RACK_X = float(os.environ.get("SUSP_RACK_X", "0.430")) # posición longitudinal
+RACK_Y = float(os.environ.get("SUSP_RACK_Y", "0.310")) # altura rótula de cremallera
+RACK_Z = float(os.environ.get("SUSP_RACK_Z", "0.520")) # posición lateral de la rótula
+TR_Y   = float(os.environ.get("SUSP_TR_Y",  "0.310"))  # altura del brazo de mangueta
 
 LA1 = np.array([0.35, 0.200, 0.50])   # pivote brazo inf. delantero (en nodo fb_lo)
 LA2 = np.array([0.75, 0.200, 0.55])   # pivote brazo inf. trasero  (en nodo fx_lo)
@@ -64,7 +70,7 @@ LBJ0 = np.array([0.545, 0.190, 0.710])   # rótula inferior (caster: adelante de
 UBJ0 = np.array([0.565, 0.425, 0.685])   # rótula superior (atrás y arriba → caster +)
 
 RACK = np.array([RACK_X, RACK_Y, RACK_Z]) # extremo de la cremallera (rótula axial)
-TR0  = np.array([0.430, 0.198, 0.695])   # terminal de dirección en la mangueta
+TR0  = np.array([0.430, TR_Y, 0.695])    # terminal de dirección en la mangueta
 
 W0 = np.array([0.55, R_RUEDA, 0.75])     # centro de rueda (trocha del. 1.50 m)
 CAMBER_EST = -1.0                        # ° camber estático
