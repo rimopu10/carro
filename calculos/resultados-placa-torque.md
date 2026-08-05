@@ -84,14 +84,14 @@ La fracción de volumen **no es un resultado del optimizador: es la restricción
 | von Mises máx (p99.5) | 107 MPa | 89 MPa |
 | FS contra σy 250 MPa | **2.3** | **2.8** |
 
-Masa del juego completo del carro — 2 ruedas × (2 placas + 2 dobladores de 0.14 kg): **3.1 kg**. Es masa NO suspendida, así que cada gramo cuenta doble para el agarre en baches.
+Masa del juego completo del carro — 2 ruedas × (2 placas + 2 dobladores de 0.38 kg): **4.1 kg**. Es masa NO suspendida, así que cada gramo cuenta doble para el agarre en baches.
 
 ## Verificaciones que el topopt no ve
 
-**Aplastamiento en los planos del eje.** El par se transmite como un par de fuerzas sobre las dos caras planas, separadas 16 mm: F = 350/0.016 = **21.9 kN** sobre un ancho de plano de 12.0 mm.
+**Aplastamiento en los planos del eje.** El par se transmite como un par de fuerzas sobre las dos caras planas, separadas 16 mm: F = 350/0.016 = **43.7 kN** sobre un ancho de plano de 12.0 mm.
 
-- Con la placa desnuda de 8 mm: σ = 228 MPa → FS **1.1** — **insuficiente**.
-- Con un **doblador de 8 mm** soldado alrededor del cubo (Ø56 mm, misma placa, mismo corte láser): espesor local 16 mm → σ = 114 MPa → FS **2.2** ✓
+- Con la placa desnuda de 8 mm: σ = 456 MPa → FS **0.5** — **insuficiente**.
+- Con un **doblador de 22 mm** soldado alrededor del cubo (Ø56 mm, misma placa, mismo corte láser): espesor local 30 mm → σ = 122 MPa → FS **2.1** ✓
 
 Este es el eslabón débil real de los montajes de motor de cubo y la razón por la que se arrancan los cables de fase. El doblador cuesta un anillo extra en la misma hoja y un cordón de soldadura.
 
@@ -115,7 +115,7 @@ Los tornillos pasan por **camisas de acero soldadas a través del PTR**, si no e
 
 - `planos/placa-torque-motor.dxf` — ×2 (una por rueda), acero 8 mm
 - `planos/placa-torque-refuerzo.dxf` — ×2, acero 8 mm
-- `planos/placa-torque-doblador.dxf` — ×4 (uno por placa), acero 8 mm
+- `planos/placa-torque-doblador.dxf` — ×4 (uno por placa), acero 22 mm
 
 Todos en mm, capa `CORTE`, listos para cotizar. El hueco del eje va con doble-D; pedir corte y luego **rimar a medida con el eje en mano** (holgura 0 — cualquier juego aquí se convierte en golpeteo y termina ovalando).
 

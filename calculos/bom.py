@@ -29,6 +29,11 @@ RAIZ = os.path.normpath(os.path.join(HERE, ".."))
 PLANOS = os.path.join(RAIZ, "planos")
 DOCS = os.path.join(RAIZ, "docs")
 
+import sys
+sys.path.insert(0, HERE)
+import analisis_chasis as _ac      # única fuente de la masa real del frame
+ac_masa = _ac.masa_acero
+
 MERMA = 1.15          # 15% extra de acero por cortes, errores y ajustes
 TRAMO = 6.0           # m, largo comercial estándar de tubo
 RHO = 7850.0          # kg/m³
@@ -176,16 +181,20 @@ add("Rodaje", "Kit buje poliuretano Ø16 + manga",
     "Pivote de brazo tirado trasero, base ancha ≥150 mm",
     2, "kit", 800, 1400, "local", "resultados-suspension-trasera", "F1")
 add("Rodaje", "Coilover delantero",
-    "Resorte **270 lb/in**, ojo-a-ojo estático 334 mm, carrera usada 81 mm, "
-    "amortiguación ajustable por clicks (ζ 0.5-0.7)",
+    "Resorte **270 lb/in** · pedir ~**380 mm extendido, carrera ≥96 mm** (ojo a ojo "
+    "estático 342 mm) · amortiguación ajustable por clicks (ζ 0.5-0.7) · 5,703 N en "
+    "bache 3g · **especificar Ø del ojo y ancho de montaje**",
     2, "pza", 4000, 7000, "2-4 semanas", "resultados-suspension-delantera", "F1")
 add("Rodaje", "Coilover trasero",
-    "Resorte **351 lb/in**, ~590 mm extendido, carrera ≥108 mm, ajustable. "
-    "Soporta 7,358 N en bache 3g",
+    "Resorte **292 lb/in** · pedir ~**540 mm extendido, carrera ≥117 mm** (ojo a ojo "
+    "estático 482 mm) · ajustable · 6,710 N en bache 3g · **especificar Ø del ojo**. "
+    "OJO: cambió respecto a versiones previas del BOM (era 351 lb/in) al corregir el "
+    "anclaje inferior, que estaba fuera del brazo",
     2, "pza", 4500, 7500, "2-4 semanas", "resultados-suspension-trasera", "F1")
 add("Rodaje", "Tornillería 10.9 de placa de torque",
-    "16 × M12 10.9 + tuerca autoblocante, y 8 × camisa de acero soldada a través del "
-    "PTR (sin camisa, el apriete aplasta el tubo)",
+    "**8** × M12 10.9 + tuerca autoblocante (4 por rueda, atraviesan las dos placas) "
+    "y **8** × camisa de acero soldada a través del PTR (sin camisa, el apriete "
+    "aplasta el tubo) · apretar a 95 N·m",
     1, "lote", 900, 1500, "local", "resultados-placa-torque", "F1")
 
 # --- FRENOS ---
@@ -503,7 +512,8 @@ with open(md_path, "w", encoding="utf-8") as f:
             "de los arcos y los consumibles de soldadura — que el presupuesto original no "
             "tenía desglosados.\n\n")
     f.write(f"> Ojo con ese número: **{acero_kg:.0f} kg es lo que se COMPRA**, no lo que pesa "
-            "el carro. El frame soldado son 90.5 kg (`analisis_chasis.py`); la diferencia son "
+            f"el carro. El frame soldado son {ac_masa:.1f} kg (`analisis_chasis.py`); la "
+            "diferencia son "
             "los tramos comerciales de 6 m que sobran, la merma de corte y las placas. El "
             "sobrante sirve para el jig de soldadura y las ménsulas, así que no se tira.\n\n")
     f.write("**Qué hacer con esto.** No es motivo de alarma: el carro sigue siendo un proyecto "

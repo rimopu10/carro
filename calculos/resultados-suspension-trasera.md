@@ -15,7 +15,7 @@ El QS273 tiene carcasa de ~350 mm: **no cabe en rin 13"** (asiento 330 mm). Deci
 | Distancia entre ejes | **2.13 m** |
 | Largo efectivo del brazo | 424 mm (barrido ±9.5° en ±70 mm) |
 | Cambio de batalla en recorrido | -31 a +18 mm |
-| Motion ratio | **0.68** (estable: 0.63–0.70) |
+| Motion ratio | **0.74** (estable: 0.71–0.75) |
 
 ## Anti-squat (comportamiento con motor de cubo)
 
@@ -30,9 +30,9 @@ La línea de empuje pasa por el pivote: anti-squat estático **258%**.
 ## Resorte y coilover (spec de compra)
 
 - Masa por esquina 214 kg (169 suspendida — el motor de cubo pesa 27 kg y NO lo carga el resorte) · frecuencia 2.05 Hz.
-- Tasa en rueda 28.0 N/mm → **resorte 61 N/mm ≈ 351 lb/in**.
-- Largo ojo-a-ojo estático **529 mm**, carrera usada 93 mm → pedir ~590 mm extendido, carrera ≥108 mm.
-- Carga estática 2453 N · bache 3g **7358 N** por shock (la torre `coil` del FEM ya soporta este caso; ménsula con FS 2 → 14.7 kN).
+- Tasa en rueda 28.0 N/mm → **resorte 51 N/mm ≈ 292 lb/in**.
+- Largo ojo-a-ojo estático **482 mm**, carrera usada 102 mm → pedir ~540 mm extendido, carrera ≥117 mm.
+- Carga estática 2237 N · bache 3g **6710 N** por shock (la torre `coil` del FEM ya soporta este caso; ménsula con FS 2 → 13.4 kN).
 - Amortiguación crítica 4351 N·s/m → coilover con clicks, ζ 0.5–0.7.
 
 ## Sección del brazo (verificada a 3g + curva 1g + frenado 0.9g)
@@ -51,7 +51,7 @@ Elegida: **PTR 70×50×4** (primera con FS≥2). El brazo es UNA pieza recta de 
 
 - 2 × PTR 70×50×4, ~0.5 m c/u (los brazos)
 - 2 × kit buje poliuretano Ø16 + manga de acero (pivote, base 150 mm)
-- 2 × coilover ~590 mm / carrera 108 mm / resorte 351 lb/in
+- 2 × coilover ~540 mm / carrera 117 mm / resorte 292 lb/in
 - 4 × placa de torque QS273 en acero 8 mm — 2 `placa-torque-motor.dxf` (llevan
   integrada la ménsula del caliper) + 2 `placa-torque-refuerzo.dxf`. Van en
   sándwich abrazando la punta del PTR. Ver `resultados-placa-torque.md`

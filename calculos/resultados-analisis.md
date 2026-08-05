@@ -17,54 +17,54 @@ Los 10 tubos más esforzados:
 
 | Tubo | Función | Sección | σ máx (MPa) | FS fluencia | FS pandeo |
 |---|---|---|---|---|---|
-| seatR-mh_loR | gen | PTR 38x38x1.9 | 116.9 | 2.1 | 637.5 |
-| dash_loR-seatR | gen | PTR 38x38x1.9 | 116.9 | 2.1 | 377.2 |
-| seatL-mh_loL | gen | PTR 38x38x1.9 | 116.7 | 2.1 | 642.5 |
-| dash_loL-seatL | gen | PTR 38x38x1.9 | 116.7 | 2.1 | 380.2 |
-| fx_hiR-dash_hiR | gen | PTR 38x38x1.9 | 78.2 | 3.2 | 422.4 |
-| fx_hiL-dash_hiL | gen | PTR 38x38x1.9 | 77.8 | 3.2 | 427.7 |
-| coilL-r_hiL | susp | PTR 38x38x1.9 | 71.3 | 3.5 | 9039.6 |
-| coilR-r_hiR | susp | PTR 38x38x1.9 | 70.6 | 3.5 | 8526.4 |
-| mh_hiL-coilL | susp | PTR 38x38x1.9 | 67.0 | 3.7 | 157.3 |
-| mh_hiR-coilR | susp | PTR 38x38x1.9 | 66.9 | 3.7 | 156.7 |
+| seatL-mh_loL | gen | PTR 38x38x1.9 | 121.9 | 2.1 | 575.8 |
+| dash_loL-seatL | gen | PTR 38x38x1.9 | 121.9 | 2.1 | 340.7 |
+| seatR-mh_loR | gen | PTR 38x38x1.9 | 121.7 | 2.1 | 589.1 |
+| dash_loR-seatR | gen | PTR 38x38x1.9 | 121.7 | 2.1 | 348.6 |
+| coilL-r_hiL | susp | PTR 38x38x1.9 | 116.9 | 2.1 | 28486.5 |
+| coilR-r_hiR | susp | PTR 38x38x1.9 | 114.6 | 2.2 | 33340.0 |
+| fx_hiR-dash_hiR | gen | PTR 38x38x1.9 | 110.8 | 2.3 | 376.5 |
+| fx_hiL-dash_hiL | gen | PTR 38x38x1.9 | 109.4 | 2.3 | 368.3 |
+| mh_hiL-coilL | susp | PTR 38x38x1.9 | 105.1 | 2.4 | 117.2 |
+| mh_hiR-coilR | susp | PTR 38x38x1.9 | 104.3 | 2.4 | 118.2 |
 
 ## LC3 Frenada 1g
 
-Factor de seguridad mínimo: **4.4** (>2.0 requerido, >3.0 deseable)
+Factor de seguridad mínimo: **2.5** (>2.0 requerido, >3.0 deseable)
 
 Los 10 tubos más esforzados:
 
 | Tubo | Función | Sección | σ máx (MPa) | FS fluencia | FS pandeo |
 |---|---|---|---|---|---|
-| fx_hiL-dash_hiL | gen | PTR 38x38x1.9 | 57.0 | 4.4 | 1409.9 |
-| fx_loL-dash_loL | gen | PTR 38x38x1.9 | 47.5 | 5.3 | 386.0 |
-| seatL-mh_loL | gen | PTR 38x38x1.9 | 44.2 | 5.7 | 988.5 |
-| dash_loL-seatL | gen | PTR 38x38x1.9 | 43.0 | 5.8 | 267.8 |
-| seatR-mh_loR | gen | PTR 38x38x1.9 | 41.7 | 6.0 | 1001.4 |
-| fb_loL-fx_loL | susp | PTR 38x38x1.9 | 40.8 | 6.1 | 239.3 |
-| fx_loL-fx_hiL | susp | PTR 38x38x1.9 | 40.6 | 6.2 | 20206.8 |
-| dash_loR-seatR | gen | PTR 38x38x1.9 | 38.3 | 6.5 | 2967.1 |
-| fx_loR-dash_loR | gen | PTR 38x38x1.9 | 37.7 | 6.6 | 29325.9 |
-| mh_loL-bat_fL | gen | PTR 38x38x1.9 | 34.7 | 7.2 | 25562.2 |
+| fx_hiL-dash_hiL | gen | PTR 38x38x1.9 | 99.6 | 2.5 | 1251.2 |
+| fx_loL-dash_loL | gen | PTR 38x38x1.9 | 88.2 | 2.8 | 224.7 |
+| fx_loL-fx_hiL | susp | PTR 38x38x1.9 | 72.6 | 3.4 | 3371.7 |
+| fb_loL-fx_loL | susp | PTR 38x38x1.9 | 71.8 | 3.5 | 138.8 |
+| seatL-mh_loL | gen | PTR 38x38x1.9 | 55.5 | 4.5 | 388.8 |
+| fx_loR-dash_loR | gen | PTR 38x38x1.9 | 53.2 | 4.7 | 38306.9 |
+| dash_loL-seatL | gen | PTR 38x38x1.9 | 51.5 | 4.9 | 155.5 |
+| dash_loL-dash_hiL | safe | PTR 38x38x1.9 | 51.1 | 4.9 | 1094.1 |
+| seatR-mh_loR | gen | PTR 38x38x1.9 | 50.0 | 5.0 | 1099.6 |
+| mh_loL-bat_fL | gen | PTR 38x38x1.9 | 49.3 | 5.1 | 17379.1 |
 
 ## LC4 Curva 1g
 
-Factor de seguridad mínimo: **3.0** (>2.0 requerido, >3.0 deseable)
+Factor de seguridad mínimo: **2.8** (>2.0 requerido, >3.0 deseable)
 
 Los 10 tubos más esforzados:
 
 | Tubo | Función | Sección | σ máx (MPa) | FS fluencia | FS pandeo |
 |---|---|---|---|---|---|
-| seatR-mh_loR | gen | PTR 38x38x1.9 | 82.9 | 3.0 | 5447.7 |
-| dash_loR-seatR | gen | PTR 38x38x1.9 | 82.8 | 3.0 | 3762.4 |
-| dash_loL-seatL | gen | PTR 38x38x1.9 | 80.4 | 3.1 | 831.5 |
-| seatL-mh_loL | gen | PTR 38x38x1.9 | 80.3 | 3.1 | 1459.0 |
-| bat_fL-taL | gen | PTR 38x38x1.9 | 55.1 | 4.5 | 14111.3 |
-| taL-bat_rL | gen | PTR 38x38x1.9 | 54.8 | 4.6 | 5257.2 |
-| mh_loR-bat_fR | gen | PTR 38x38x1.9 | 45.5 | 5.5 | 31406.6 |
-| fx_hiL-dash_hiL | gen | PTR 38x38x1.9 | 44.4 | 5.6 | 2516.9 |
-| bat_fL-bat_fR | batt | PTR 38x38x1.9 | 35.6 | 7.0 | 77.8 |
-| dash_loL-dash_loR | gen | PTR 38x38x1.9 | 34.6 | 7.2 | 1077.2 |
+| taL-bat_rL | gen | PTR 38x38x1.9 | 89.1 | 2.8 | 2244.3 |
+| bat_fL-taL | gen | PTR 38x38x1.9 | 88.7 | 2.8 | 11890.1 |
+| seatR-mh_loR | gen | PTR 38x38x1.9 | 86.8 | 2.9 | 9262.5 |
+| dash_loR-seatR | gen | PTR 38x38x1.9 | 86.7 | 2.9 | 7313.9 |
+| dash_loL-seatL | gen | PTR 38x38x1.9 | 85.7 | 2.9 | 943.8 |
+| seatL-mh_loL | gen | PTR 38x38x1.9 | 85.6 | 2.9 | 1666.7 |
+| fx_hiL-dash_hiL | gen | PTR 38x38x1.9 | 72.4 | 3.5 | 2743.3 |
+| mh_loR-bat_fR | gen | PTR 38x38x1.9 | 54.6 | 4.6 | 26837.2 |
+| fx_loL-dash_loL | gen | PTR 38x38x1.9 | 54.4 | 4.6 | 2122.3 |
+| coilL-r_hiL | susp | PTR 38x38x1.9 | 49.5 | 5.0 | 13203.9 |
 
 ## Supuestos y límites
 

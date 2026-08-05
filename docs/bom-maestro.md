@@ -57,9 +57,9 @@ No se compra todo junto. El orden lo dicta el tiempo de entrega, no el gusto:
 | F1 | Rótula cónica ATV | Tipo Honda TRX300/Rancher — LBJ y UBJ por lado. **Verificar el cono contra la mangueta donante antes de comprar** | 4 pza | local/importado | $1,400–2,400 |
 | F1 | Buje de poliuretano Ø12 + tubo interno | Pivotes de horquillas delanteras | 8 pza | local | $1,600–2,800 |
 | F1 | Kit buje poliuretano Ø16 + manga | Pivote de brazo tirado trasero, base ancha ≥150 mm | 2 kit | local | $800–1,400 |
-| F1 | Coilover delantero | Resorte **270 lb/in**, ojo-a-ojo estático 334 mm, carrera usada 81 mm, amortiguación ajustable por clicks (ζ 0.5-0.7) | 2 pza | 2-4 semanas | $4,000–7,000 |
-| F1 | Coilover trasero | Resorte **351 lb/in**, ~590 mm extendido, carrera ≥108 mm, ajustable. Soporta 7,358 N en bache 3g | 2 pza | 2-4 semanas | $4,500–7,500 |
-| F1 | Tornillería 10.9 de placa de torque | 16 × M12 10.9 + tuerca autoblocante, y 8 × camisa de acero soldada a través del PTR (sin camisa, el apriete aplasta el tubo) | 1 lote | local | $900–1,500 |
+| F1 | Coilover delantero | Resorte **270 lb/in** · pedir ~**380 mm extendido, carrera ≥96 mm** (ojo a ojo estático 342 mm) · amortiguación ajustable por clicks (ζ 0.5-0.7) · 5,703 N en bache 3g · **especificar Ø del ojo y ancho de montaje** | 2 pza | 2-4 semanas | $4,000–7,000 |
+| F1 | Coilover trasero | Resorte **292 lb/in** · pedir ~**540 mm extendido, carrera ≥117 mm** (ojo a ojo estático 482 mm) · ajustable · 6,710 N en bache 3g · **especificar Ø del ojo**. OJO: cambió respecto a versiones previas del BOM (era 351 lb/in) al corregir el anclaje inferior, que estaba fuera del brazo | 2 pza | 2-4 semanas | $4,500–7,500 |
+| F1 | Tornillería 10.9 de placa de torque | **8** × M12 10.9 + tuerca autoblocante (4 por rueda, atraviesan las dos placas) y **8** × camisa de acero soldada a través del PTR (sin camisa, el apriete aplasta el tubo) · apretar a 95 N·m | 1 lote | local | $900–1,500 |
 | F1 | Disco de freno delantero | Ø220 × 5 mm macizo. **El disco del donante ATV (Ø180-200) NO da el par** — con él ninguna pedalera cumple | 2 pza | local | $1,200–2,200 |
 | F1 | Caliper delantero | Área de pistón ≥ **938 mm²** (equivale a un pistón de Ø35 mm) — de compacto o de moto deportiva de 2-4 pistones | 2 pza | deshuesadero/local | $2,000–4,000 |
 | F1 | Caliper trasero CON palanca de freno de mano | Área de pistón ≥ **740 mm²** (Ø31 mm equivalente), palanca mecánica integrada. **Verificar patrón de barrenos: 82 mm a radio 110** o se re-corre placa_torque.py. El disco lo trae el QS273 | 2 pza | deshuesadero/local | $2,400–4,200 |
@@ -189,7 +189,7 @@ Los **frenos solos se comen casi la mitad del rodaje**, y es consecuencia direct
 
 **Estructura** se pasa por los servicios, no por el acero: el acero puro son ~201 kg ($6,425–10,039), y lo que empuja son el corte láser, el rolado de los arcos y los consumibles de soldadura — que el presupuesto original no tenía desglosados.
 
-> Ojo con ese número: **201 kg es lo que se COMPRA**, no lo que pesa el carro. El frame soldado son 90.5 kg (`analisis_chasis.py`); la diferencia son los tramos comerciales de 6 m que sobran, la merma de corte y las placas. El sobrante sirve para el jig de soldadura y las ménsulas, así que no se tira.
+> Ojo con ese número: **201 kg es lo que se COMPRA**, no lo que pesa el carro. El frame soldado son 81.0 kg (`analisis_chasis.py`); la diferencia son los tramos comerciales de 6 m que sobran, la merma de corte y las placas. El sobrante sirve para el jig de soldadura y las ménsulas, así que no se tira.
 
 **Qué hacer con esto.** No es motivo de alarma: el carro sigue siendo un proyecto de rango medio y **se construye por fases**, así que el desembolso se reparte. Las palancas reales para bajarlo, en orden de efecto:
 

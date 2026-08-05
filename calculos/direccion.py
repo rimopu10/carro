@@ -27,6 +27,7 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import suspension_delantera as sd          # re-genera su propio informe (idempotente)
+import analisis_chasis as ac               # para revisar holgura contra los tubos
 
 import matplotlib
 matplotlib.use("Agg")
@@ -60,7 +61,12 @@ MU_PISO = 0.80          # coeficiente llanta-piso para el par de pivotamiento pa
 # --- puntos duros heredados (NO se tocan: fijan camber/caster/bump steer) ---
 LBJ, UBJ = sd.LBJ0, sd.UBJ0
 TR0 = sd.TR0
+# Posición VIGENTE de la cremallera: vive en suspension_delantera.py, que es la única
+# fuente de la geometría delantera. Este script la verifica, no la inventa.
 RACK0 = sd.RACK
+# Posición PREVIA, la que tenía el diseño antes de mirar el Ackermann. Se conserva
+# como referencia histórica para poder mostrar el antes y el después.
+RACK_PREV = np.array([0.410, 0.207, 0.510])
 
 # ============================================================================
 # 2. CINEMÁTICA DE GIRO (exacta, una sola incógnita)
@@ -161,8 +167,8 @@ def bump_steer(rack, tr0):
 # ============================================================================
 # 4. DIAGNÓSTICO DE LA GEOMETRÍA ACTUAL
 # ============================================================================
-ack0, out0, inn0, ss0 = ackermann(RACK0, TR0)
-bs0, _, _ = bump_steer(RACK0, TR0)
+ack0, out0, inn0, ss0 = ackermann(RACK_PREV, TR0)
+bs0, _, _ = bump_steer(RACK_PREV, TR0)
 
 # ángulo del brazo de mangueta en vista superior (kingpin → terminal)
 t_kp = (TR0[1] - LBJ[1]) / (UBJ[1] - LBJ[1])
@@ -179,21 +185,55 @@ ANG_IDEAL = np.degrees(np.arctan2(KP_TR[2], BATALLA))
 # Esto es lo primero que hay que probar porque NO CUESTA PIEZAS: solo cambia dónde
 # se atornilla la cremallera al mamparo. La altura (y) no se toca — es la que fija
 # el bump steer y ±5 mm lo duplican.
-XS = np.round(np.arange(0.28, 0.531, 0.01), 3)
-ZS = np.round(np.arange(0.40, 0.621, 0.01), 3)
+from holguras import dist_segmentos
+R_TIE, R_TUBO_A, MARGEN_H = 0.009, 0.0127, 0.008
+
+def holgura_tierod(rack):
+    """Holgura mínima del tie rod contra los brazos y los tubos del chasis.
+    AÑADIDO 2026-08-05: el barrido original optimizaba Ackermann y bump steer sin
+    mirar interferencias, y la posición que elegía metía la rótula de la cremallera
+    DENTRO del larguero inferior. Ahora esto filtra antes de nada."""
+    peor = np.inf
+    for (b1, b2) in [(sd.LA1, sd.LBJ0), (sd.LA2, sd.LBJ0),
+                     (sd.UA1, sd.UBJ0), (sd.UA2, sd.UBJ0)]:
+        d, _, _ = dist_segmentos(rack, TR0, b1, b2)
+        peor = min(peor, d - (R_TIE + R_TUBO_A + MARGEN_H))
+    for e in ac.elems:
+        pa, pb = ac.NODES[e["a"]], ac.NODES[e["b"]]
+        if pa[2] < -0.05 or pb[2] < -0.05 or max(pa[0], pb[0]) > 1.3:
+            continue
+        d, _, _ = dist_segmentos(rack, TR0, pa, pb)
+        peor = min(peor, d - (R_TIE + e["sec"]["c"] + MARGEN_H))
+    return peor
+
+# La ALTURA de la cremallera también entra al barrido: es la que fija el bump steer,
+# pero dejarla clavada en 207 mm era justo lo que la metía dentro del larguero.
+XS = np.round(np.arange(0.28, 0.531, 0.015), 3)
+ZS = np.round(np.arange(0.40, 0.621, 0.015), 3)
+YS = np.round(np.unique(np.append(np.arange(0.150, 0.3401, 0.010), RACK0[1])), 3)
 malla = np.full((len(ZS), len(XS)), np.nan)
 rack_cands = []
-for i, z in enumerate(ZS):
-    for j, x in enumerate(XS):
-        rack = np.array([x, RACK0[1], z])
-        try:
-            p, out, inn, ss = ackermann(rack, TR0)
-        except Exception:
-            continue
-        if p is None:
-            continue
-        malla[i, j] = p
-        rack_cands.append(dict(x=x, z=z, ack=p, rack=rack, lock=float(out[-1])))
+sin_holgura = []            # candidatos buenos en cinemática pero que INTERFIEREN
+for y in YS:
+    for i, z in enumerate(ZS):
+        for j, x in enumerate(XS):
+            rack = np.array([x, y, z])
+            hol = holgura_tierod(rack)
+            try:
+                p, out, inn, ss = ackermann(rack, TR0)
+            except Exception:
+                continue
+            if p is None:
+                continue
+            c = dict(x=x, y=y, z=z, ack=p, rack=rack, lock=float(out[-1]), hol=hol)
+            if hol >= 0:
+                if abs(y - RACK0[1]) < 1e-9:
+                    malla[i, j] = p
+                rack_cands.append(c)
+            elif abs(y - RACK0[1]) < 1e-9:
+                sin_holgura.append(c)
+print(f"  {len(rack_cands)} posiciones libres de interferencia, "
+      f"{len(sin_holgura)} a la altura actual que interfieren")
 ack_max_rack = float(np.nanmax(malla)) if np.any(~np.isnan(malla)) else float("nan")
 
 # Entre los que dan el Ackermann objetivo, se verifica el bump steer (barrido 3D
@@ -241,6 +281,21 @@ pareto.sort(key=lambda c: c["bs"])
 sol_rack = mejor_bajo(evaluados, BS_PREF) or mejor_bajo(evaluados, BS_MAX)
 rack_ok = pareto
 
+# ---- CONFLICTO GEOMÉTRICO ----------------------------------------------------
+# Si NINGUNA posición libre de interferencia consigue un bump steer aceptable, no hay
+# solución moviendo solo la cremallera: el paquete delantero está peleado consigo mismo
+# y hace falta cambiar el chasis. Se dice, no se disimula.
+CONFLICTO = sol_rack is None
+BS_LIBRE_MIN = min((c["bs"] for c in evaluados), default=float("nan"))
+if CONFLICTO:
+    for c in sin_holgura:
+        c["bs"], _, _ = bump_steer(c["rack"], TR0)
+    cand = [c for c in sin_holgura if c["bs"] <= BS_MAX] or sin_holgura
+    sol_rack = min(cand, key=lambda c: (c["bs"], abs(c["ack"] - ACK_OBJ)))
+    print(f"  *** CONFLICTO: ninguna posicion libre baja de {BS_LIBRE_MIN:.2f} deg/25mm "
+          f"de bump steer (tope {BS_MAX}). Se conserva la de mejor cinematica y se marca "
+          f"la interferencia: holgura {sol_rack['hol']*1000:.1f} mm")
+
 # ============================================================================
 # 6. PLAN B: brazo de dirección fabricado (solo si la cremallera no basta)
 # ============================================================================
@@ -252,7 +307,7 @@ def tr_desde_angulo(ang_deg, largo=None):
     return np.array([KP_TR[0] - L * np.cos(a), TR0[1], KP_TR[2] + L * np.sin(a)])
 
 sol_brazo = None
-if sol_rack is None:
+if False:   # plan B desactivado: no revisaba interferencias, que es justo el problema
     cands = []
     for ang in np.arange(-10.0, 26.1, 1.0):
         tr = tr_desde_angulo(ang)
@@ -300,7 +355,7 @@ def topes_y_giro(rack, tr0):
     return s_u, d_o, d_i, vueltas, ratio, diam
 
 S_USADA, D_OUT_MAX, D_INN_MAX, VUELTAS, RATIO, DIAM_GIRO = topes_y_giro(RACK_N, TR_N)
-S_USADA_0, D_OUT_0, D_INN_0, VUELTAS_0, RATIO_0, DIAM_GIRO_0 = topes_y_giro(RACK0, TR0)
+S_USADA_0, D_OUT_0, D_INN_0, VUELTAS_0, RATIO_0, DIAM_GIRO_0 = topes_y_giro(RACK_PREV, TR0)
 
 # círculo de giro con el ángulo exterior máximo
 # ============================================================================
@@ -328,6 +383,36 @@ with open(out_md, "w", encoding="utf-8") as f:
             "— la mangueta solo rota alrededor del eje de kingpin. Eso deja una sola incógnita "
             "(el ángulo de rotación) con una sola ecuación (el tie rod conserva su largo), y se "
             "resuelve exacto para las dos ruedas. Nada de fórmulas aproximadas de Ackermann.\n\n")
+
+    if CONFLICTO:
+        f.write("> ## ⛔ CONFLICTO GEOMÉTRICO SIN RESOLVER — leer antes que nada\n>\n")
+        f.write("> **La rótula de la cremallera y el larguero inferior del chasis se pelean "
+                "por el mismo espacio, y no hay forma de resolverlo moviendo la cremallera.**\n>\n")
+        f.write(f"> - En su posición actual (x={sol_rack['x']*1000:.0f}, "
+                f"y={sol_rack['y']*1000:.0f}, z={sol_rack['z']*1000:.0f}) el tie rod pasa a "
+                f"**{abs(sol_rack['hol'])*1000:.0f} mm por dentro** de la holgura mínima "
+                "contra el larguero `fb_lo–fx_lo` y la pata delantera de la horquilla "
+                "inferior. Físicamente no se puede montar.\n")
+        f.write(f"> - Se barrieron **{len(rack_cands)} posiciones libres de interferencia** "
+                f"(x, y y z). La mejor de todas da un bump steer de "
+                f"**{BS_LIBRE_MIN:.2f}°/25 mm**, contra el tope de {BS_MAX:.2f}. Es casi "
+                "cien veces peor: el carro se dirigiría solo al pasar un tope.\n")
+        f.write("> - La razón es de fondo: el bump steer se minimiza cuando el tie rod sigue "
+                "el arco de la horquilla inferior, o sea a **su misma altura** — y esa altura "
+                "es exactamente donde vive el larguero inferior del chasis.\n>\n")
+        f.write("> **Esto NO se arregla con la dirección: se arregla con el chasis.** Las "
+                "tres salidas reales son:\n>\n")
+        f.write("> 1. **Bajar los pivotes de la horquilla inferior a ménsulas por debajo del "
+                "larguero** (~50 mm). Es lo que de todas formas hace falta: hoy `LA1` y `LA2` "
+                "caen *dentro* de los nodos del chasis y el buje no cabe. Al bajarlos, se abre "
+                "el hueco por donde pasa el tie rod. Obliga a re-correr toda la cinemática "
+                "delantera (camber, centro de balanceo, bump steer).\n")
+        f.write("> 2. **Partir el larguero inferior** con un quiebre local que libre el paso "
+                "del tie rod. Más soldadura y hay que re-verificar el FEM.\n")
+        f.write("> 3. **Cremallera de montaje trasero** (detrás del eje), que cambia el signo "
+                "de todo el planteamiento de Ackermann de este documento.\n>\n")
+        f.write("> Mientras tanto, **los números de abajo son válidos como cinemática pero la "
+                "pieza no se puede montar**. No cortar la ménsula de cremallera.\n\n")
 
     f.write("## 1. Qué Ackermann trae la geometría heredada\n\n")
     f.write("Los puntos duros venían afinados para camber, caster y bump steer, pero el "
@@ -383,11 +468,19 @@ with open(out_md, "w", encoding="utf-8") as f:
                 f"mejor Ackermann que quepa bajo **{BS_PREF:.3f}°/25 mm**, en vez de apurar el "
                 f"Ackermann hasta el tope duro de {BS_MAX:.2f}.\n\n")
         f.write(f"**Elegida: cremallera en x = {RACK_N[0]*1000:.0f} mm, z = "
-                f"{RACK_N[2]*1000:.0f} mm** (antes {RACK0[0]*1000:.0f} / "
-                f"{RACK0[2]*1000:.0f}). Se mueve "
-                f"{abs(RACK_N[0]-RACK0[0])*1000:.0f} mm en largo y "
-                f"{abs(RACK_N[2]-RACK0[2])*1000:.0f} mm en ancho — nada más que la posición de "
-                "sus dos ménsulas al mamparo.\n\n")
+                f"{RACK_N[2]*1000:.0f} mm** (antes {RACK_PREV[0]*1000:.0f} / "
+                f"{RACK_PREV[2]*1000:.0f}). Se mueve "
+                f"{abs(RACK_N[0]-RACK_PREV[0])*1000:.0f} mm en largo y "
+                f"{abs(RACK_N[2]-RACK_PREV[2])*1000:.0f} mm en ancho — nada más que la "
+                "posición de sus dos ménsulas al mamparo.\n\n")
+        coincide = (abs(RACK_N[0] - RACK0[0]) < 1e-6 and abs(RACK_N[2] - RACK0[2]) < 1e-6)
+        f.write(f"> **Autoverificación:** la posición que vive hoy en "
+                f"`suspension_delantera.py` es x={RACK0[0]*1000:.0f}, z={RACK0[2]*1000:.0f}. "
+                + ("Coincide con la que este barrido vuelve a elegir, así que las dos "
+                   "fuentes dicen lo mismo."
+                   if coincide else
+                   "**NO coincide con la que este barrido elige** — hay que reconciliar "
+                   "las dos antes de cortar la ménsula.") + "\n\n")
     else:
         f.write("No alcanza con la mangueta del donante: hay que fabricar un brazo de "
                 f"dirección de {L_BRAZO*1000:.0f} mm a {elegido['ang']:+.0f}°, en acero "
@@ -511,11 +604,11 @@ ax.annotate("kingpin", (KP_TR[0]*1000, KP_TR[2]*1000), textcoords="offset points
             xytext=(8, -12), color="#38bdf8", fontsize=8)
 ax.plot([KP_TR[0]*1000, TR0[0]*1000], [KP_TR[2]*1000, TR0[2]*1000],
         color="#e6edf3", lw=3, label=f"brazo de mangueta ({L_BRAZO*1000:.0f} mm)")
-ax.plot([RACK0[0]*1000, TR0[0]*1000], [RACK0[2]*1000, TR0[2]*1000],
+ax.plot([RACK_PREV[0]*1000, TR0[0]*1000], [RACK_PREV[2]*1000, TR0[2]*1000],
         color="#f87171", lw=2, ls=":", label=f"tie rod heredado ({ack0:+.0f}%)")
 ax.plot([RACK_N[0]*1000, TR_N[0]*1000], [RACK_N[2]*1000, TR_N[2]*1000],
         color="#4ade80", lw=2, label=f"tie rod nuevo ({ack_n:+.0f}%)")
-ax.plot([RACK0[0]*1000], [RACK0[2]*1000], marker="o", color="#f87171", ms=7)
+ax.plot([RACK_PREV[0]*1000], [RACK_PREV[2]*1000], marker="o", color="#f87171", ms=7)
 ax.plot([RACK_N[0]*1000], [RACK_N[2]*1000], marker="o", color="#4ade80", ms=7)
 ax.plot([sd.W0[0]*1000], [sd.W0[2]*1000], marker="s", color="#8b949e", ms=7)
 ax.annotate("rueda", (sd.W0[0]*1000, sd.W0[2]*1000), textcoords="offset points",
@@ -543,7 +636,7 @@ ax.legend(facecolor="#0d1117", edgecolor="#30363d", labelcolor="#e6edf3", fontsi
 
 # (3) bump steer antes y después
 ax = axs[1, 0]
-_, ys0, toes0 = bump_steer(RACK0, TR0)
+_, ys0, toes0 = bump_steer(RACK_PREV, TR0)
 ax.plot(ys0, (toes0 - np.interp(0, ys0, toes0)) * 60, color="#f87171", lw=2,
         label=f"heredado ({bs0:.3f}°/25mm)")
 ax.plot(ys_n, (toes_n - np.interp(0, ys_n, toes_n)) * 60, color="#4ade80", lw=2,

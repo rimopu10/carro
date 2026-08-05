@@ -12,11 +12,11 @@ Horquillas dobles + coilover a la torre `fx_hi`. Cinemática 3D exacta de cuerpo
 | Pivote sup. tras. | 750 | 417 | 550 | ménsula 63 mm bajo fx_hi |
 | Rótula inferior LBJ | 545 | 190 | 710 | cónica tipo ATV |
 | Rótula superior UBJ | 565 | 425 | 685 | cónica tipo ATV |
-| Extremo cremallera | 410 | 207 | 510 | rótula axial |
+| Extremo cremallera | 385 | 207 | 505 | rótula axial |
 | Terminal dirección | 430 | 198 | 695 | en brazo de mangueta |
 | Centro de rueda | 550 | 288 | 750 | 175/70R13 |
 | Coilover inferior | 580 | 215 | 660 | sobre brazo inf., 75% a la rótula |
-| Coilover superior | 750 | 480 | 550 | torre fx_hi (nodo del FEM) |
+| Coilover superior | 700 | 480 | 480 | torre fx_hi (nodo del FEM) |
 
 ## Alineación estática
 
@@ -33,16 +33,16 @@ Horquillas dobles + coilover a la torre `fx_hi`. Cinemática 3D exacta de cuerpo
 ## Cinemática en el recorrido (±70 mm)
 
 - Ganancia de camber: **-0.49°/25 mm** en compresión (la rueda se inclina hacia adentro al comprimir: correcto).
-- Bump steer máximo: **0.043°/25 mm** en ±50 mm — excelente (<0.1).
-- Cambio de semitrocha: -14.5 a 0.0 mm.
+- Bump steer máximo: **0.018°/25 mm** en ±50 mm — excelente (<0.1).
+- Cambio de semitrocha: -14.4 a 0.0 mm.
 - Motion ratio del coilover: **0.58** (shock/rueda) — casi constante en el recorrido.
 
 ## Resortes y coilover (especificación de compra)
 
 - Masa por esquina: 131 kg (113 suspendida) · frecuencia objetivo 1.9 Hz.
 - Tasa en rueda 16.1 N/mm → **resorte 47 N/mm ≈ 270 lb/in**.
-- Largo ojo-a-ojo estático: **334 mm** · carrera usada: 81 mm → pedir coilover ~370 mm extendido, carrera ≥96 mm.
-- Carga estática por shock: 1902 N · en bache 3g: **5705 N** (carga de diseño de la ménsula en la torre, con FS 2 soldar para 11.4 kN).
+- Largo ojo-a-ojo estático: **342 mm** · carrera usada: 81 mm → pedir coilover ~380 mm extendido, carrera ≥96 mm.
+- Carga estática por shock: 1901 N · en bache 3g: **5703 N** (carga de diseño de la ménsula en la torre, con FS 2 soldar para 11.4 kN).
 - Amortiguación crítica en rueda 2700 N·s/m → ajustar ζ≈0.5–0.7 (coilover con clicks).
 
 ## Largos de fabricación de brazos (centro a centro, mm)
@@ -51,7 +51,7 @@ Horquillas dobles + coilover a la torre `fx_hi`. Cinemática 3D exacta de cuerpo
 - brazo inf. tubo tras.: **260 mm**
 - brazo sup. tubo del.: **284 mm**
 - brazo sup. tubo tras.: **229 mm**
-- tie rod (centro-centro): **186 mm**
+- tie rod (centro-centro): **195 mm**
 
 ## Piezas (BOM parcial de esta sección)
 

@@ -50,7 +50,13 @@ X_EJE_DEL = 0.55                       # eje delantero (de suspension_delantera.
 
 L_brazo = np.linalg.norm(EJE0[:2] - PIV[:2])         # largo efectivo en vista lateral
 ang0 = np.arctan2(EJE0[1] - PIV[1], EJE0[0] - PIV[0])
-SHK_INF0 = PIV + T_SHK * (EJE0 - PIV)                # punto de anclaje del shock en el brazo
+# El brazo NO llega al centro de rueda: termina antes del motor, en Z_PUNTA. El
+# coilover se ancla SOBRE el eje del brazo, no sobre la línea pivote–centro de rueda.
+# CORREGIDO 2026-08-05: antes se anclaba en PIV+T_SHK·(EJE0−PIV), que cae 94 mm fuera
+# del brazo y 47 mm DENTRO de la llanta. No existía pieza que lo llevara ahí.
+Z_PUNTA = 0.640                                      # z del extremo del brazo (placa_torque)
+Z_SHK = PIV[2] + T_SHK * (Z_PUNTA - PIV[2])          # z del anclaje, sobre el brazo
+SHK_INF0 = np.array([*(PIV + T_SHK * (EJE0 - PIV))[:2], Z_SHK])
 
 # ---------------- cinemática del brazo (rotación pura, sin solver) ----------------
 CARRERA = 0.070
@@ -58,7 +64,8 @@ angs = np.linspace(ang0 - 0.35, ang0 + 0.35, 161)
 rows = []
 for a in angs:
     eje = PIV + np.array([L_brazo * np.cos(a), L_brazo * np.sin(a), EJE0[2] - PIV[2]])
-    shk = PIV + T_SHK * (eje - PIV)
+    # el brazo gira alrededor de un eje lateral, así que la z del anclaje no cambia
+    shk = np.array([*(PIV + T_SHK * (eje - PIV))[:2], Z_SHK])
     rows.append(dict(a=a, y=eje[1], x=eje[0], Lshk=np.linalg.norm(SHK_SUP - shk)))
 
 y0 = EJE0[1]

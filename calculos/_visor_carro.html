@@ -228,10 +228,15 @@ function bCoilover(L,rc,rb,hilo,vueltas,col){
   o.position.y=y; o.rotation.y=Math.PI/2; return o;};
  return G(cuerpo,dep,vast,res,asi(L*0.37),asi(-L*0.33),ojo(L/2),ojo(-L/2));
 }
-function bRueda(R,W,Rr,rayos,s){
+function bRueda(R,W,Rr,rayos,s,tipo){
  // Todo se construye con el eje de giro en Z local, que ya es el lateral del carro.
  // La llanta sale de una revolución (eje natural Y), así que ESA malla —y solo esa—
  // se gira 90° para alinearla con las demás.
+ //
+ // tipo 'rayos' = rueda delantera normal, con maza y 5 rayos y hueco entre ellos.
+ // tipo 'motor' = rueda trasera: la carcasa del QS273 es Ø350 dentro de un rin de
+ //   14" (Ø355.6), o sea 2.8 mm de holgura. NO caben rayos ni plato: el motor ES el
+ //   centro de la rueda y el barril del rin se atornilla a su brida.
  const g=new THREE.Group(); const Rb=Rr+0.012;
  const pf=[new THREE.Vector2(Rb,-W/2), new THREE.Vector2(R*0.80,-W/2*0.98),
            new THREE.Vector2(R*0.965,-W/2*0.80), new THREE.Vector2(R,-W/2*0.60),
@@ -239,29 +244,45 @@ function bRueda(R,W,Rr,rayos,s){
            new THREE.Vector2(R*0.80,W/2*0.98), new THREE.Vector2(Rb,W/2)];
  const lla=malla(new THREE.LatheGeometry(pf,44),MAT.hule('#15181d'));
  lla.rotation.x=Math.PI/2; g.add(lla);
- for(let i=0;i<26;i++){                        // dibujo de la banda de rodamiento
-  const a=2*Math.PI*i/26;
+ for(let i=0;i<28;i++){                        // dibujo de la banda de rodamiento
+  const a=2*Math.PI*i/28;
   const t=malla(new THREE.BoxGeometry(0.011,0.017,W*0.86),MAT.hule('#0e1114'));
   t.position.set(R*0.994*Math.cos(a),R*0.994*Math.sin(a),0);
   t.rotation.z=a; g.add(t);}
- const bar=malla(new THREE.CylinderGeometry(Rr*0.92,Rr*0.92,W*0.86,34),MAT.acero('#aeb8c4'));
- bar.rotation.x=Math.PI/2; g.add(bar);
- for(const z of [-W*0.46,W*0.46]){             // pestañas del rin
-  const p=malla(new THREE.TorusGeometry(Rr,0.010,8,34),MAT.acero('#c3ccd6'));
+ // barril del rin: hueco (open-ended) para poder ver el freno por los huecos
+ const bar=malla(new THREE.CylinderGeometry(Rr*0.90,Rr*0.90,W*0.88,40,1,true),
+  MAT.acero('#9fa9b5')); bar.rotation.x=Math.PI/2; bar.material.side=THREE.DoubleSide;
+ g.add(bar);
+ for(const z of [-W*0.47,W*0.47]){             // pestañas del rin
+  const p=malla(new THREE.TorusGeometry(Rr,0.011,9,40),MAT.acero('#c3ccd6'));
   p.position.z=z; g.add(p);}
- const pla=malla(new THREE.CylinderGeometry(Rr*0.88,Rr*0.88,0.010,34),MAT.acero('#b8c2cd'));
- pla.rotation.x=Math.PI/2; pla.position.z=W*0.20; g.add(pla);
- for(let i=0;i<rayos;i++){                     // rayos
-  const a=2*Math.PI*i/rayos;
-  const r=malla(new THREE.BoxGeometry(Rr*0.80,0.028,0.032),MAT.acero('#9aa5b1'));
-  r.position.set(Rr*0.44*Math.cos(a),Rr*0.44*Math.sin(a),W*0.20);
-  r.rotation.z=a; g.add(r);}
- const cubo=malla(new THREE.CylinderGeometry(0.055,0.055,0.045,22),MAT.acero('#8a95a1'));
- cubo.rotation.x=Math.PI/2; cubo.position.z=W*0.23; g.add(cubo);
- for(let i=0;i<4;i++){                         // birlos
-  const a=Math.PI/2*i+Math.PI/4;
-  const b=bTornillo(0.011,0.035); b.rotation.x=Math.PI/2;
-  b.position.set(0.038*Math.cos(a),0.038*Math.sin(a),W*0.27); g.add(b);}
+ if(tipo==='motor'){
+  // brida atornillada del rin a la carcasa del motor: un aro con birlos, nada más
+  const aro=malla(new THREE.TorusGeometry(Rr*0.80,0.012,10,40),MAT.acero('#8a95a1'));
+  aro.position.z=W*0.16; g.add(aro);
+  for(let i=0;i<8;i++){
+   const a=2*Math.PI*i/8;
+   const b=bTornillo(0.010,0.030); b.rotation.x=Math.PI/2;
+   b.position.set(Rr*0.80*Math.cos(a),Rr*0.80*Math.sin(a),W*0.16); g.add(b);}
+ } else {
+  const Rh=Rr*0.30;
+  for(let i=0;i<rayos;i++){                    // rayos, con hueco entre ellos
+   const a=2*Math.PI*i/rayos, Lr=Rr*0.86-Rh;
+   const r=malla(new THREE.BoxGeometry(Lr,0.034,0.026),MAT.acero('#aab4bf'));
+   r.position.set((Rh+Lr/2)*Math.cos(a),(Rh+Lr/2)*Math.sin(a),W*0.19);
+   r.rotation.z=a; g.add(r);
+   const p=malla(new THREE.BoxGeometry(0.030,0.052,0.024),MAT.acero('#aab4bf'));
+   p.position.set(Rr*0.84*Math.cos(a),Rr*0.84*Math.sin(a),W*0.19);
+   p.rotation.z=a; g.add(p);}                  // pie del rayo contra el barril
+  const maza=malla(new THREE.CylinderGeometry(Rh,Rh*0.92,0.030,26),MAT.acero('#98a2ae'));
+  maza.rotation.x=Math.PI/2; maza.position.z=W*0.19; g.add(maza);
+  const tapa=malla(new THREE.CylinderGeometry(Rh*0.42,Rh*0.42,0.014,20),MAT.pintado('#2b3138'));
+  tapa.rotation.x=Math.PI/2; tapa.position.z=W*0.215; g.add(tapa);
+  for(let i=0;i<4;i++){                        // birlos
+   const a=Math.PI/2*i+Math.PI/4;
+   const b=bTornillo(0.011,0.032); b.rotation.x=Math.PI/2;
+   b.position.set(Rh*0.66*Math.cos(a),Rh*0.66*Math.sin(a),W*0.215); g.add(b);}
+ }
  if(s<0)g.scale.z=-1;
  return g;
 }
@@ -269,16 +290,33 @@ function bMotor(R,W,s){
  const g=new THREE.Group();
  const cu=malla(new THREE.CylinderGeometry(R,R,W*0.72,40),MAT.acero('#54606d'));
  cu.rotation.x=Math.PI/2; g.add(cu);
- for(const z of [-W*0.42,W*0.42]){
+ for(const z of [-W*0.42,W*0.42]){            // tapas laterales cónicas
   const t=malla(new THREE.CylinderGeometry(R*0.97,R*0.80,W*0.16,40),MAT.acero('#5f6b78'));
   t.rotation.x=Math.PI/2; t.position.z=z; g.add(t);}
  for(let i=0;i<28;i++){                       // aletas de enfriamiento
   const a=2*Math.PI*i/28;
   const f=malla(new THREE.BoxGeometry(0.012,0.030,W*0.70),MAT.acero('#6b7784'));
   f.position.set(R*Math.cos(a),R*Math.sin(a),0); f.rotation.z=a; g.add(f);}
+ // cara exterior: nervaduras radiales, corona de tornillos y tapa central. Es lo que
+ // se ve del carro desde afuera, así que aquí es donde se nota si parece un motor.
+ for(const [z,lado] of [[W*0.51,1],[-W*0.51,-1]]){
+  const cara=malla(new THREE.CylinderGeometry(R*0.80,R*0.80,0.010,40),MAT.acero('#66727f'));
+  cara.rotation.x=Math.PI/2; cara.position.z=z; g.add(cara);
+  for(let i=0;i<12;i++){
+   const a=2*Math.PI*i/12;
+   const n=malla(new THREE.BoxGeometry(R*0.60,0.016,0.012),MAT.acero('#75818e'));
+   n.position.set(R*0.46*Math.cos(a),R*0.46*Math.sin(a),z+lado*0.010);
+   n.rotation.z=a; g.add(n);}
+  for(let i=0;i<10;i++){
+   const a=2*Math.PI*i/10+0.3;
+   const b=malla(new THREE.CylinderGeometry(0.007,0.007,0.014,8),MAT.acero('#c3ccd6'));
+   b.rotation.x=Math.PI/2;
+   b.position.set(R*0.74*Math.cos(a),R*0.74*Math.sin(a),z+lado*0.008); g.add(b);}
+  const tap=malla(new THREE.CylinderGeometry(R*0.20,R*0.17,0.018,24),MAT.pintado('#3b444f'));
+  tap.rotation.x=Math.PI/2; tap.position.z=z+lado*0.012; g.add(tap);}
  // los cables de fase salen POR DENTRO del eje, hacia adentro del carro
  const cab=malla(new THREE.CylinderGeometry(0.010,0.010,0.045,10),MAT.hule('#f97316'));
- cab.rotation.x=Math.PI/2; cab.position.set(0,0,-W*0.55); g.add(cab);
+ cab.rotation.x=Math.PI/2; cab.position.set(0,0,-W*0.58); g.add(cab);
  if(s<0)g.scale.z=-1;
  return g;
 }
@@ -450,7 +488,12 @@ for(const p of D.piezas){
    o.position.set(...p.pos); break;}
   case 'caja':{o=malla(new THREE.BoxGeometry(...p.size),MAT.plastico(p.col));
    o.position.set(...p.pos); break;}
-  case 'voxel':{o=malla(geoVoxel(p.tipo,p.mir),mat(p.col,0.55,0.42,{flatShading:true}));
+  case 'voxel':{
+   // Son piezas de AlSi10Mg impreso: se ven de aluminio, no de plástico de color.
+   // El color del sistema se conserva como tinte para poder identificarlas, pero
+   // mezclado hacia gris metálico y con metalness alto.
+   const c=new THREE.Color(p.col).lerp(new THREE.Color('#aab4bf'),0.62);
+   o=malla(geoVoxel(p.tipo,p.mir),mat(c,0.85,0.46,{flatShading:true}));
    o.position.set(...p.pos); break;}
   case 'malla':{const g=new THREE.BufferGeometry();
    g.setAttribute('position',new THREE.Float32BufferAttribute(p.tris,3)); g.computeVertexNormals();
@@ -471,7 +514,7 @@ for(const p of D.piezas){
    o.quaternion.setFromUnitVectors(UP,V(p.dir).normalize()); break;}
   case 'coilover':{const L=V(p.b).sub(V(p.a)).length();
    o=bCoilover(L,p.rc,p.rb,p.hilo,p.vueltas,p.col); orientar(o,p.a,p.b); break;}
-  case 'rueda':{o=bRueda(p.R,p.W,p.Rr,p.rayos,p.s); o.position.set(...p.pos); break;}
+  case 'rueda':{o=bRueda(p.R,p.W,p.Rr,p.rayos,p.s,p.tipo); o.position.set(...p.pos); break;}
   case 'motor':{o=bMotor(p.R,p.W,p.s); o.position.set(...p.pos); break;}
   case 'disco':{o=bDisco(p.R,p.Rh,p.t_,p.s); o.position.set(...p.pos); break;}
   case 'caliper':{o=bCaliper(p.Rd,p.ang,p.s); o.position.set(...p.pos); break;}

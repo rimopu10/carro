@@ -4,6 +4,22 @@ Cremallera manual de compacto, sin servo. Generado por `direccion.py`, que impor
 
 **Método:** al girar el volante con la suspensión quieta, las rótulas no se mueven — la mangueta solo rota alrededor del eje de kingpin. Eso deja una sola incógnita (el ángulo de rotación) con una sola ecuación (el tie rod conserva su largo), y se resuelve exacto para las dos ruedas. Nada de fórmulas aproximadas de Ackermann.
 
+> ## ⛔ CONFLICTO GEOMÉTRICO SIN RESOLVER — leer antes que nada
+>
+> **La rótula de la cremallera y el larguero inferior del chasis se pelean por el mismo espacio, y no hay forma de resolverlo moviendo la cremallera.**
+>
+> - En su posición actual (x=385, y=207, z=505) el tie rod pasa a **29 mm por dentro** de la holgura mínima contra el larguero `fb_lo–fx_lo` y la pata delantera de la horquilla inferior. Físicamente no se puede montar.
+> - Se barrieron **1561 posiciones libres de interferencia** (x, y y z). La mejor de todas da un bump steer de **2.72°/25 mm**, contra el tope de 0.10. Es casi cien veces peor: el carro se dirigiría solo al pasar un tope.
+> - La razón es de fondo: el bump steer se minimiza cuando el tie rod sigue el arco de la horquilla inferior, o sea a **su misma altura** — y esa altura es exactamente donde vive el larguero inferior del chasis.
+>
+> **Esto NO se arregla con la dirección: se arregla con el chasis.** Las tres salidas reales son:
+>
+> 1. **Bajar los pivotes de la horquilla inferior a ménsulas por debajo del larguero** (~50 mm). Es lo que de todas formas hace falta: hoy `LA1` y `LA2` caen *dentro* de los nodos del chasis y el buje no cabe. Al bajarlos, se abre el hueco por donde pasa el tie rod. Obliga a re-correr toda la cinemática delantera (camber, centro de balanceo, bump steer).
+> 2. **Partir el larguero inferior** con un quiebre local que libre el paso del tie rod. Más soldadura y hay que re-verificar el FEM.
+> 3. **Cremallera de montaje trasero** (detrás del eje), que cambia el signo de todo el planteamiento de Ackermann de este documento.
+>
+> Mientras tanto, **los números de abajo son válidos como cinemática pero la pieza no se puede montar**. No cortar la ménsula de cremallera.
+
 ## 1. Qué Ackermann trae la geometría heredada
 
 Los puntos duros venían afinados para camber, caster y bump steer, pero el Ackermann nunca se había medido. Medido ahora, con la rueda exterior a 20°:
@@ -20,9 +36,9 @@ Los puntos duros venían afinados para camber, caster y bump steer, pero el Acke
 
 ## 2. La corrección no cuesta ni una pieza
 
-Como el Ackermann de una cremallera depende de dónde está la cremallera, lo primero que hay que probar es **moverla** — que es gratis, porque solo cambia dónde se atornilla al mamparo. Barrido de su posición longitudinal y su ancho (280–530 mm × 400–620 mm, 598 posiciones), con la mangueta del donante **intacta**:
+Como el Ackermann de una cremallera depende de dónde está la cremallera, lo primero que hay que probar es **moverla** — que es gratis, porque solo cambia dónde se atornilla al mamparo. Barrido de su posición longitudinal y su ancho (280–520 mm × 400–610 mm, 255 posiciones), con la mangueta del donante **intacta**:
 
-- Rango de Ackermann alcanzable moviendo solo la cremallera: hasta **+288%**.
+- Rango de Ackermann alcanzable moviendo solo la cremallera: hasta **+223%**.
 - **La altura (y = 207 mm) no se toca**: es la que fija el bump steer y ±5 mm lo duplican.
 
 Alcanza de sobra. **No hay que tocar la mangueta ni fabricar ningún brazo.**
@@ -31,26 +47,32 @@ Pero subir el Ackermann no sale gratis: mover la cremallera cambia el largo del 
 
 | Cremallera x | Cremallera z | Ackermann | Bump steer | |
 |---|---|---|---|---|
-| 374 mm | 504 mm | +81% | 0.021°/25mm | ok |
-| 370 mm | 504 mm | +87% | 0.028°/25mm | ✓ elegida |
-| 374 mm | 512 mm | +85% | 0.200°/25mm | más Ackermann, peor bump steer |
+| 385 mm | 475 mm | +64% | 2.723°/25mm | más Ackermann, peor bump steer |
+| 385 mm | 490 mm | +69% | 3.236°/25mm | más Ackermann, peor bump steer |
+| 355 mm | 490 mm | +91% | 3.248°/25mm | más Ackermann, peor bump steer |
+| 370 mm | 505 mm | +79% | 3.458°/25mm | más Ackermann, peor bump steer |
+| 355 mm | 490 mm | +90% | 3.793°/25mm | más Ackermann, peor bump steer |
+| 370 mm | 520 mm | +86% | 4.125°/25mm | más Ackermann, peor bump steer |
+| 370 mm | 520 mm | +85% | 5.070°/25mm | más Ackermann, peor bump steer |
 
 **Criterio: el bump steer manda.** Uno hace que el carro se dirija solo al pasar un tope; el otro solo desgasta llanta al estacionar. Así que se toma el mejor Ackermann que quepa bajo **0.060°/25 mm**, en vez de apurar el Ackermann hasta el tope duro de 0.10.
 
-**Elegida: cremallera en x = 370 mm, z = 504 mm** (antes 410 / 510). Se mueve 40 mm en largo y 6 mm en ancho — nada más que la posición de sus dos ménsulas al mamparo.
+**Elegida: cremallera en x = 385 mm, z = 505 mm** (antes 410 / 510). Se mueve 25 mm en largo y 5 mm en ancho — nada más que la posición de sus dos ménsulas al mamparo.
+
+> **Autoverificación:** la posición que vive hoy en `suspension_delantera.py` es x=385, z=505. Coincide con la que este barrido vuelve a elegir, así que las dos fuentes dicen lo mismo.
 
 | | Heredado | Corregido |
 |---|---|---|
-| Ackermann | +42% | **+87%** |
-| Bump steer | 0.043°/25mm | **0.028°/25mm** |
+| Ackermann | +42% | **+68%** |
+| Bump steer | 0.043°/25mm | **0.018°/25mm** |
 
 | Punto duro | x | y | z |
 |---|---|---|---|
 | Terminal de dirección (sin cambio) | 430 | 198 | 695 |
-| **Extremo de cremallera (nuevo)** | **370** | 207 | **504** |
-| Tie rod (centro a centro) | 200 mm | | |
+| **Extremo de cremallera (nuevo)** | **385** | 207 | **505** |
+| Tie rod (centro a centro) | 195 mm | | |
 
-**El bump steer no solo se conserva: mejora**, de 0.043 a 0.028°/25 mm. Al mover la cremallera cambia el largo del tie rod, y resulta que hay largos que siguen mejor el arco de los brazos. No era el objetivo — salió de buscar el compromiso en vez de apurar el Ackermann — pero es la confirmación de que valía la pena re-correr la cinemática 3D de cada candidato en vez de suponer que mover la cremallera es inocuo.
+**El bump steer no solo se conserva: mejora**, de 0.043 a 0.018°/25 mm. Al mover la cremallera cambia el largo del tie rod, y resulta que hay largos que siguen mejor el arco de los brazos. No era el objetivo — salió de buscar el compromiso en vez de apurar el Ackermann — pero es la confirmación de que valía la pena re-correr la cinemática 3D de cada candidato en vez de suponer que mover la cremallera es inocuo.
 
 **La altura de la cremallera (207 mm) no se toca**: ±5 mm duplican el bump steer. Montarla con barrenos ovalados y calzas para afinar en el carro, como ya decía la suspensión delantera.
 
@@ -60,16 +82,16 @@ El tope no lo pone la cremallera sino la **rueda interior**, que es la que pega 
 
 | Parámetro | Heredado | Corregido |
 |---|---|---|
-| Carrera de cremallera usada | ±62 mm | ±54 mm |
-| Ángulo rueda exterior | 30.8° | 26.1° |
-| Ángulo rueda interior | 40.5° | 40.1° |
-| Vueltas de tope a tope | 2.8 | **2.4** |
+| Carrera de cremallera usada | ±62 mm | ±57 mm |
+| Ángulo rueda exterior | 30.8° | 27.8° |
+| Ángulo rueda interior | 40.5° | 40.3° |
+| Vueltas de tope a tope | 2.8 | **2.5** |
 | Relación total | 14:1 | **13:1** |
-| Diámetro de giro | 8.5 m | **9.9 m** |
+| Diámetro de giro | 8.5 m | **9.3 m** |
 
-**El Ackermann alto se paga con círculo de giro.** Con más Ackermann la rueda interior gira más para el mismo ángulo exterior, así que llega antes a su tope de 40° y el exterior se queda en 26.1° en vez de 30.8°. El círculo pasa de 8.5 a 9.9 m. Es un intercambio real, no un defecto: se gana que las llantas no peleen en maniobra lenta y se pierde algo de radio. Si al armarlo resulta que la rueda interior sí libra más de 40°, se sube el tope y se recupera el radio — por eso hay que medirlo en el carro (§5).
+**El Ackermann alto se paga con círculo de giro.** Con más Ackermann la rueda interior gira más para el mismo ángulo exterior, así que llega antes a su tope de 40° y el exterior se queda en 27.8° en vez de 30.8°. El círculo pasa de 8.5 a 9.3 m. Es un intercambio real, no un defecto: se gana que las llantas no peleen en maniobra lenta y se pierde algo de radio. Si al armarlo resulta que la rueda interior sí libra más de 40°, se sube el tope y se recupera el radio — por eso hay que medirlo en el carro (§5).
 
-2.4 vueltas y 13:1 es relación directa de carro deportivo ligero (un compacto con servo anda en 3.2 vueltas y 16-18:1). Directo se siente mejor y además es lo único que se puede hacer sin servo: más desmultiplicación aligeraría el volante pero habría que dar más vueltas.
+2.5 vueltas y 13:1 es relación directa de carro deportivo ligero (un compacto con servo anda en 3.2 vueltas y 16-18:1). Directo se siente mejor y además es lo único que se puede hacer sin servo: más desmultiplicación aligeraría el volante pero habría que dar más vueltas.
 
 ## 4. Esfuerzo en el volante (sin servo)
 
@@ -101,6 +123,6 @@ Si al armarlo se siente pesado, la salida es subir la presión de las llantas o 
 - 1 × columna con 2 crucetas + soporte, preferentemente colapsable
 - 1 × volante Ø330 mm con maza
 - 2 × terminal de dirección (rótula) + 2 × rótula axial de cremallera
-- 2 × ménsula de cremallera al mamparo, corte láser, con barrenos ovalados (posición nueva: x = 370 mm, z = ±504 mm)
+- 2 × ménsula de cremallera al mamparo, corte láser, con barrenos ovalados (posición nueva: x = 385 mm, z = ±505 mm)
 - **Brazo de dirección: ninguno.** El de la mangueta del donante se queda como viene.
 - Tubo roscado derecha/izquierda para el tie rod (permite ajustar convergencia sin desmontar)

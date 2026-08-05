@@ -37,12 +37,23 @@ m_susp = m_esq - M_NOSUSP                  # masa suspendida por esquina
 
 # ---------------- puntos duros (m, lado izquierdo z+) ----------------
 # Anclajes al chasis (los nodos existentes; los pivotes superiores llevan ménsula
-# que baja el eje 57 mm bajo el tubo fb_hi–fx_hi para lograr la geometría).
-# Valores afinados por barrido numérico (2026-07-06): bump steer 0.04°/25mm,
-# ganancia de camber -0.49°/25mm, RC +8 mm. No mover sin re-correr el barrido.
+# que baja el eje 63 mm bajo el tubo fb_hi–fx_hi para lograr la geometría).
+# Valores afinados por barrido numérico (2026-07-06): ganancia de camber -0.49°/25mm,
+# RC +8 mm. No mover sin re-correr el barrido.
+# ACTUALIZADO 2026-08-05: la cremallera pasó de (410, 207, 510) a (370, 207, 504) por
+# el barrido de `direccion.py`, que lleva el Ackermann de +42% a +87% y de paso BAJA el
+# bump steer de 0.043 a 0.028°/25mm. Este archivo es la única fuente de la geometría
+# delantera: `direccion.py` la importa de aquí.
 UA_Y = float(os.environ.get("SUSP_UA_Y", "0.417"))     # altura eje pivote superior
+# AVISO 2026-08-05: esta posición es la de mejor cinemática (bump steer 0.018°/25mm,
+# Ackermann +68%) pero **INTERFIERE con el larguero inferior del chasis por 29 mm**.
+# `direccion.py` barrió 1561 posiciones libres de interferencia y la mejor da 2.7°/25mm
+# de bump steer — cien veces peor. El conflicto no se resuelve moviendo la cremallera:
+# hay que bajar los pivotes de la horquilla inferior a ménsulas. NO CORTAR la ménsula
+# de cremallera hasta resolverlo. Ver §0 de resultados-direccion.md.
+RACK_X = float(os.environ.get("SUSP_RACK_X", "0.385")) # posición longitudinal
 RACK_Y = float(os.environ.get("SUSP_RACK_Y", "0.207")) # altura rótula de cremallera
-RACK_Z = float(os.environ.get("SUSP_RACK_Z", "0.510")) # posición lateral de la rótula
+RACK_Z = float(os.environ.get("SUSP_RACK_Z", "0.505")) # posición lateral de la rótula
 
 LA1 = np.array([0.35, 0.200, 0.50])   # pivote brazo inf. delantero (en nodo fb_lo)
 LA2 = np.array([0.75, 0.200, 0.55])   # pivote brazo inf. trasero  (en nodo fx_lo)
@@ -52,7 +63,7 @@ UA2 = np.array([0.75, UA_Y, 0.55])    # pivote brazo sup. trasero  (ménsula baj
 LBJ0 = np.array([0.545, 0.190, 0.710])   # rótula inferior (caster: adelante del eje)
 UBJ0 = np.array([0.565, 0.425, 0.685])   # rótula superior (atrás y arriba → caster +)
 
-RACK = np.array([0.410, RACK_Y, RACK_Z]) # extremo de la cremallera (rótula axial)
+RACK = np.array([RACK_X, RACK_Y, RACK_Z]) # extremo de la cremallera (rótula axial)
 TR0  = np.array([0.430, 0.198, 0.695])   # terminal de dirección en la mangueta
 
 W0 = np.array([0.55, R_RUEDA, 0.75])     # centro de rueda (trocha del. 1.50 m)
@@ -60,8 +71,13 @@ CAMBER_EST = -1.0                        # ° camber estático
 a0 = np.array([0.0, np.sin(np.radians(-CAMBER_EST)), np.cos(np.radians(-CAMBER_EST))])
 S0 = W0 + 0.10 * a0                      # punto del eje del husillo (define camber/toe)
 
-# Coilover: del brazo inferior a la torre fx_hi
-SHK_SUP = np.array([0.75, 0.48, 0.55])   # torre coilover (nodo fx_hi del FEM)
+# Coilover: del brazo inferior a una ménsula en la caja frontal.
+# CORREGIDO 2026-08-05: el anclaje superior estaba EN el nodo fx_hi (750,480,550) y
+# desde ahí el coilover pasaba a 2.6 mm de la pata trasera de la horquilla superior —
+# se atravesaban. Se movió a (700,480,480), sobre una ménsula 50 mm adelante y 70 mm
+# adentro del nodo, que da 62 mm de holgura contra brazos y tubos (`holguras.py`) y
+# CONSERVA el motion ratio en 0.59, así que el resorte de 270 lb/in no cambia.
+SHK_SUP = np.array([0.70, 0.48, 0.48])   # ménsula sobre el travesaño fx_hi
 SHK_INF0 = np.array([0.58, 0.215, 0.66]) # sobre el brazo inferior, al 75% hacia la rótula
 
 # ---------------- cinemática de cuerpo rígido ----------------

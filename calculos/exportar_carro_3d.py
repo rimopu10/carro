@@ -337,10 +337,13 @@ for (cx, R, rin, llanta, tras) in [(WD[0], R_DEL, 13, "175/70R13", False),
         lado, pos_ = ("izq" if s > 0 else "der"), ("trasera" if tras else "delantera")
         P("ruedas", f"Rueda {pos_} ({lado})",
           f"{llanta} · Ø{R*2000:.0f} mm · rin {rin}\"" +
-          (" — versión desmontable de carro del QS273" if tras else " — de deshuesadero") +
+          (" desmontable de carro, atornillado a la brida del QS273: la carcasa del "
+           "motor (Ø350) llena el rin (Ø356) y hace de centro de rueda — por eso no "
+           "lleva rayos" if tras else " de deshuesadero, con maza y 5 rayos") +
           " · perfil 70 para absorber topes (masa no suspendida alta)",
           4, "#1a1e24", exp=(0, 0, 0.9 * s),
-          t="rueda", pos=R4(cx, R, zc), s=s, R=R, W=ANCHO_LL, Rr=rin * 0.0127, rayos=5)
+          t="rueda", pos=R4(cx, R, zc), s=s, R=R, W=ANCHO_LL, Rr=rin * 0.0127, rayos=5,
+          tipo="motor" if tras else "rayos")
         if tras:
             P("motores", f"Motor de cubo QS273 ({lado})",
               "8 kW · 96 V · 350 N·m · carcasa Ø350 · 27 kg de masa NO suspendida · "

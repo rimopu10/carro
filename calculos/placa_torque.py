@@ -461,12 +461,19 @@ def barre(nombre, con_caliper, Fv, Fl, par):
 # 6. VERIFICACIONES ANALÍTICAS (lo que el topopt no ve)
 # ============================================================================
 def check_cubo(par, t_total):
-    """Aplastamiento en los planos del eje. El par se transmite como un par de
-    fuerzas sobre las dos caras planas, separadas por la entrecaras."""
-    w_plano = 2 * np.sqrt((EJE_D / 2)**2 - (EJE_PLANOS / 2)**2)   # ancho de cada plano
-    F = par / EJE_PLANOS                    # T = F · a  (par de fuerzas)
-    sigma = F / (w_plano * t_total)
-    return w_plano, F, sigma, SIGMA_Y / sigma
+    """Aplastamiento en los planos del eje.
+
+    CORREGIDO 2026-08-05. Antes se usaba T = F·a con a = la entrecaras (16 mm), como
+    si las dos fuerzas actuaran separadas por el grueso del eje. Está mal: la presión
+    sobre un plano maquinado es NORMAL al plano, así que su brazo respecto al eje se
+    mide **a lo largo del plano**, no a través de él. Con contacto unilateral la
+    presión se reparte en triángulo sobre media cara y su resultante queda a w/3 del
+    eje, de modo que T = 2·F·(w/3)  →  **F = 3T/(2w)**, que es el DOBLE de lo que se
+    calculaba. El resultado se invierte: lo que parecía FS 2.2 es en realidad 1.1."""
+    w = 2 * np.sqrt((EJE_D / 2)**2 - (EJE_PLANOS / 2)**2)   # ancho de cada plano
+    F = 3 * par / (2 * w)
+    sigma = F / (w * t_total)
+    return w, F, sigma, SIGMA_Y / sigma
 
 def check_bulon(F_bulon):
     """Tornillo M10 10.9 con la reacción que salió del FEM: cortante y aplastamiento."""

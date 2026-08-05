@@ -188,6 +188,26 @@ MASAS = {  # kg aplicados en nodos (por nodo)
     "dash_loL": 10, "dash_loR": 10, "mh_loL": 10, "mh_loR": 10,         # carrocería ~40 kg en anclajes
 }
 
+# CORREGIDO 2026-08-05. Lo de arriba suma 325 kg, pero la masa SUSPENDIDA real del
+# carro es 690 − 126 de masa no suspendida (2×18 delante + 2×45 atrás, los motores de
+# cubo) = 564 kg. Faltaban 239 kg, incluido el propio chasis, que nadie aplicaba: el
+# FEM estaba verificando la estructura con el 58% de su carga. Se reparte el faltante
+# entre los nodos en proporción al tubo que llega a cada uno — que es exactamente cómo
+# se distribuye el peso propio del frame y lo que va atornillado a él.
+MASA_TOTAL_CARRO = 690.0
+MASA_NO_SUSPENDIDA = 2 * 18.0 + 2 * 45.0
+MASA_SUSPENDIDA = MASA_TOTAL_CARRO - MASA_NO_SUSPENDIDA
+_falta = MASA_SUSPENDIDA - sum(MASAS.values())
+if _falta > 0:
+    _tubo_por_nodo = {n: 0.0 for n in NODES}
+    for (a, b, s, tag) in MEMBERS:
+        L = float(np.linalg.norm(NODES[b] - NODES[a]))
+        _tubo_por_nodo[a] += L / 2
+        _tubo_por_nodo[b] += L / 2
+    _tot = sum(_tubo_por_nodo.values())
+    for n, L in _tubo_por_nodo.items():
+        MASAS[n] = MASAS.get(n, 0.0) + _falta * L / _tot
+
 def F_vector(ax_g=0.0, ay_g=-1.0, az_g=0.0):
     """vector de fuerzas por inercia: aceleración en g's por eje"""
     F = np.zeros(ndof)

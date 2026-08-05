@@ -1,5 +1,28 @@
 # ¿Qué falta para tener todo lo necesario? — inventario de huecos
 
+## ⛔ BLOQUEANTES ENCONTRADOS EN LA REVISIÓN DEL 2026-08-05
+
+Cuatro revisiones cruzadas (coherencia entre documentos, realismo del 3D, armabilidad
+y rigor de los cálculos) encontraron esto. **Nada de acero se corta hasta cerrarlos.**
+
+| # | Qué | Estado |
+|---|---|---|
+| B1 | **El tie rod choca con el larguero inferior del chasis.** La rótula de la cremallera queda dentro del tubo. Se barrieron 1561 posiciones libres: la mejor da bump steer de 2.7°/25 mm contra un tope de 0.10. No se arregla moviendo la cremallera — hay que **bajar los pivotes de la horquilla inferior a ménsulas**. Ver §0 de `resultados-direccion.md` | ❌ ABIERTO |
+| B2 | **Los pivotes de la horquilla inferior caen DENTRO de los nodos del chasis** (`LA1`=`fb_lo`, `LA2`=`fx_lo`): el buje no cabe. Necesitan ménsula con offset, igual que los superiores (63 mm) — y eso re-abre toda la cinemática delantera | ❌ ABIERTO |
+| B3 | **El aplastamiento en los planos del eje del QS273 estaba mal calculado** (brazo de palanca a través del eje en vez de a lo largo del plano). La fuerza real es el doble: 43.7 kN. El doblador pasa de 8 a **22 mm** para llegar a FS 2.1 | ✅ CORREGIDO |
+| B4 | **El FEM del chasis aplicaba 325 kg de los 564 kg suspendidos** — le faltaba el peso propio del frame y el resto del carro. Corregido repartiendo el faltante por nodo. FS baja de 2.14 a **2.05** (sigue ≥2) y la optimización de secciones sobrevive | ✅ CORREGIDO |
+| B5 | **El coilover delantero atravesaba la horquilla superior** (2.6 mm entre ejes, hacen falta 57). Anclaje movido a (700,480,480): 62 mm de holgura, motion ratio intacto | ✅ CORREGIDO |
+| B6 | **El coilover trasero se anclaba 94 mm fuera del brazo y 47 mm dentro de la llanta.** Corregido sobre el eje del brazo: el resorte pasa de **351 a 292 lb/in** y el amortiguador de ~590 a ~540 mm | ✅ CORREGIDO |
+| B7 | **La lista de corte no es una lista de corte**: da longitud entre centros de nodo, sin ángulos de inglete ni destajes. No se pueden cortar los 73 tubos con ella | ❌ ABIERTO |
+| B8 | **El arco principal son 5 tubos rectos, no un arco rolado** — con una soldadura a tope justo donde se anclan los arneses. Y el FEM no tiene caso de volcadura ni de choque | ❌ ABIERTO |
+| B9 | **No hay plano de ninguna pieza que se fabrica** (brazos, ménsulas, camisas, pedalera) ni cotas de posición de las ménsulas al chasis | ❌ ABIERTO |
+
+Se agregó `calculos/holguras.py`, que detecta interferencias entre piezas móviles y
+contra los tubos del chasis. **Correrlo después de mover cualquier punto duro.**
+
+---
+
+
 **2026-07-06** · complementa el documento maestro (`2026-07-05-carro-electrico-design.md`).
 Regla de lectura: ✅ resuelto · 🟡 parcial (existe pero no está listo para construir) · ❌ falta por completo.
 

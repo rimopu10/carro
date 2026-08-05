@@ -4,7 +4,7 @@ Generado por `optimizar_chasis.py`. Reusa la geometría, el FEM de vigas 3D y lo
 
 ## Por qué había masa que quitar
 
-El chasis usa una sola sección para casi todo. De los 73 tubos, solo uno está al límite — el peor da FS **2.22** en bache 3g. Los otros 72 van sobrados, algunos muchísimo. Poner el mismo tubo en todos lados es cómodo para comprar, pero se paga en kilos.
+El chasis usa una sola sección para casi todo. De los 73 tubos, solo uno está al límite — el peor da FS **2.03** en bache 3g. Los otros 72 van sobrados, algunos muchísimo. Poner el mismo tubo en todos lados es cómodo para comprar, pero se paga en kilos.
 
 La optimización agrupa los tubos **por función** (no uno por uno: un chasis con 73 secciones distintas sería imposible de comprar y de armar) y le busca a cada grupo la sección más ligera del catálogo que siga cumpliendo todo.
 
@@ -27,13 +27,13 @@ El diseño actual da **10,868 N·m/°**, cuando el doc maestro pide >4,000 para 
 
 | Piso de rigidez | Masa | vs actual | FS mínimo | Rigidez real | |
 |---|---|---|---|---|---|
-| 4,000 N·m/° | 77.5 kg | **-13.0 kg** | 2.13 | 9,559 N·m/° |  |
-| 6,000 N·m/° | 77.5 kg | **-13.0 kg** | 2.13 | 9,559 N·m/° |  |
-| 8,000 N·m/° | 77.5 kg | **-13.0 kg** | 2.13 | 9,559 N·m/° | ✓ **recomendado** |
-| 10,000 N·m/° | 80.6 kg | **-9.9 kg** | 2.16 | 10,068 N·m/° |  |
-| 10,868 N·m/° | 90.2 kg | **-0.3 kg** | 2.20 | 10,884 N·m/° |  |
+| 4,000 N·m/° | 79.8 kg | **-10.6 kg** | 2.04 | 9,836 N·m/° |  |
+| 6,000 N·m/° | 79.8 kg | **-10.6 kg** | 2.04 | 9,836 N·m/° |  |
+| 8,000 N·m/° | 79.8 kg | **-10.6 kg** | 2.04 | 9,836 N·m/° | ✓ **recomendado** |
+| 10,000 N·m/° | 83.5 kg | **-7.0 kg** | 2.09 | 10,030 N·m/° |  |
+| 10,868 N·m/° | 90.2 kg | **-0.3 kg** | 2.11 | 10,884 N·m/° |  |
 
-Con el piso en 8,000 N·m/° el óptimo absoluto baja a **77.5 kg**. Pero ese óptimo usa 5 secciones distintas, y ahí aparece el segundo intercambio.
+Con el piso en 8,000 N·m/° el óptimo absoluto baja a **79.8 kg**. Pero ese óptimo usa 4 secciones distintas, y ahí aparece el segundo intercambio.
 
 ## El intercambio que de verdad importa: masa vs simplicidad
 
@@ -41,11 +41,11 @@ Un chasis con muchas secciones distintas pesa menos pero es más lío: más reng
 
 | Secciones distintas | Masa | vs actual | FS | Rigidez | Cuáles |
 |---|---|---|---|---|---|
-| 2 | 90.5 kg | +0.0 kg | 2.22 | 10,868 N·m/° | PTR 38x38x1.9, RED 44.5x2.1 |
-| 3 ✓ **elegido** | 81.0 kg | -9.5 kg | 2.14 | 10,032 N·m/° | PTR 25x25x1.5, PTR 38x38x1.9, RED 44.5x2.1 |
-| 4 | 77.9 kg | -12.6 kg | 2.12 | 9,169 N·m/° | PTR 25x25x1.5, PTR 32x32x1.9, PTR 38x38x1.9, RED 44.5x2.1 |
+| 2 | 90.5 kg | +0.0 kg | 2.03 | 10,868 N·m/° | PTR 38x38x1.9, RED 44.5x2.1 |
+| 3 ✓ **elegido** | 81.0 kg | -9.5 kg | 2.05 | 10,032 N·m/° | PTR 25x25x1.5, PTR 38x38x1.9, RED 44.5x2.1 |
+| 4 | 79.8 kg | -10.6 kg | 2.04 | 9,836 N·m/° | PTR 25x25x1.5, PTR 32x32x1.9, PTR 38x38x1.9, RED 44.5x2.1 |
 
-**Elegido: 3 secciones.** Se lleva **9.5 kg de los 13.0 kg posibles (73% del beneficio) agregando UN solo tubo a la lista de compra**, y encima conserva casi toda la rigidez (10,032 contra 10,868 N·m/°). Las secciones 4 y 5 compran 3.5 kg más — no vale la pena para este proyecto.
+**Elegido: 3 secciones.** Se lleva **9.5 kg de los 10.6 kg posibles (89% del beneficio) agregando UN solo tubo a la lista de compra**, y encima conserva casi toda la rigidez (10,032 contra 10,868 N·m/°). Las secciones 4 y 5 compran 1.2 kg más — no vale la pena para este proyecto.
 
 ## Qué tubo va en cada grupo
 
@@ -65,27 +65,27 @@ Un chasis con muchas secciones distintas pesa menos pero es más lío: más reng
 | | Actual | Optimizado |
 |---|---|---|
 | Masa de acero | 90.5 kg | **81.0 kg** |
-| FS mínimo a fluencia | 2.22 | **2.14** |
-| FS mínimo a pandeo | 63.6 | **14.9** |
+| FS mínimo a fluencia | 2.03 | **2.05** |
+| FS mínimo a pandeo | 37.4 | **8.8** |
 | Rigidez torsional | 10,868 N·m/° | **10,032 N·m/°** |
 | Secciones que comprar | 2 | **3** |
 
-El tubo crítico del diseño optimizado es **seatR-mh_loR** (PTR 38x38x1.9) en Bache 3g, con FS 2.14 — el mismo tubo que ya era el crítico antes, así que el margen no se movió de sitio.
+El tubo crítico del diseño optimizado es **seatL-mh_loL** (PTR 38x38x1.9) en Bache 3g, con FS 2.05 — el mismo tubo que ya era el crítico antes, así que el margen no se movió de sitio.
 
 Los 10 tubos más esforzados del diseño optimizado:
 
 | Caso | Tubo | Función | Sección | σ (MPa) | FS |
 |---|---|---|---|---|---|
-| Bache 3g | seatR-mh_loR | gen | PTR 38x38x1.9 | 117 | 2.14 |
-| Bache 3g | dash_loR-seatR | gen | PTR 38x38x1.9 | 117 | 2.14 |
-| Bache 3g | seatL-mh_loL | gen | PTR 38x38x1.9 | 117 | 2.14 |
-| Bache 3g | dash_loL-seatL | gen | PTR 38x38x1.9 | 117 | 2.14 |
-| Curva 1g | seatR-mh_loR | gen | PTR 38x38x1.9 | 83 | 3.02 |
-| Curva 1g | dash_loR-seatR | gen | PTR 38x38x1.9 | 83 | 3.02 |
-| Curva 1g | dash_loL-seatL | gen | PTR 38x38x1.9 | 80 | 3.11 |
-| Curva 1g | seatL-mh_loL | gen | PTR 38x38x1.9 | 80 | 3.11 |
-| Bache 3g | fx_hiR-dash_hiR | gen | PTR 38x38x1.9 | 78 | 3.20 |
-| Bache 3g | fx_hiL-dash_hiL | gen | PTR 38x38x1.9 | 78 | 3.21 |
+| Bache 3g | seatL-mh_loL | gen | PTR 38x38x1.9 | 122 | 2.05 |
+| Bache 3g | dash_loL-seatL | gen | PTR 38x38x1.9 | 122 | 2.05 |
+| Bache 3g | seatR-mh_loR | gen | PTR 38x38x1.9 | 122 | 2.05 |
+| Bache 3g | dash_loR-seatR | gen | PTR 38x38x1.9 | 122 | 2.05 |
+| Bache 3g | coilL-r_hiL | susp | PTR 38x38x1.9 | 117 | 2.14 |
+| Bache 3g | coilR-r_hiR | susp | PTR 38x38x1.9 | 115 | 2.18 |
+| Bache 3g | fx_hiR-dash_hiR | gen | PTR 38x38x1.9 | 111 | 2.26 |
+| Bache 3g | fx_hiL-dash_hiL | gen | PTR 38x38x1.9 | 109 | 2.28 |
+| Bache 3g | mh_hiL-coilL | susp | PTR 38x38x1.9 | 105 | 2.38 |
+| Bache 3g | mh_hiR-coilR | susp | PTR 38x38x1.9 | 104 | 2.40 |
 
 ## Qué significa esto para el carro
 
