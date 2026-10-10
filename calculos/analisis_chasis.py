@@ -55,6 +55,13 @@ PTR, RED = sec_ptr(), sec_red()
 # optimizar_chasis.py — quita 9.5 kg (90.5 → 81.0) agregando UN solo tubo a la lista
 # de compra, y la rigidez torsional apenas baja de 10,868 a 10,032 N·m/°.
 PTR_DIAG = sec_ptr(0.025, 0.0015)
+# GAVIOTA (2026-08-16). Al llevar los rieles del techo al espinazo, la cabecera del
+# parabrisas y la corona del arco dejan de recibir la carga en el eje y pasan a
+# trabajar a FLEXIÓN. Con RED 44.5 el caso de volcadura cae de 1.44 a 1.14; con
+# RED 57.2 sube a 1.61. Los tirantes traseros suben con ellos porque, apenas se
+# arregla el techo, el tubo crítico se muda a ellos.
+RED_CELDA = sec_red(0.0572, 0.0032)
+PTR_TRANS = sec_ptr(0.038, 0.0030)   # fx_hi–dash_hi: cierra el bache 3g en 2.06
 SEC_POR_TAG = {"tors": PTR_DIAG}
 
 # ---------------- geometría: nodos (x adelante→atrás, y arriba, z lateral) ----------------
@@ -76,12 +83,19 @@ NM("fb_hi", 0.35, 0.48, 0.50)   # bulkhead frontal superior (anclaje susp.)
 NM("fx_lo", 0.75, 0.20, 0.55)   # caja frontal trasera inferior
 NM("fx_hi", 0.75, 0.48, 0.55)   # caja frontal trasera superior (torre coilover del.)
 NM("dash_lo", 1.10, 0.16, 0.58)
-NM("dash_hi", 1.10, 0.72, 0.48)
-NM("hdr",   1.32, 1.02, 0.42)   # cabecera parabrisas
+# Pie del pilar A adelantado y cabecera atrasada: el parabrisas pasa de 44° a 65° de
+# la vertical (44° es ángulo de camioneta). No cuesta acero y el pilar más largo y
+# tumbado triangula mejor: la rigidez torsional sube de 12,496 a 13,830 N·m/°.
+NM("dash_hi", 0.95, 0.72, 0.48)
+# Techo 70 mm más abajo (butacas recinadas 12°, escenario D). Baja el arco → palanca
+# más corta → el caso de volcadura MEJORA de 1.49 a 1.59.
+NM("hdr",   1.45, 0.95, 0.42)   # cabecera parabrisas (esquina del pilar A)
+NM("sp_f",  1.45, 0.95, 0.15)   # espinazo delantero — eje de bisagra de la gaviota
+NM("sp_r",  2.02, 1.01, 0.15)   # espinazo trasero
 NM("seat",  1.62, 0.16, 0.591)  # punto de asiento sobre estribo
 NM("mh_lo", 2.02, 0.16, 0.60)   # arco principal pie
-NM("mh_belt",2.02, 0.78, 0.492) # nodo barra de cinturones (sobre la pierna del arco)
-NM("mh_hi", 2.02, 1.08, 0.44)   # arco principal corona
+NM("mh_belt",2.02, 0.742, 0.492) # nodo barra de cinturones (sobre la pierna del arco)
+NM("mh_hi", 2.02, 1.01, 0.44)   # arco principal corona
 NM("bat_f", 2.10, 0.16, 0.585)  # cuna batería frente (sobre riel)
 NM("ta",    2.28, 0.16, 0.552)  # pivote brazo trasero (sobre riel)
 NM("bat_r", 2.64, 0.16, 0.486)  # cuna batería atrás (sobre riel)
@@ -113,24 +127,32 @@ MM("fb_hi", "fx_lo", tag="tors")
 CROSS("fb_lo"); CROSS("fb_hi"); CROSS("fx_hi")
 M("fx_hiL", "fb_hiR", None, "tors")  # X superior
 # transición
-MM("fx_lo", "dash_lo"); MM("fx_hi", "dash_hi"); MM("dash_lo", "dash_hi", tag="safe")
+MM("fx_lo", "dash_lo"); MM("fx_hi", "dash_hi", PTR_TRANS, "safe")
+MM("dash_lo", "dash_hi", tag="safe")
 CROSS("dash_lo")
 # célula: pilares A, techo, estribos, diagonal puerta
-MM("dash_hi", "hdr", RED, "safe"); CROSS("hdr", RED, "safe")
-MM("hdr", "mh_hi", RED, "safe")
+MM("dash_hi", "hdr", RED, "safe")
+# La cabecera del parabrisas y la corona del arco van PARTIDAS por el espinazo: el
+# hueco de la puerta de gaviota se come el techo hasta z=±0.15, así que los rieles
+# ya no pueden ir por la orilla — irían dentro del hueco y la puerta les pegaría.
+M("hdrL", "sp_fL", RED_CELDA, "safe"); M("sp_fL", "sp_fR", RED_CELDA, "safe")
+M("sp_fR", "hdrR", RED_CELDA, "safe")
+MM("sp_f", "sp_r", RED_CELDA, "safe")   # rieles de techo = viga de bisagra
 MM("dash_lo", "seat", tag="gen"); MM("seat", "mh_lo", tag="gen")   # estribo en 2 tramos
 MM("dash_hi", "mh_lo", tag="tors")                                  # diagonal de puerta
 M("dash_loL", "mh_loR", None, "tors"); M("dash_loR", "mh_loL", None, "tors")  # X piso
 # arco principal (2 tramos por la barra de cinturones)
 MM("mh_lo", "mh_belt", RED, "safe"); MM("mh_belt", "mh_hi", RED, "safe")
-CROSS("mh_hi", RED, "safe"); CROSS("mh_belt", PTR, "safe")
+M("mh_hiL", "sp_rL", RED_CELDA, "safe"); M("sp_rL", "sp_rR", RED_CELDA, "safe")
+M("sp_rR", "mh_hiR", RED_CELDA, "safe")
+CROSS("mh_belt", PTR, "safe")
 M("mh_loL", "mh_hiR", RED, "safe")   # diagonal del arco
 # bahía trasera (rieles partidos por cuna/pivote/torre)
 MM("mh_lo", "bat_f"); MM("bat_f", "ta"); MM("ta", "bat_r"); MM("bat_r", "r_lo")
 # Tirantes traseros del arco principal: son los que bajan la carga de volcadura a la
 # estructura trasera. Van en redondo de la célula, no en PTR — sin ellos el FS de LC5
 # se queda en 1.10 y el tubo crítico es justamente éste.
-MM("mh_hi", "coil", RED, "safe"); MM("coil", "r_hi", RED, "safe")
+MM("mh_hi", "coil", RED_CELDA, "safe"); MM("coil", "r_hi", RED_CELDA, "safe")
 MM("r_lo", "r_hi", tag="susp")
 MM("mh_lo", "r_hi", tag="tors")
 MM("r_lo", "tail"); MM("r_hi", "tail"); CROSS("tail"); CROSS("r_hi"); CROSS("r_lo")

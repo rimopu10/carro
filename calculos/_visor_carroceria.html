@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carrocería paramétrica — carro eléctrico</title>
+<style>
+ *{box-sizing:border-box}
+ html,body{margin:0;height:100%;background:#0c1016;overflow:hidden;color:#c9d1d9;
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+ #app{position:fixed;inset:0}
+ .panel{background:#131820ee;border:1px solid #262d38;border-radius:12px;padding:12px 14px;
+  font-size:12px;line-height:1.55;backdrop-filter:blur(10px);box-shadow:0 6px 24px #0007}
+ #izq{position:fixed;top:12px;left:12px;z-index:10;width:266px;display:flex;
+  flex-direction:column;gap:9px}
+ h1{color:#f0f6fc;font-size:15px;margin:0 0 6px;letter-spacing:-.01em}
+ h2{color:#7d8590;font-size:10px;margin:0 0 8px;text-transform:uppercase;
+  letter-spacing:.1em;font-weight:650}
+ button{background:#1a212b;color:#c9d1d9;border:1px solid #2b3441;border-radius:8px;
+  padding:6px 10px;font-size:11.5px;cursor:pointer;font-family:inherit;transition:all .12s}
+ button:hover{background:#232c38}
+ button.on{background:#1f6feb;border-color:#1f6feb;color:#fff}
+ .row{display:flex;flex-wrap:wrap;gap:5px}
+ .lbl{display:flex;justify-content:space-between;color:#7d8590;font-size:10.5px;margin-top:10px}
+ input[type=range]{width:100%;accent-color:#1f6feb}
+ b{color:#e6edf3}
+ #hint{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:10;
+  color:#5c6570;font-size:11px;background:#131820ee;border:1px solid #262d38;
+  border-radius:9px;padding:6px 15px}
+</style></head><body>
+<div id="app"></div>
+<div id="izq">
+ <div class="panel">
+  <h1>Carrocería paramétrica</h1>
+  <div id="stats"></div>
+ </div>
+ <div class="panel">
+  <h2>Ver</h2>
+  <div class="row">
+   <button id="bcar" class="on">Paramétrica</button>
+   <button id="bdet">Detallada</button>
+   <button id="bcha">Chasis</button>
+   <button id="brue" class="on">Ruedas</button>
+  </div>
+  <div class="row" style="margin-top:6px">
+   <button id="bsec">Secciones</button>
+   <button id="bwire">Malla</button>
+   <button id="brot" class="on">⟳ Girar</button>
+  </div>
+  <div class="lbl"><span>Transparencia carrocería</span><span id="ltr">0%</span></div>
+  <input type="range" id="rtr" min="0" max="100" value="0">
+  <div class="row" style="margin-top:10px">
+   <button id="vi" class="on">Iso</button><button id="vl">Lateral</button>
+   <button id="vf">Frontal</button><button id="vs">Superior</button>
+  </div>
+ </div>
+</div>
+<div id="hint">Arrastra para girar · rueda para acercar · clic derecho para desplazar</div>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+"three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+const D = __DATA__;
+
+const rnd = new THREE.WebGLRenderer({antialias:true});
+rnd.setPixelRatio(Math.min(devicePixelRatio,2)); rnd.setSize(innerWidth,innerHeight);
+rnd.shadowMap.enabled = true; rnd.shadowMap.type = THREE.PCFSoftShadowMap;
+rnd.toneMapping = THREE.ACESFilmicToneMapping;
+document.getElementById('app').appendChild(rnd.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0c1016);
+scene.environment = new THREE.PMREMGenerator(rnd).fromScene(new RoomEnvironment(),0.03).texture;
+const cam = new THREE.PerspectiveCamera(36, innerWidth/innerHeight, 0.02, 120);
+const ctr = new OrbitControls(cam, rnd.domElement);
+ctr.enableDamping = true; ctr.dampingFactor = 0.07;
+ctr.autoRotate = true; ctr.autoRotateSpeed = 0.7; ctr.maxPolarAngle = Math.PI*0.495;
+ctr.target.set(D.cotas.largo/2, 0.42, 0);
+cam.position.set(-3.4, 1.7, 4.6);
+
+scene.add(new THREE.HemisphereLight(0xdbe9ff, 0x0d1218, 0.75));
+const sol = new THREE.DirectionalLight(0xfff6ea, 2.0);
+sol.position.set(-3.5, 6.5, 4.5); sol.castShadow = true;
+sol.shadow.mapSize.set(2048,2048); sol.shadow.bias = -0.0004;
+const sc = sol.shadow.camera; sc.left=-4;sc.right=4;sc.top=4;sc.bottom=-4;sc.far=22;
+sc.updateProjectionMatrix(); scene.add(sol);
+const relleno = new THREE.DirectionalLight(0x8fb0ff, 0.55);
+relleno.position.set(5,3,-4); scene.add(relleno);
+
+const piso = new THREE.Mesh(new THREE.PlaneGeometry(60,60),
+  new THREE.MeshStandardMaterial({color:0x12171e, roughness:0.92}));
+piso.rotation.x = -Math.PI/2; piso.position.y = -0.001; piso.receiveShadow = true;
+scene.add(piso);
+const grid = new THREE.GridHelper(24,48,0x1e2731,0x161d26);
+grid.position.y = 0.002; scene.add(grid);
+
+// El modelo usa Y arriba y Z lateral (convención del proyecto), igual que three.js.
+function malla(d, mat){
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(d.pos,3));
+  g.setIndex(d.idx);
+  g.computeVertexNormals();
+  const m = new THREE.Mesh(g, mat);
+  m.castShadow = true; m.receiveShadow = true;
+  return m;
+}
+
+const matPiel = new THREE.MeshPhysicalMaterial({
+  color:new THREE.Color(0.173,0.145,0.133), metalness:0.25, roughness:0.36,
+  clearcoat:0.4, clearcoatRoughness:0.16});
+const matAcero = new THREE.MeshStandardMaterial({color:0x8f99a6, metalness:0.9, roughness:0.34});
+const matHule  = new THREE.MeshStandardMaterial({color:0x14171c, roughness:0.85});
+
+const carroceria = malla(D.piel, matPiel);   scene.add(carroceria);
+// La DETALLADA es la reconstrucción cruda: conserva rebajes y filos que la
+// paramétrica suaviza al pasar de 1.2 M de triángulos a 22 mil cuadrángulos.
+let detallada = null;
+if (D.detallada) {
+  detallada = malla(D.detallada, matPiel.clone());
+  detallada.visible = false; scene.add(detallada);
+}
+const chasis     = malla(D.chasis, matAcero); chasis.visible = false; scene.add(chasis);
+const ruedasM    = malla(D.ruedas, matHule);  scene.add(ruedasM);
+
+const gs = new THREE.BufferGeometry();
+gs.setAttribute('position', new THREE.Float32BufferAttribute(D.secciones,3));
+const secciones = new THREE.LineSegments(gs,
+  new THREE.LineBasicMaterial({color:0x58a6ff, transparent:true, opacity:0.55}));
+secciones.visible = false; scene.add(secciones);
+
+const wire = new THREE.Mesh(carroceria.geometry,
+  new THREE.MeshBasicMaterial({color:0x3fb950, wireframe:true, transparent:true, opacity:0.25}));
+wire.visible = false; scene.add(wire);
+
+const c = D.cotas, s = D.stats;
+document.getElementById('stats').innerHTML =
+ `<b>${c.largo} × ${c.ancho} × ${c.alto} m</b><br>`+
+ `Batalla <b>${(c.eje_tras-c.eje_del).toFixed(2)} m</b> · ejes ${c.eje_del} / ${c.eje_tras}<br>`+
+ `Piel: <b>${s.cuadrangulos.toLocaleString()}</b> cuadrángulos<br>`+
+ `Chasis: <b>${s.tubos} tubos</b>, ${s.masa_chasis} kg, ${s.ktors.toLocaleString()} N·m/°`;
+
+const alt = (id, obj) => {
+  const b = document.getElementById(id);
+  b.onclick = () => { obj.visible = !obj.visible; b.classList.toggle('on', obj.visible); };
+};
+alt('bcar', carroceria); alt('bcha', chasis); alt('brue', ruedasM);
+if (detallada) {
+  const bd = document.getElementById('bdet');
+  bd.onclick = () => {                       // son alternativas: nunca las dos
+    detallada.visible = !detallada.visible;
+    bd.classList.toggle('on', detallada.visible);
+    carroceria.visible = !detallada.visible;
+    document.getElementById('bcar').classList.toggle('on', carroceria.visible);
+  };
+} else document.getElementById('bdet').style.display = 'none';
+alt('bsec', secciones);  alt('bwire', wire);
+document.getElementById('brot').onclick = e => {
+  ctr.autoRotate = !ctr.autoRotate; e.target.classList.toggle('on', ctr.autoRotate); };
+document.getElementById('rtr').oninput = e => {
+  const v = +e.target.value/100;
+  document.getElementById('ltr').textContent = e.target.value + '%';
+  matPiel.transparent = v > 0.01; matPiel.opacity = 1 - v;
+  matPiel.depthWrite = v < 0.5; matPiel.needsUpdate = true;
+  if (v > 0.05 && !chasis.visible) { chasis.visible = true;
+    document.getElementById('bcha').classList.add('on'); }
+};
+const vistas = {
+  vi:[-3.4,1.7,4.6], vl:[c.largo/2,0.55,7.2],
+  vf:[-6.4,0.8,0.01], vs:[c.largo/2,7.0,0.01]};
+for (const k in vistas) document.getElementById(k).onclick = () => {
+  cam.position.set(...vistas[k]);
+  for (const j in vistas) document.getElementById(j).classList.toggle('on', j===k);
+};
+
+addEventListener('resize', () => {
+  cam.aspect = innerWidth/innerHeight; cam.updateProjectionMatrix();
+  rnd.setSize(innerWidth, innerHeight); });
+(function bucle(){ requestAnimationFrame(bucle); ctr.update(); rnd.render(scene,cam); })();
+</script></body></html>

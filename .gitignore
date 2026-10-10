@@ -4,3 +4,15 @@ __pycache__/
 node_modules/
 package.json
 package-lock.json
+*.blend1
+
+# Binarios pesados que se regeneran con los scripts (render/, calculos/)
+cad/*.blend
+cad/carro-detallado.obj
+cad/carro-detallado.mtl
+cad/carro-real-mm.stl
+cad/carro-ligero-mm.stl
+cad/carro-luces.glb
+# Mallas de IA (Hunyuan3D, licencia NO comercial): solo referencia local
+cad/gem-mv*.glb
+cad/referencia-ia.glb

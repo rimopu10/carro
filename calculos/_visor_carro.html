@@ -76,6 +76,8 @@
   </div>
   <div class="lbl"><span>Vista explotada</span><span id="lexp">0%</span></div>
   <input type="range" id="rexp" min="0" max="100" value="0">
+  <div class="lbl"><span>Puertas de gaviota</span><span id="lpta">cerradas</span></div>
+  <input type="range" id="rpta" min="0" max="90" value="0">
  </div>
 </div>
 
@@ -134,6 +136,20 @@ const mat=(c,met,rou,extra={})=>new THREE.MeshStandardMaterial(
 const MAT={
  acero:c=>mat(c,0.88,0.34), pintado:c=>mat(c,0.28,0.45), hule:c=>mat(c,0.05,0.92),
  plastico:c=>mat(c,0.12,0.62), crudo:c=>mat(c,0.72,0.52), muelle:c=>mat(c,0.9,0.28),
+};
+/* Materiales de la piel. DoubleSide en todos: las puertas son cascarón de una hoja y
+   el cuerpo se mira por dentro cuando la cámara entra a la cabina. */
+const D2=THREE.DoubleSide;
+const MAT_PIEL={
+ pintura:mat('#9aa4b2',0.62,0.34,{side:D2}),
+ vidrio :mat('#141d28',0.42,0.035,{side:D2,transparent:true,opacity:0.86,
+          envMapIntensity:1.8}),   // polarizado oscuro: a menor opacidad la
+          // cabina se lee como hueco y el carro parece descapotado
+ negro  :mat('#14181f',0.18,0.74,{side:D2}),
+ luz_t  :mat('#2a0509',0.0,0.35,{side:D2,emissive:new THREE.Color('#e01427'),
+          emissiveIntensity:1.5}),
+ luz_d  :mat('#0a1418',0.0,0.30,{side:D2,emissive:new THREE.Color('#9fd8ff'),
+          emissiveIntensity:1.6}),
 };
 
 /* ---------------- utilidades ---------------- */
@@ -495,6 +511,30 @@ for(const p of D.piezas){
    const c=new THREE.Color(p.col).lerp(new THREE.Color('#aab4bf'),0.62);
    o=malla(geoVoxel(p.tipo,p.mir),mat(c,0.85,0.46,{flatShading:true}));
    o.position.set(...p.pos); break;}
+  case 'piel':{
+   // Piel indexada con un grupo por material. Las normales vienen calculadas desde
+   // Python sobre la superficie completa — NO se recalculan aquí, porque hacerlo por
+   // malla suelta dejaría una costura dura en cada cambio de material.
+   const g=new THREE.BufferGeometry();
+   g.setAttribute('position',new THREE.Float32BufferAttribute(p.pos,3));
+   g.setAttribute('normal',new THREE.Float32BufferAttribute(p.nor,3));
+   const idx=[],mats=[];
+   for(const k in p.grupos){
+    const ini=idx.length; for(const v of p.grupos[k])idx.push(v);
+    g.addGroup(ini,p.grupos[k].length,mats.length);
+    mats.push(MAT_PIEL[k]||MAT.pintado(p.col));
+   }
+   g.setIndex(idx);
+   const piel=new THREE.Mesh(g,mats);
+   if(p.eje){                                  // puerta: cuelga de un pivote propio
+    const p0=new THREE.Vector3(p.eje[0],p.eje[1],p.eje[2]);
+    g.translate(-p0.x,-p0.y,-p0.z);
+    const piv=new THREE.Group(); piv.position.copy(p0); piv.add(piel);
+    piv.userData.eje=new THREE.Vector3(p.eje[3],p.eje[4],p.eje[5]).normalize();
+    piv.userData.sig=p0.z>0?-1:1;   // + abre hacia ABAJO: verificado midiendo la caja
+    o=new THREE.Group(); o.add(piv); o.userData.piv=piv;
+   }else o=piel;
+   break;}
   case 'malla':{const g=new THREE.BufferGeometry();
    g.setAttribute('position',new THREE.Float32BufferAttribute(p.tris,3)); g.computeVertexNormals();
    o=new THREE.Mesh(g,mat(p.col,0.15,0.24,{transparent:true,opacity:0.14,
@@ -536,16 +576,18 @@ for(const p of D.piezas){
  }
  if(!o)continue;
  o.traverse(c=>{if(!c.isMesh)return;
-  c.castShadow=p.sis!=='carroceria'; c.receiveShadow=true;
+  c.castShadow=true; c.receiveShadow=true;
   // se guarda la transparencia original para que rayos X no arruine las piezas
   // que ya eran translúcidas a propósito (carrocería, caja de batería)
-  c.material.userData.tr=c.material.transparent;
-  c.material.userData.op=c.material.opacity;});
+  // la piel usa un ARRAY de materiales (uno por grupo), no uno solo
+  for(const mm of (Array.isArray(c.material)?c.material:[c.material])){
+   mm.userData.tr=mm.transparent; mm.userData.op=mm.opacity;}});
  o.userData.p=p;
  const base=o.position.clone();
  let dir=p.exp?V(p.exp):base.clone().sub(CENTRO).normalize();
  if(dir.lengthSq()<1e-6)dir=new THREE.Vector3(0,1,0);
  scene.add(o); objetos.push({o,p,base,dir});
+ window.__objetos=objetos; window.__THREE=THREE;
 }
 
 /* ---------------- interfaz ---------------- */
@@ -556,7 +598,7 @@ document.getElementById('stats').innerHTML=
  `Chasis: <b>${S.n_tubos} tubos</b>, ${S.masa_chasis} kg, ${S.ktors.toLocaleString()} N·m/°<br>`+
  `Masa objetivo: <b>${S.masa_total} kg</b> con 2 ocupantes`;
 
-const apagados=new Set(['carroceria']);
+const apagados=new Set();   // la carrocería ya es sólida: se muestra por defecto
 const lista=document.getElementById('lista'), filas={};
 for(const s of D.sistemas){
  const r=document.createElement('div'); r.className='sis'+(apagados.has(s.id)?' off':'');
@@ -579,10 +621,17 @@ function pintarPaso(){
 rp.oninput=()=>{paso=+rp.value;pintarPaso();refrescar();};
 document.getElementById('rexp').oninput=e=>{explosion=+e.target.value/100;
  document.getElementById('lexp').textContent=e.target.value+'%'; refrescar();};
+let apertura=0;
+document.getElementById('rpta').oninput=e=>{apertura=+e.target.value;
+ document.getElementById('lpta').textContent=
+  apertura===0?'cerradas':(apertura+'°'); refrescar();};
 function refrescar(){
  for(const x of objetos){
   x.o.visible=!apagados.has(x.p.sis)&&x.p.paso<=paso;
   x.o.position.copy(x.base).addScaledVector(x.dir,explosion*0.9);
+  const piv=x.o.userData&&x.o.userData.piv;
+  if(piv)piv.quaternion.setFromAxisAngle(piv.userData.eje,
+   piv.userData.sig*apertura*Math.PI/180);
  }
 }
 function sincro(){
@@ -593,15 +642,21 @@ pintarPaso(); refrescar(); sincro();
 document.getElementById('brot').onclick=e=>{ctr.autoRotate=!ctr.autoRotate;
  e.target.classList.toggle('on',ctr.autoRotate);};
 document.getElementById('bcar').onclick=()=>{
- apagados.has('carroceria')?apagados.delete('carroceria'):apagados.add('carroceria');
- filas['carroceria'].classList.toggle('off',apagados.has('carroceria')); sincro(); refrescar();};
+ const on=apagados.has('carroceria');
+ for(const s of ['carroceria','puertas']){
+  on?apagados.delete(s):apagados.add(s);
+  if(filas[s])filas[s].classList.toggle('off',apagados.has(s));
+ }
+ sincro(); refrescar();};
 let xray=false;
 document.getElementById('bxray').onclick=e=>{xray=!xray;e.target.classList.toggle('on',xray);
- for(const x of objetos){ if(x.p.sis==='carroceria')continue;
+ for(const x of objetos){ if(x.p.sis==='carroceria'||x.p.sis==='puertas')continue;
   x.o.traverse(c=>{if(!c.isMesh)return;
-   c.material.transparent=xray||c.material.userData?.tr;
-   c.material.opacity=xray?0.20:(c.material.userData?.op??1);
-   c.material.depthWrite=!xray; c.castShadow=!xray; c.material.needsUpdate=true;});}};
+   for(const mm of (Array.isArray(c.material)?c.material:[c.material])){
+    mm.transparent=xray||mm.userData?.tr;
+    mm.opacity=xray?0.20:(mm.userData?.op??1);
+    mm.depthWrite=!xray; mm.needsUpdate=true;}
+   c.castShadow=!xray;});}};
 
 const VISTAS={vi:[4.9,2.0,3.8],vl:[1.5,0.9,7.0],vf:[7.2,1.2,0.01],vs:[1.55,7.0,0.02]};
 for(const k in VISTAS) document.getElementById(k).onclick=e=>{

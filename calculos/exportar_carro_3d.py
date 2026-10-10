@@ -37,6 +37,7 @@ CAD = os.path.join(HERE, "..", "cad")
 PLANOS = os.path.join(HERE, "..", "planos")
 sys.path.insert(0, HERE)
 import analisis_chasis as ac
+import carroceria
 
 R4 = lambda *a: [round(float(x), 4) for x in a]
 
@@ -479,31 +480,27 @@ piloto(+0.30); piloto(-0.30)
 # ============================================================================
 # 11. CARROCERÍA
 # ============================================================================
-ESTACIONES = [
-    (0.00, 0.34, 0.30, 0.42), (0.22, 0.56, 0.17, 0.52), (0.55, 0.80, 0.13, 0.60),
-    (0.85, 0.76, 0.12, 0.68), (1.10, 0.74, 0.12, 0.78), (1.34, 0.72, 0.12, 1.04),
-    (1.70, 0.74, 0.12, 1.10), (2.02, 0.76, 0.12, 1.09), (2.35, 0.80, 0.13, 0.92),
-    (2.68, 0.81, 0.15, 0.72), (3.00, 0.52, 0.24, 0.54),
-]
-def anillo(x, hw, y0, y1, n=32, sup=2.7):
-    cy, ry = (y0 + y1) / 2, (y1 - y0) / 2
-    return [[x, cy + ry * np.sign(np.sin(2*np.pi*k/n)) * abs(np.sin(2*np.pi*k/n))**(2/sup),
-             hw * np.sign(np.cos(2*np.pi*k/n)) * abs(np.cos(2*np.pi*k/n))**(2/sup)]
-            for k in range(n)]
-tris, anillos = [], [anillo(*e) for e in ESTACIONES]
-for i in range(len(anillos) - 1):
-    A, B = anillos[i], anillos[i + 1]
-    for k in range(len(A)):
-        k2 = (k + 1) % len(A)
-        tris += A[k] + B[k] + B[k2] + A[k] + B[k2] + A[k2]
-for extremo, ring in [(0, anillos[0]), (1, anillos[-1])]:
-    cx = [sum(p[j] for p in ring) / len(ring) for j in range(3)]
-    for k in range(len(ring)):
-        k2 = (k + 1) % len(ring)
-        tris += (cx + ring[k2] + ring[k]) if extremo == 0 else (cx + ring[k] + ring[k2])
-P("carroceria", "Carrocería", "10 paneles independientes de fibra sándwich sobre molde de "
-  "espuma CNC · estilo i8 × 33 Stradale · un panel chocado se re-fabrica por su archivo",
-  7, "#3b82f6", exp=(0, 1.2, 0), t="malla", tris=[round(v, 4) for v in tris])
+# La superficie sale de carroceria.py, que la construye por estaciones sobre los
+# puntos duros del chasis. Llega INDEXADA y con normales suaves promediadas sobre la
+# piel completa: si cada material calculara las suyas, cada cambio de material sería
+# una costura dura y la carrocería se vería facetada.
+PIEL = carroceria.exportar_visor()
+
+P("carroceria", "Carrocería — cuerpo",
+  f"Piel de fibra sándwich sobre molde de espuma CNC · {carroceria.LARGO:.2f} × "
+  f"{carroceria.ANCHO:.2f} × {carroceria.ALTO:.2f} m · un panel chocado se re-fabrica "
+  "por su archivo CAD",
+  7, "#8d97a3", exp=(0, 1.2, 0), t="piel",
+  pos=PIEL["cuerpo"]["pos"], nor=PIEL["cuerpo"]["nor"], grupos=PIEL["cuerpo"]["grupos"])
+
+for clave, lado, nom in (("pi", "izquierda", "izquierda"), ("pd", "derecha", "derecha")):
+    d = PIEL[clave]
+    P("puertas", f"Puerta de gaviota ({nom})",
+      f"13.1 kg · bisagra de pasador simple sobre el espinazo (z=±{carroceria.Z_ESPINAZO*1000:.0f} mm) · "
+      f"dos pistones de gas de ~200 N · abierta llega a {carroceria.ALTO_ABIERTA*1000:.0f} mm de alto "
+      f"y barre {(carroceria.ANCHO_BARRIDO-carroceria.SEMI)*1000:.0f} mm afuera del costado",
+      7, "#e8a35c", exp=(0, 0.9, 0.5 if clave == "pi" else -0.5),
+      t="piel", pos=d["pos"], nor=d["nor"], grupos=d["grupos"], eje=d["eje"])
 
 # ============================================================================
 # 12. METADATOS
@@ -516,7 +513,8 @@ SISTEMAS = [
     ("ruedas", "Ruedas", "#1a1e24"), ("motores", "Motores de cubo", "#4b5563"),
     ("bateria", "Caja de batería", "#16a34a"), ("celdas", "Celdas (30)", "#15803d"),
     ("electrico", "Eléctrico", "#0ea5e9"), ("cabina", "Cabina", "#2f3540"),
-    ("pilotos", "Pilotos (escala)", "#64748b"), ("carroceria", "Carrocería", "#3b82f6"),
+    ("pilotos", "Pilotos (escala)", "#64748b"), ("carroceria", "Carrocería", "#8d97a3"),
+    ("puertas", "Puertas de gaviota", "#e8a35c"),
 ]
 PASOS = [
     (1, "Chasis soldado", "F1",
@@ -575,7 +573,8 @@ DATA = {
     "pasos": [{"n": n, "tit": t, "fase": f, "desc": d, "chk": c} for (n, t, f, d, c) in PASOS],
     "stats": {"n_piezas": len(PIEZAS), "n_tubos": len(ac.elems),
               "masa_chasis": round(ac.masa_acero, 1), "ktors": round(ac.K_tors),
-              "largo": 3.0, "ancho": 1.66, "alto": 1.10, "batalla": 2.13, "masa_total": 690},
+              "largo": carroceria.LARGO, "ancho": carroceria.ANCHO,
+              "alto": carroceria.ALTO, "batalla": 2.13, "masa_total": 690},
 }
 
 TEMPLATE = open(os.path.join(HERE, "_visor_carro.html"), encoding="utf-8").read()
