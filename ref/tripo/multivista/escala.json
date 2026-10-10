@@ -1,0 +1,58 @@
+{
+ "lienzo": 1024,
+ "piso_px": 641,
+ "vistas": {
+  "front": {
+   "fuente": "ia-frontal.png",
+   "caja_px": [
+    46,
+    181,
+    976,
+    798
+   ],
+   "escala": 0.4191,
+   "ancho_px": 390,
+   "alto_px": 259,
+   "ancho_sobre_alto": 1.506
+  },
+  "left": {
+   "fuente": "ia-lateral.png",
+   "caja_px": [
+    47,
+    384,
+    976,
+    639
+   ],
+   "escala": 1.0141,
+   "ancho_px": 943,
+   "alto_px": 260,
+   "ancho_sobre_alto": 3.627
+  },
+  "back": {
+   "fuente": "ia-trasera.png",
+   "caja_px": [
+    47,
+    190,
+    976,
+    788
+   ],
+   "escala": 0.4324,
+   "ancho_px": 402,
+   "alto_px": 259,
+   "ancho_sobre_alto": 1.552
+  },
+  "right": {
+   "fuente": "ia-lateral-espejo.png",
+   "caja_px": [
+    47,
+    384,
+    976,
+    639
+   ],
+   "escala": 1.0141,
+   "ancho_px": 943,
+   "alto_px": 260,
+   "ancho_sobre_alto": 3.627
+  }
+ }
+}

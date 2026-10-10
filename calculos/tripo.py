@@ -14,6 +14,8 @@ Flujo para tener vistas de todos los lados QUE CORRESPONDAN entre sí:
     python calculos/tripo.py vistas ref/tripo/1-tres_cuartos.png
     python calculos/tripo.py editar <tarea> back "a thin continuous red light bar ..."
     python calculos/tripo.py modelo <tarea>
+    python calculos/tripo.py modelo ref/tripo/multivista   # las 4 vistas de la lámina alineadas
+                                                             # (calculos/vistas_tripo.py)
     python calculos/tripo.py imagen ref/tripo/1-tres_cuartos.png     # atajo: una foto -> 3D
 
 La clave NO va en el repo: se lee de la variable TRIPO_API_KEY o del archivo
@@ -95,7 +97,8 @@ def main():
     p = sub.add_parser("vistas"); p.add_argument("imagen")
     p = sub.add_parser("editar"); p.add_argument("tarea"); p.add_argument("vista", choices=ORDEN_VISTAS)
     p.add_argument("prompt")
-    p = sub.add_parser("modelo"); p.add_argument("tarea", help="tarea de 'vistas' o 'editar'")
+    p = sub.add_parser("modelo")
+    p.add_argument("tarea", help="tarea de 'vistas'/'editar', o carpeta con front/left/back/right.png")
     p.add_argument("--rapido", action="store_true", help="calidad estándar (más barato)")
     p = sub.add_parser("imagen"); p.add_argument("imagen")
     p.add_argument("--rapido", action="store_true")
@@ -114,11 +117,13 @@ def main():
         asyncio.run(correr("editar", lambda c: c.edit_multiview_image(
             a.tarea, [{"view": a.vista, "prompt": a.prompt}]), f"{a.tarea}:{a.vista}"))
     elif a.cmd == "modelo":
-        d = os.path.join(DIR, a.tarea)
+        d = a.tarea if os.path.isdir(a.tarea) else os.path.join(DIR, a.tarea)
         vistas = []
         for v in ORDEN_VISTAS:
-            f = [x for x in os.listdir(d) if x.split(".")[0].endswith("_" + v)]
+            f = [x for x in os.listdir(d) if x.split(".")[0] == v
+                 or x.split(".")[0].endswith("_" + v)]
             vistas.append(os.path.join(d, f[0]) if f else None)
+        print("vistas:", {v: (os.path.basename(f) if f else None) for v, f in zip(ORDEN_VISTAS, vistas)})
         if vistas[0] is None:
             raise SystemExit(f"no encuentro la vista frontal en {d}")
         asyncio.run(correr("modelo", lambda c: c.multiview_to_model(
