@@ -1,3 +1,27 @@
+# Juguete 1:20 con puertas de gaviota y ruedas que giran (2026-10-09)
+
+`calculos/tripo_gaviota.py` → piezas acostadas aquí; armado para ver en Blender con
+`blender --python render/abrir_gaviota.py` (puerta izquierda abierta 65°).
+
+| Archivo | Qué es |
+|---|---|
+| `gaviota-1a20-carroceria.stl` | 198 × 89 × 53 mm, cabina hueca con asientos y tablero; cristales como lámina de 1.2 mm |
+| `gaviota-1a20-puerta-der.stl` / `-izq.stl` | 50 × 37 × 43 mm c/u, se imprimen paradas sobre su canto de abajo |
+| `gaviota-1a20-ruedas-x4.stl` | las 4 ruedas |
+
+**Armado:**
+1. Ruedas: dos ejes de filamento 1.75 de 87 mm (libres en la carrocería, a presión en las ruedas).
+2. Puertas: pon el nudillo de la puerta entre los dos nudillos del techo y mete por el
+   frente del nudillo delantero un tramo de filamento de **17 mm**. Entra justo en la
+   carrocería (1.9) y la puerta gira libre (2.1). Si queda flojo, una gota de pegamento
+   en la punta delantera.
+
+**Impresión:** la carrocería lleva soportes de árbol también dentro de la cabina, bajo el
+techo; se sacan por los huecos de las puertas. La holgura puerta–carrocería es de
+0.3 mm.
+
+---
+
 # Juguete de la carrocería de Tripo (la nueva, 2026-10-09)
 
 Sale de `calculos/tripo_juguete.py` (ver ahí cómo se cierran los cristales y se rellena
