@@ -68,7 +68,7 @@ def _area(p):
 
 
 def cerrar_aberturas(M, lamina=None, paso=2.0, area_min=2.0e4, parabrisas=(880.0, 1450.0),
-                     tramo=60.0, paso_tramo=30.0):
+                     tramo=60.0, paso_tramo=30.0, hundido=4.0, vol_min=2.0e6):
     """Cierra SOLO las aberturas que Tripo dejó sin cristal (ventanas laterales con la
     cabina detrás, luneta, base del parabrisas) y no toca las curvas del diseño.
 
@@ -83,6 +83,14 @@ def cerrar_aberturas(M, lamina=None, paso=2.0, area_min=2.0e4, parabrisas=(880.0
     CON QUÉ SUPERFICIE: cascos convexos 3D por tramos de `tramo` mm traslapados (planos
     lisos). Los cortes sólo dicen dónde; si la superficie saliera de los cortes, cada
     corte la deja un poco distinta y el cristal sale rayado.
+
+    Ajustes del 2026-10-09 tras verlo armado:
+      * sólo cuentan las entradas que CRUZAN EL CENTRO (z = 0), y ya en 3D se tiran las
+        zonas de menos de `vol_min` mm3: la curva de la cadera rozaba el umbral de área
+        en cortes sueltos, se pegaba a la luneta y dejaba tiras de cristal como peine;
+      * el cristal va `hundido` mm por dentro de la envolvente (disco en (y, z)): la
+        envolvente pasa unos mm por fuera del marco y el cristal sobresalía como placa
+        con la orilla escalonada; hundido, el marco lo tapa como a un cristal real.
 
     lamina=None: se rellena la abertura entera (juguete macizo). lamina=t (mm reales):
     sólo una lámina de cristal de grueso t; la cabina queda hueca (el casco erosionado
@@ -105,31 +113,50 @@ def cerrar_aberturas(M, lamina=None, paso=2.0, area_min=2.0e4, parabrisas=(880.0
             zona = envolvente.offset(5.0, mf.JoinType.Round)
         else:
             exterior = mf.CrossSection([np.asarray(p) for p in polys if _area(p) > 0])
-            abiertas = [f for f in (envolvente - exterior).decompose() if f.area() > area_min]
+            # una abertura real (ventanas+cabina, luneta, base del parabrisas) cruza el
+            # centro del carro; una curva de la cadera nunca. Corte en (y, z): bounds =
+            # (y0, z0, y1, z1)
+            abiertas = [f for f in (envolvente - exterior).decompose()
+                        if f.area() > area_min and f.bounds()[1] < 0.0 < f.bounds()[3]]
             if not abiertas:
                 continue
-            zona = mf.CrossSection.batch_boolean(abiertas, mf.OpType.Add).offset(5.0, mf.JoinType.Round)
+            zona = mf.CrossSection.batch_boolean(abiertas, mf.OpType.Add).offset(2.0, mf.JoinType.Round)
+            if x > 2250:
+                # detrás de las ventanas laterales la única abertura es la luneta
+                # (|z| < 430); en algunos cortes su entrada queda unida a la curva de la
+                # cadera y se colaban aletas de cristal sobre la cadera
+                zona = zona ^ mf.CrossSection.square([3000.0, 2 * 450.0]).translate([-500.0, -450.0])
+                # apertura (encoger y volver a crecer 20 mm): corta los cuellos delgados
+                # por donde la luneta se une a la cadera; se queda la pieza del centro
+                zona = zona.offset(-20.0, mf.JoinType.Round).offset(20.0, mf.JoinType.Round)
+                centro = [c for c in zona.decompose() if c.bounds()[1] < 0.0 < c.bounds()[3]]
+                if not centro:
+                    continue
+                zona = mf.CrossSection.batch_boolean(centro, mf.OpType.Add)
         zonas.append(mf.Manifold.extrude(zona, paso + 1.0).translate([0, 0, x - 0.5]))
     if not zonas:
         return M, 0
     zona = mf.Manifold.batch_boolean(zonas, mf.OpType.Add).transform(B)
+    grandes = [z for z in zona.decompose() if z.volume() > vol_min]
+    zona = mf.Manifold.batch_boolean(grandes, mf.OpType.Add)
 
     V = np.asarray(M.to_mesh().vert_properties)[:, :3]
     corte = np.where((V[:, 0] > 850) & (V[:, 0] < 2300), 748.0, 770.0)
     V = V[V[:, 1] >= corte]
     cascos, huecos = [], []
-    # disco en el plano (y, z), no esfera: erosionar también a lo largo de x acortaría
-    # cada tramo 2t y los huecos dejarían costillas atravesadas en la cabina
-    bola = None
-    if lamina:
-        bola = mf.Manifold.cylinder(0.02, lamina, lamina, 24, True).transform(
+    # discos en el plano (y, z), no esferas: erosionar también a lo largo de x acortaría
+    # cada tramo y los huecos dejarían costillas atravesadas en la cabina
+    def disco(r):
+        return mf.Manifold.cylinder(0.02, r, r, 24, True).transform(
             np.array([[0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0]], float))
+    bola = disco(hundido + lamina) if lamina else None
+    hunde = disco(hundido) if hundido else None
     for x in np.arange(V[:, 0].min(), V[:, 0].max(), paso_tramo):
         sel = V[(V[:, 0] >= x) & (V[:, 0] <= x + tramo)]
         if len(sel) < 8:
             continue
         H = mf.Manifold.hull_points(sel.astype(np.float32))
-        cascos.append(H)
+        cascos.append(H.minkowski_difference(hunde) if hunde is not None else H)
         if bola is not None:
             E = H.minkowski_difference(bola)
             if not E.is_empty():

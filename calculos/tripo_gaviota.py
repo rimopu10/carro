@@ -125,11 +125,24 @@ def _ccw(pts):
     return p[::-1].tolist() if area < 0 else p.tolist()
 
 
+def _chaikin(pts, veces=3):
+    """Redondea un contorno cerrado cortando esquinas: con los 12 puntos trazados, la
+    curva trasera de la puerta salía en tramos rectos en el marco de la carrocería."""
+    p = np.asarray(pts, float)
+    for _ in range(veces):
+        q = np.roll(p, -1, axis=0)
+        p = np.vstack([np.column_stack([0.75 * p[:, 0] + 0.25 * q[:, 0], 0.75 * p[:, 1] + 0.25 * q[:, 1]]),
+                       np.column_stack([0.25 * p[:, 0] + 0.75 * q[:, 0], 0.25 * p[:, 1] + 0.75 * q[:, 1]])])
+        n = len(p) // 2
+        p = np.array([p[i // 2 + (i % 2) * n] for i in range(2 * n)])
+    return p.tolist()
+
+
 def prisma_puerta(lado, crece, seccion=None):
     """Volumen que ocupa la puerta (crece > 0: más grande, para cortar la carrocería;
     crece < 0: más chico, para la puerta). Prisma del contorno de lado ∩ prisma de la
     sección, espejado para el lado izquierdo."""
-    a = mf.CrossSection([_ccw(CONTORNO_LADO)]).offset(crece, mf.JoinType.Round)
+    a = mf.CrossSection([_ccw(_chaikin(CONTORNO_LADO))]).offset(crece, mf.JoinType.Round)
     lat = mf.Manifold.extrude(a, 4000.0).translate([0, 0, -2000.0])          # (x, y) a lo largo de z
     b = mf.CrossSection([_ccw(seccion or SECCION)]).offset(crece, mf.JoinType.Round)
     sec = mf.Manifold.extrude(b, 6000.0).translate([0, 0, -1000.0])          # (z, y) a lo largo de "x"
