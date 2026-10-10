@@ -27,3 +27,5 @@ ref/tripo/*/
 
 # mallas de Tripo (60+ MB): se guardan fuera de git; el origen queda en ref/tripo/LEEME.md
 ref/tripo/*.glb
+cad/carroceria-tripo.glb
+cad/carroceria-tripo-solida-mm.stl

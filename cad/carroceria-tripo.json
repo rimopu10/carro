@@ -1,0 +1,31 @@
+{
+ "escala": 4.03159,
+ "batalla": 2.13,
+ "largo": 3.9545,
+ "x_nariz": -0.3201,
+ "x_cola": 3.6343,
+ "ancho": 1.785,
+ "alto": 1.1126,
+ "ruedas": [
+  {
+   "x": 0.55,
+   "lado": 1,
+   "alto_llanta": 0.7313,
+   "z_ext": 0.8832,
+   "z_int": 0.6169
+  },
+  {
+   "x": 2.68,
+   "lado": 1,
+   "alto_llanta": 0.7481,
+   "z_ext": 0.8831,
+   "z_int": 0.6172
+  }
+ ],
+ "solido": {
+  "voxel_m": 0.004,
+  "triangulos": 1200000,
+  "no_manifold": 0,
+  "volumen_m3": 3.2758
+ }
+}
