@@ -44,9 +44,10 @@ def arg(n, d=None):
 
 
 RAPIDO = "--rapido" in ARGS
+SOLO_VISTAS = arg("--vistas", "").split(",") if arg("--vistas") else None
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CAD = os.path.join(RAIZ, "cad")
-SAL = os.path.join(RAIZ, "render", "salida", "v3")
+SAL = arg("--salida") or os.path.join(RAIZ, "render", "salida", "v3")
 os.makedirs(SAL, exist_ok=True)
 
 J = json.load(open(os.path.join(CAD, "carro-v3-jaula.json"), encoding="utf-8"))
@@ -391,15 +392,19 @@ def srgb(r, g, b):
 
 MAT = {
     # pintura muestreada de la lámina del dueño (sRGB 115,106,102), con clearcoat
-    "pintura": material("pintura", srgb(78, 71, 68), rug=0.34, metal=0.20, coat=1.0),
+    # satinada: el doc maestro pide wrap satinado (perdona ondulaciones). Con clearcoat
+    # 1.0 la piel reflejaba el estudio como espejo y cada ondita se leía como defecto.
+    "pintura": material("pintura", srgb(84, 76, 72), rug=0.42, metal=0.45, coat=0.35,
+                        coat_rug=0.18),
     "vidrio": material("vidrio", (0.30, 0.33, 0.36), rug=0.02, trans=1.0, coat=0.0),
     "negro": material("negro", srgb(18, 17, 17), rug=0.55),
     "negro_brillo": material("negro_brillo", srgb(12, 12, 12), rug=0.18, coat=0.8),
     "pozo": material("pozo", srgb(10, 10, 10), rug=0.9),
-    "luz_d": material("luz_d", (0.75, 0.90, 1.0), rug=0.2, emis=(0.75, 0.9, 1.0), fuerza=5.0),
-    "luz_t": material("luz_t", (1.0, 0.05, 0.02), rug=0.2, emis=(1.0, 0.06, 0.02), fuerza=6.0),
+    "luz_d": material("luz_d", (0.75, 0.90, 1.0), rug=0.2, emis=(0.75, 0.9, 1.0), fuerza=2.2),
+    "luz_t": material("luz_t", (1.0, 0.05, 0.02), rug=0.2, emis=(1.0, 0.06, 0.02), fuerza=3.5),
     "llanta": material("llanta", srgb(22, 22, 22), rug=0.85),
-    "rin": material("rin", srgb(190, 192, 196), rug=0.22, metal=1.0),
+    # grafito satinado: el cromo hacía ver el rin de 13" como de carrito de golf
+    "rin": material("rin", srgb(92, 94, 98), rug=0.32, metal=0.9),
     "hub": material("hub", srgb(60, 60, 62), rug=0.4, metal=0.8),
     "disco": material("disco", srgb(120, 118, 115), rug=0.45, metal=0.9),
     "caliper": material("caliper", srgb(170, 30, 20), rug=0.4),
@@ -449,7 +454,7 @@ def material_carroceria(anillo, estacion, c):
     x0 = ESTACIONES[estacion] if 0 <= estacion < len(ESTACIONES) else x
     x1 = ESTACIONES[estacion + 1] if 0 <= estacion + 1 < len(ESTACIONES) else x
     if anillo == -2:                                   # tapa de la cola
-        return "negro"
+        return "pintura"
     if anillo == -1:                                   # tapa de la nariz
         return "pintura"
     if anillo >= 8:
@@ -464,10 +469,8 @@ def material_carroceria(anillo, estacion, c):
             return "vidrio"
     if anillo <= 1:
         return "negro"                                 # bajos
-    if anillo == 2 and 0.85 <= x <= 2.45:
-        return "negro"                                 # faldón entre ruedas
-    if x > 3.02 and y < Y_BARRA - 0.012:
-        return "negro"                                 # cola bajo la barra (difusor)
+    # el faldón y la cola van en color carrocería: lo negro (difusor) es un bolsillo
+    # real cortado con booleano, no una pintada por altura que dejaba escalones
     return "pintura"
 
 
@@ -546,7 +549,7 @@ def boca_parrilla(cuerpo):
     """Boca ancha bajo el labio del cofre, entre las uniones de las Y de luz."""
     poli = [(-0.74, 0.31), (-0.55, 0.30), (0.0, 0.285), (0.55, 0.30), (0.74, 0.31),
             (0.78, 0.25), (0.72, 0.14), (0.0, 0.135), (-0.72, 0.14), (-0.78, 0.25)]
-    return bolsillo(cuerpo, poli, "x", X_MORRO - 0.6, 0.055, "negro_brillo")
+    return bolsillo(cuerpo, poli, "x", X_MORRO - 0.6, 0.055, "pozo")
 
 
 def branquias(cuerpo):
@@ -559,17 +562,34 @@ def branquias(cuerpo):
         bolsillo(cuerpo, poli, "z", lado * (SEMI + 0.5), 0.022, "negro", dir_neg=lado < 0)
 
 
-def bolsillo(cuerpo, poli2d, eje, plano, hondo, mat, dir_neg=False):
+def boca_difusor(cuerpo):
+    """Difusor como en la lámina trasera: banda negra hundida bajo la barra de luz que
+    deja en color carrocería una V alrededor del triángulo y las dos esquinas de la
+    cadera. Puntos (z, y) vistos desde atrás. Se queda en |z|<=0.70: más afuera el
+    bolsillo rompería hacia el pozo de la rueda (que llega a x=3.03)."""
+    der = [(0.186, 0.525), (0.60, 0.525), (0.67, 0.505), (0.70, 0.45), (0.70, 0.24),
+           (0.66, 0.175)]
+    poli = [(0.0, 0.205)] + der + [(-z, y) for z, y in der[::-1]]
+    return bolsillo(cuerpo, poli, "x", X_COLA + 0.6, 0.05, "negro", dir_neg=False,
+                    afuera_x=1)
+
+
+def bolsillo(cuerpo, poli2d, eje, plano, hondo, mat, dir_neg=False, afuera_x=-1, suavizar=2):
     """Hunde un polígono proyectado `hondo` metros en la piel. El fondo sigue la
     superficie (Shrinkwrap con desplazamiento negativo) y las paredes salen rectas
     hacia afuera; se resta con booleano y las caras nuevas llevan `mat`."""
-    vs, fs = poligono_plano(chaikin(poli2d, 2), eje, plano, cortes=3)
+    vs, fs = poligono_plano(chaikin(poli2d, suavizar) if suavizar else poli2d, eje, plano, cortes=3)
     ob = objeto("_bolsillo", vs, fs, MAT[mat], modelo=False)
-    afuera = {"x": (-1, 0, 0), "z": (0, 0, -1 if dir_neg else 1), "y": (0, 1, 0)}[eje]
-    n = envolver(ob, cuerpo, eje, -hondo, plano=plano, afuera=afuera)
+    afuera = {"x": (afuera_x, 0, 0), "z": (0, 0, -1 if dir_neg else 1), "y": (0, 1, 0)}[eje]
+    # el fondo se proyecta SOBRE la piel y luego se corre `hondo` a lo largo del eje.
+    # Con el desplazamiento de Shrinkwrap (que va por la normal) el contorno se movía
+    # de lado en las zonas curvas y la orilla del bolsillo salía ondulada.
+    n = envolver(ob, cuerpo, eje, 0.0, plano=plano, afuera=afuera)
     if n < 4:
         borrar(ob)
         return
+    for v in ob.data.vertices:
+        v.co -= Vector(afuera) * hondo
     # prisma: el fondo envuelto se conserva (use_keep_orig) y su copia se corre a lo
     # largo del eje hacia afuera, con paredes rectas
     bm = bmesh.new()
@@ -693,50 +713,126 @@ def _triangulo_trasero(dy):
         h = lado * 0.86
         return [(-lado / 2 / SEMI, (yc + h / 3)), (lado / 2 / SEMI, (yc + h / 3)),
                 (0.0, (yc - 2 * h / 3))]
-    ext, inte = tri(0.30), tri(0.19)
+    ext, inte = tri(0.26), tri(0.16)
     # [0:3] triángulo exterior (luz); [4:7] interior (malla negra encima)
     return [ext[0], ext[1], ext[2], ext[0], inte[0], inte[1], inte[2]]
 
 
+# Ejes de las firmas de luz en (u, v) de la lámina (u = z/SEMI, v = y/ALTO), lado +z.
+# Se trazaron sobre los contornos de cad/firma-luces.json: la lámina las dibuja de
+# 35-55 mm de grueso porque el contorno incluye el resplandor; la luz en sí es una
+# línea de ~22 mm.
+EJES_LUZ_DEL = [
+    [(0.897, 0.600), (0.893, 0.550), (0.880, 0.490), (0.862, 0.430), (0.845, 0.380),
+     (0.828, 0.356), (0.780, 0.348), (0.700, 0.338), (0.600, 0.326), (0.520, 0.313)],
+    [(0.842, 0.325), (0.858, 0.290), (0.878, 0.255), (0.905, 0.212)],
+]
+EJES_LUZ_TRAS = [
+    [(0.435, 0.497), (0.650, 0.495), (0.710, 0.488), (0.760, 0.462), (0.800, 0.452),
+     (0.845, 0.458)],
+]
+# la central baja a la cara de la cola: a la altura de las laterales caía justo en la
+# arista y se veía de canto
+EJE_BARRA_CENTRO = [(-0.25, 0.474), (0.25, 0.474)]
+
+
+def _densificar(pts, paso):
+    out = []
+    for a, b in zip(pts[:-1], pts[1:]):
+        n = max(1, int(math.hypot(b[0] - a[0], b[1] - a[1]) / paso))
+        out += [(a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n) for k in range(n)]
+    return out + [pts[-1]]
+
+
+def ranura_sobre_piel(cuerpo, linea_zy, x_cam, ancho, hondo, mat, cerrada=False):
+    """Surco de ancho constante que sigue la piel. Cada punto del eje se proyecta
+    sobre la piel con un rayo desde x_cam y ahí se arma una sección rectangular
+    orientada por la NORMAL de la piel (no por el eje de proyección): así el ancho no
+    se estira donde la superficie corre casi paralela al rayo. El prisma se resta con
+    booleano y el surco hereda el material emisivo."""
+    dir_rayo = Vector((1.0 if x_cam < 0 else -1.0, 0.0, 0.0))
+    P, N = [], []
+    for (z, y) in linea_zy:
+        pos, nor = rayo(cuerpo, (x_cam, y, z), dir_rayo)
+        if pos is None:
+            continue
+        if nor.dot(dir_rayo) > 0:
+            nor = -nor
+        P.append(pos)
+        N.append(nor.normalized())
+    if len(P) < 3:
+        print(f"  ranura {mat}: sólo {len(P)} de {len(linea_zy)} puntos tocaron la piel")
+        return
+    ranura_3d(cuerpo, P, N, ancho, hondo, mat, cerrada)
+
+
+def ranura_3d(cuerpo, P, N, ancho, hondo, mat, cerrada=False):
+    """Resta de la piel un prisma rectangular barrido por los puntos P (sobre la piel)
+    con la sección orientada por las normales N."""
+    # normales suavizadas a lo largo del eje: la malla subdividida las trae con ruido
+    for _ in range(3):
+        if cerrada:
+            N = [(N[k - 1] + 2 * N[k] + N[(k + 1) % len(N)]).normalized() for k in range(len(N))]
+        else:
+            N = [N[0]] + [(N[k - 1] + 2 * N[k] + N[k + 1]).normalized() for k in range(1, len(N) - 1)] + [N[-1]]
+    n = len(P)
+    verts, faces = [], []
+    for i in range(n):
+        if cerrada:
+            T = (P[(i + 1) % n] - P[(i - 1) % n]).normalized()
+        else:
+            T = (P[min(i + 1, n - 1)] - P[max(i - 1, 0)]).normalized()
+        S = T.cross(N[i]).normalized() * (ancho / 2)
+        afuera, adentro = N[i] * 0.015, -N[i] * hondo
+        verts += [tuple(P[i] + S + afuera), tuple(P[i] - S + afuera),
+                  tuple(P[i] - S + adentro), tuple(P[i] + S + adentro)]
+    tramos = n if cerrada else n - 1
+    for i in range(tramos):
+        a, b = 4 * i, 4 * ((i + 1) % n)
+        for k in range(4):
+            faces.append((a + k, a + (k + 1) % 4, b + (k + 1) % 4, b + k))
+    if not cerrada:
+        faces.append((3, 2, 1, 0))
+        m = 4 * (n - 1)
+        faces.append((m, m + 1, m + 2, m + 3))
+    ob = objeto("_ranura", verts, faces, MAT[mat], modelo=False)
+    normales(ob)
+    if CORTADORES is not None:          # modo maqueta: el booleano lo hace manifold3d
+        CORTADORES.append(ob)
+        return
+    booleano(cuerpo, ob)
+    borrar(ob)
+
+
 def luces(cuerpo):
-    # delanteras: polígonos (u,v) del frente, u<0 es un lado; se espejan
-    for nombre, clave, eje_x, mat, dy in (("LuzDelantera", "luz_frontal", X_MORRO - 0.5, "luz_d", 0.0),
-                                          ("LuzTrasera", "luz_trasera", X_COLA + 0.5, "luz_t", 0.0)):
-        polis = LUCES[clave]
-        if clave == "luz_trasera":
-            # la barra tiene que caer en la arista de la cola: se corre en y lo que haga falta
-            vmax = max(v for p in polis for (u, v) in p)
-            dy = Y_BARRA + 0.006 - vmax * ALTO
-            # de la lámina sólo la barra (lo que llega al flanco); el triángulo central
-            # se construye limpio: anillo triangular invertido bajo la barra
-            polis = [p for p in polis if max(abs(u) for (u, v) in p) > 0.4]
-            polis.append(_triangulo_trasero(dy)[0:3])
-        vs_all, fs_all = [], []
-        for poli in polis:
-            simetrico = min(u for (u, v) in poli) < -0.05 and max(u for (u, v) in poli) > 0.05
-            for lado in ((1,) if simetrico else (1, -1)):
-                if simetrico:
-                    pts = [(u * SEMI, v * ALTO + dy) for (u, v) in poli]
-                else:
-                    pts = [(lado * abs(u) * SEMI, v * ALTO + dy) for (u, v) in poli]
-                    if lado < 0:
-                        pts = pts[::-1]
-                vs, fs = poligono_plano(pts if simetrico else chaikin(pts, 2), "x", eje_x, cortes=2)
-                base = len(vs_all)
-                vs_all += vs
-                fs_all += [tuple(i + base for i in f) for f in fs]
-        ob = objeto(nombre, vs_all, fs_all, MAT[mat])
-        envolver(ob, cuerpo, "x", 0.0025, plano=eje_x,
-                 afuera=(-1, 0, 0) if clave == "luz_frontal" else (1, 0, 0))
-        solidificar(ob, 0.004, hacia=1.0)
-        if clave == "luz_trasera":
-            # el centro del triángulo es malla negra: un triángulo menor encima
-            tri = _triangulo_trasero(dy)[4:7]
-            pts = [(u * SEMI, v * ALTO + dy) for (u, v) in tri]
-            vs, fs = poligono_plano(pts, "x", eje_x, cortes=2)
-            ob2 = objeto("LuzTrasera_centro", vs, fs, MAT["malla"])
-            envolver(ob2, cuerpo, "x", 0.0075, plano=eje_x, afuera=(1, 0, 0))
-            solidificar(ob2, 0.002, hacia=1.0)
+    """Firmas de luz como SURCOS de 22 mm sobre la piel con el fondo emisivo. Antes eran
+    calcas envueltas por proyección frontal y en las esquinas de la nariz (donde la piel
+    corre casi paralela al rayo) salían anchas y con la orilla mordida. En la maqueta
+    impresa quedan como surcos limpios para pintar o meter fibra óptica."""
+    ANCHO, HONDO = 0.022, 0.010
+    for eje in EJES_LUZ_DEL:
+        for lado in (1, -1):
+            pts = _densificar([(lado * u * SEMI, v * ALTO) for (u, v) in eje], 0.008)
+            ranura_sobre_piel(cuerpo, pts, X_MORRO - 1.0, ANCHO, HONDO, "luz_d")
+    # trasera: la barra cae en la arista de la cola
+    vmax = max(v for p in LUCES["luz_trasera"] for (u, v) in p)
+    dy = Y_BARRA + 0.006 - vmax * ALTO
+    xc = X_COLA + 1.0
+    ranura_sobre_piel(cuerpo, _densificar([(u * SEMI, v * ALTO + dy) for (u, v) in EJE_BARRA_CENTRO], 0.01),
+                      xc, ANCHO * 0.8, HONDO, "luz_t")
+    for eje in EJES_LUZ_TRAS:
+        for lado in (1, -1):
+            pts = _densificar([(lado * u * SEMI, v * ALTO + dy) for (u, v) in eje], 0.008)
+            ranura_sobre_piel(cuerpo, pts, xc, ANCHO * 0.8, HONDO, "luz_t")
+    # triángulo: bolsillo luminoso con un triángulo menor más hondo de malla encima,
+    # así queda el anillo de luz. (Barrerlo como surco cerrado se auto-intersecaba en
+    # las esquinas de 60° y dejaba la malla abierta.) La cola ahí es casi normal a x,
+    # así que la proyección no estira nada.
+    tri = _triangulo_trasero(dy)
+    for pts, mat, h in ((tri[0:3], "luz_t", HONDO), (tri[4:7], "malla", HONDO + 0.008)):
+        zy = [(u * SEMI, v * ALTO + dy) for (u, v) in pts]
+        zy = chaikin(_densificar(zy + [zy[0]], 0.02)[:-1], 1)
+        bolsillo(cuerpo, zy, "x", X_COLA + 0.5, h, mat, afuera_x=1, suavizar=0)
 
 
 # ============================================================================
@@ -745,7 +841,7 @@ def luces(cuerpo):
 def malla_parrilla(cuerpo):
     """Retícula de rombos dentro de la boca: cintas planas envueltas sobre el fondo
     del bolsillo y con espesor. Dos familias a ±40°."""
-    poli = [(-0.72, 0.30), (0.0, 0.28), (0.72, 0.30), (0.75, 0.24), (0.70, 0.15),
+    poli = [(-0.72, 0.305), (0.0, 0.29), (0.72, 0.305), (0.75, 0.24), (0.70, 0.15),
             (0.0, 0.145), (-0.70, 0.15), (-0.75, 0.24)]
     vs_all, fs_all = [], []
     paso, ancho = 0.055, 0.006
@@ -786,24 +882,31 @@ def splitter(cuerpo):
     """Labio delantero: la planta del morro a y=0.16 desplazada 45 mm hacia afuera."""
     contorno = []
     for i in range(0, 61):
-        a = -pi / 2 + pi * i / 60           # barrido de -z a +z
-        d = Vector((-cos(a) * 0.0 - 1.0, 0, 0))
-        z = -1.0 + 2.0 * i / 60
+        z = -0.74 + 1.48 * i / 60           # sin llegar a las ruedas (z=0.66)
         p, n = rayo(cuerpo, (X_MORRO - 1.0, 0.165, z), (1, 0, 0))
         if p and p.x < 0.45:
             contorno.append((p.x - 0.045, z))
     if len(contorno) < 5:
         return
+    # el borde por rayos sale con escalones de la malla: se suaviza a lo largo de z
+    xs = [c[0] for c in contorno]
+    for _ in range(6):
+        xs = [xs[0]] + [0.25 * xs[k - 1] + 0.5 * xs[k] + 0.25 * xs[k + 1]
+                        for k in range(1, len(xs) - 1)] + [xs[-1]]
+    contorno = [(x, c[1]) for x, c in zip(xs, contorno)]
     xmax = max(c[0] for c in contorno) + 0.25
     poli = [(xmax, contorno[0][1])] + contorno + [(xmax, contorno[-1][1])]
-    vs, fs = poligono_plano(poli, "y", 0.128, cortes=0)
+    # cara inferior EN el plano del piso de la piel: en la maqueta impresa nace de la
+    # cama en vez de quedar como voladizo de 0.8 mm que pide soporte
+    vs, fs = poligono_plano(poli, "y", Y_PISO + 0.016, cortes=0)
     ob = objeto("Splitter", vs, fs, MAT["negro_brillo"])
     solidificar(ob, 0.016, hacia=-1.0)
 
 
-def difusor(cuerpo):
+def difusor(cuerpo, espesor=0.014, modelo=True):
     """Cuatro aletas verticales sobre el panel negro rebajado de la cola: cada una es
     un perfil (x,y) que sigue la piel por rayos y sobresale 45 mm."""
+    hechas = []
     for z in (0.29, 0.49):
         for lado in (1, -1):
             perfil = []
@@ -816,8 +919,10 @@ def difusor(cuerpo):
             afuera = [(x + 0.045 + 0.02 * (i == 0), y) for i, (x, y) in enumerate(perfil)]
             poli = perfil + afuera[::-1]
             vs, fs = poligono_plano(poli, "z", lado * z - 0.007, cortes=0)
-            ob = objeto("Aleta", vs, fs, MAT["negro"], suave=False)
-            solidificar(ob, 0.014, hacia=1.0)
+            ob = objeto("Aleta", vs, fs, MAT["negro"], suave=False, modelo=modelo)
+            solidificar(ob, espesor, hacia=1.0)
+            hechas.append(ob)
+    return hechas
 
 
 def espejos(cuerpo):
@@ -827,11 +932,15 @@ def espejos(cuerpo):
         base, _ = rayo(cuerpo, (1.10, 2.0, lado * 0.72), (0, -1, 0))
         if base is None:
             base = Vector((1.10, 0.74, lado * 0.72))
-        c = (base.x - 0.01, base.y + 0.042, lado * (abs(base.z) + 0.04))
-        vs, fs = esfera(c, 0.082, n=14, escala=(1.0, 0.38, 0.60))
+        # gota alargada y baja (tipo ala), pegada a la repisa con un brazo corto e
+        # inclinado; la paleta redonda sobre poste vertical se veía de los 60
+        c = (base.x + 0.03, base.y + 0.030, lado * (abs(base.z) + 0.075))
+        vs, fs = esfera(c, 0.080, n=14, escala=(1.35, 0.36, 0.52))
         objeto("Espejo", vs, fs, MAT["pintura"])
-        vs, fs = tubo([(base.x, base.y - 0.01, base.z), (c[0] + 0.01, c[1] - 0.02, c[2] - lado * 0.03)], 0.013)
-        objeto("Espejo_brazo", vs, fs, MAT["negro"])
+        vs, fs = barrido([(base.x - 0.02, base.y - 0.01, base.z),
+                          (c[0] - 0.03, c[1] - 0.012, c[2] - lado * 0.035)],
+                         [(-0.022, -0.005), (0.022, -0.005), (0.022, 0.005), (-0.022, 0.005)])
+        objeto("Espejo_brazo", vs, fs, MAT["negro"], suave=False)
 
 
 def ruedas():
@@ -963,6 +1072,11 @@ VISTAS = {
     "tres_cuartos": ((-0.70, 0.36, 0.61), 1.08, False),
     "tres_cuartos_tras": ((0.72, 0.30, -0.62), 1.08, False),
 }
+# (posición de cámara, objetivo, lente mm) en coordenadas del proyecto
+DETALLES = {
+    "detalle_frente": ((-2.3, 0.75, 1.9), (0.25, 0.38, 0.15), 50),
+    "detalle_cola": ((5.4, 0.85, -1.7), (3.05, 0.42, -0.1), 50),
+}
 
 
 def escena_y_render():
@@ -1027,6 +1141,8 @@ def escena_y_render():
     aspecto = e.render.resolution_x / e.render.resolution_y
     piso = bpy.data.objects["Piso"]
     for nom, (dirn, holgura, orto) in VISTAS.items():
+        if SOLO_VISTAS and nom not in SOLO_VISTAS:
+            continue
         cd = bpy.data.cameras.new("c")
         c = bpy.data.objects.new("c", cd)
         COL.objects.link(c)
@@ -1043,6 +1159,22 @@ def escena_y_render():
             e.render.film_transparent = False
             piso.hide_render = False
         c.rotation_euler = mirar(c.location, foco)
+        e.camera = c
+        e.render.filepath = os.path.join(SAL, nom + ".png")
+        bpy.ops.render.render(write_still=True)
+        print("FOTO " + nom)
+    # acercamientos para revisar detalle (no entran a la comparación de siluetas)
+    e.render.film_transparent = False
+    piso.hide_render = False
+    for nom, (pos, objetivo, lente) in DETALLES.items():
+        if SOLO_VISTAS and nom not in SOLO_VISTAS:
+            continue
+        cd = bpy.data.cameras.new("c")
+        c = bpy.data.objects.new("c", cd)
+        COL.objects.link(c)
+        cd.lens = lente
+        c.location = pos
+        c.rotation_euler = mirar(pos, objetivo)
         e.camera = c
         e.render.filepath = os.path.join(SAL, nom + ".png")
         bpy.ops.render.render(write_still=True)
@@ -1068,6 +1200,180 @@ def exportar(cuerpo):
     print("OK  cad/carro-v3-carroceria-mm.stl")
 
 
+# ============================================================================
+# 8. MAQUETA IMPRIMIBLE (--maqueta N  ->  escala 1:N)
+# ============================================================================
+# Medidas en mm A ESCALA (lo que mide la pieza impresa). La junta y el cristal se
+# exageran a propósito: una junta real de 6 mm a 1:16 mide 0.4 mm y una boquilla de
+# 0.4 la borra (revisión de impresión, 2026-10-09).
+JUNTA_MM = (0.8, 0.5)          # ancho, hondo de la junta de puerta
+CRISTAL_MM = (0.5, 0.4)        # surco perimetral del cristal (guía para enmascarar)
+ALETA_MIN_MM = 1.2             # 3 líneas de extrusión
+EJE_MM = 2.1                   # agujero del eje (filamento 1.75), en gota
+
+
+def _cadenas(aristas):
+    """Encadena aristas (pares de índices) en polilíneas: [(índices, cerrada)]."""
+    ady = {}
+    for a, b in aristas:
+        ady.setdefault(a, []).append(b)
+        ady.setdefault(b, []).append(a)
+
+    def clave(a, b):
+        return (min(a, b), max(a, b))
+
+    usadas, cadenas = set(), []
+    inicios = [v for v, l in ady.items() if len(l) != 2] + list(ady)
+    for v0 in inicios:
+        for v1 in ady[v0]:
+            if clave(v0, v1) in usadas:
+                continue
+            cad = [v0, v1]
+            usadas.add(clave(v0, v1))
+            while True:
+                u = cad[-1]
+                sig = [w for w in ady[u] if clave(u, w) not in usadas]
+                if len(ady[u]) != 2 or not sig:
+                    break
+                usadas.add(clave(u, sig[0]))
+                cad.append(sig[0])
+            cerrada = cad[0] == cad[-1]
+            cadenas.append((cad[:-1] if cerrada else cad, cerrada))
+    return cadenas
+
+
+def _suavizar_sobre_piel(cuerpo, pts, cerrada, veces=6):
+    """Promedia la polilínea (quita los escalones de la subdivisión) y la vuelve a
+    asentar sobre la piel."""
+    for _ in range(veces):
+        n = len(pts)
+        if cerrada:
+            pts = [(pts[k - 1] + 2 * pts[k] + pts[(k + 1) % n]) / 4 for k in range(n)]
+        else:
+            pts = [pts[0]] + [(pts[k - 1] + 2 * pts[k] + pts[k + 1]) / 4
+                              for k in range(1, n - 1)] + [pts[-1]]
+    P, N = [], []
+    for p in pts:
+        ok, loc, nor, _ = cuerpo.closest_point_on_mesh(p)
+        if ok:
+            P.append(loc)
+            N.append(nor.normalized())
+    return P, N
+
+
+def surcos_de_cristal(cuerpo, ancho, hondo):
+    """Surco en la orilla de cada cristal: las aristas entre caras de vidrio y el resto."""
+    mats = [m.name if m else "" for m in cuerpo.data.materials]
+    bm = bmesh.new()
+    bm.from_mesh(cuerpo.data)
+
+    def es_vidrio(f):
+        return mats[f.material_index].startswith("vidrio")
+
+    aristas = [(e.verts[0].index, e.verts[1].index) for e in bm.edges
+               if len(e.link_faces) == 2
+               and es_vidrio(e.link_faces[0]) != es_vidrio(e.link_faces[1])]
+    co = [v.co.copy() for v in bm.verts]
+    bm.free()
+    hechas = 0
+    for cad, cerrada in _cadenas(aristas):
+        pts = [co[i] for i in cad]
+        largo = sum((pts[k + 1] - pts[k]).length for k in range(len(pts) - 1))
+        if largo < 0.15 or len(pts) < 6:
+            continue
+        P, N = _suavizar_sobre_piel(cuerpo, pts, cerrada)
+        ranura_3d(cuerpo, P, N, ancho, hondo, "negro", cerrada)
+        hechas += 1
+    print(f"  maqueta: {hechas} surcos de cristal")
+
+
+def surcos_de_puerta(cuerpo, ancho, hondo):
+    """Las mismas juntas que juntas_de_puerta(), pero grabadas en la piel."""
+    lado_xy = [(1.06, 0.30), (1.08, 0.40), (1.13, 0.52), (1.21, 0.66), (1.31, 0.80),
+               (1.43, 0.92), (1.56, 0.99)]
+    tras_xy = [(2.12, 0.99), (2.16, 0.90), (2.19, 0.76), (2.19, 0.60), (2.16, 0.45),
+               (2.14, 0.30), (1.06, 0.30)]
+    techo_xz = [(1.50, 0.50), (1.55, 0.40), (1.60, 0.28), (1.66, 0.18), (1.72, 0.15),
+                (1.98, 0.15), (2.04, 0.18), (2.10, 0.28), (2.15, 0.40), (2.19, 0.50)]
+    for lado in (1, -1):
+        for linea in (lado_xy, tras_xy):
+            P, N = [], []
+            for (x, y) in _densificar(linea, 0.01):
+                pos, nor = rayo(cuerpo, (x, y, lado * 2.0), (0, 0, -lado))
+                if pos is not None:
+                    P.append(pos)
+                    N.append(nor if nor.z * lado > 0 else -nor)
+            if len(P) > 3:
+                ranura_3d(cuerpo, P, N, ancho, hondo, "negro")
+        P, N = [], []
+        for (x, z) in _densificar(techo_xz, 0.01):
+            pos, nor = rayo(cuerpo, (x, 2.0, lado * z), (0, -1, 0))
+            if pos is not None:
+                P.append(pos)
+                N.append(nor if nor.y > 0 else -nor)
+        if len(P) > 3:
+            ranura_3d(cuerpo, P, N, ancho, hondo, "negro")
+
+
+def agujeros_de_eje(cuerpo, d):
+    """Agujero pasante en z en cada eje, en GOTA (punta arriba): impreso acostado, el
+    techo de un agujero redondo horizontal se cuelga; con punta a 45° no."""
+    r = d / 2
+    perfil = [(r * cos(math.radians(a)), r * sin(math.radians(a))) for a in range(-225, 46, 15)]
+    perfil.append((0.0, r * math.sqrt(2)))
+    m = len(perfil)
+    for w in J["ruedas"][::2]:
+        vs = []
+        for z in (-1.2, 1.2):
+            vs += [(w["x"] + u, w["R"] + v, z) for (u, v) in perfil]
+        fs = [(k, (k + 1) % m, m + (k + 1) % m, m + k) for k in range(m)]
+        fs += [tuple(range(m))[::-1], tuple(range(m, 2 * m))]
+        ob = objeto("_eje", vs, fs, MAT["pozo"], modelo=False)
+        normales(ob)
+        CORTADORES.append(ob)
+
+
+CORTADORES = None
+
+
+def _stl(ob, ruta):
+    for o in bpy.context.view_layer.objects:
+        o.select_set(False)
+    activar(ob)
+    bpy.ops.wm.stl_export(filepath=ruta, export_selected_objects=True, global_scale=1000.0)
+
+
+def maqueta(cuerpo, escala):
+    """Piezas de la maqueta a 1:escala para calculos/maqueta.py: la piel, lo que se le
+    SUMA (splitter, aletas del difusor engrosadas) y lo que se le RESTA (juntas de
+    puerta, orilla de cristales, agujeros de eje), cada una en su STL en mm reales.
+    Los booleanos los hace manifold3d: el solver exacto de Blender, sobre la piel ya
+    cortada, dejaba aristas abiertas y en una unión hasta BAJABA el volumen."""
+    global CORTADORES
+    mm = escala / 1000.0                      # 1 mm a escala, en metros reales
+    d = os.path.join(CAD, f"_maqueta-1a{escala}")
+    os.makedirs(d, exist_ok=True)
+    for f in os.listdir(d):
+        os.remove(os.path.join(d, f))
+    _stl(cuerpo, os.path.join(d, "piel.stl"))
+    sumar = [o for o in MODELO if o.name.startswith("Splitter")]
+    sumar += difusor(cuerpo, espesor=max(0.014, ALETA_MIN_MM * mm), modelo=False)
+    for i, o in enumerate(sumar):
+        _stl(o, os.path.join(d, f"sumar-{i:02d}.stl"))
+    CORTADORES = []
+    surcos_de_puerta(cuerpo, JUNTA_MM[0] * mm, JUNTA_MM[1] * mm)
+    surcos_de_cristal(cuerpo, CRISTAL_MM[0] * mm, CRISTAL_MM[1] * mm)
+    agujeros_de_eje(cuerpo, EJE_MM * mm)
+    for i, o in enumerate(CORTADORES):
+        _stl(o, os.path.join(d, f"restar-{o.name.split('.')[0].strip('_')}-{i:02d}.stl"))
+        borrar(o)
+    CORTADORES = None
+    json.dump({"escala": escala, "ruedas": J["ruedas"], "y_piso": Y_PISO,
+               "eje_mm": EJE_MM, "z_pozo": 0.615},
+              open(os.path.join(d, "datos.json"), "w", encoding="utf-8"), indent=1)
+    print(f"OK  {d}: piel + {len(sumar)} para sumar + {len(os.listdir(d)) - 2 - len(sumar)} para restar")
+
+
 def main():
     global CUERPO
     cuerpo = carroceria()
@@ -1075,11 +1381,12 @@ def main():
     pasos_de_rueda(cuerpo)
     branquias(cuerpo)
     boca_parrilla(cuerpo)
+    boca_difusor(cuerpo)
+    luces(cuerpo)
     limpiar(cuerpo)
     tapar_agujeros(cuerpo)
     suavizar_por_angulo(cuerpo, 40)
     juntas_de_puerta(cuerpo)
-    luces(cuerpo)
     malla_parrilla(cuerpo)
     splitter(cuerpo)
     difusor(cuerpo)
@@ -1095,6 +1402,8 @@ def main():
           f"piezas {len(MODELO)}")
     if "--sin-exportar" not in ARGS:
         exportar(cuerpo)
+    for esc in [int(e) for e in (arg("--maqueta") or "").split(",") if e]:
+        maqueta(cuerpo, esc)
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(CAD, "carro-v3.blend"))
     print("OK  cad/carro-v3.blend")
     if "--sin-render" not in ARGS:

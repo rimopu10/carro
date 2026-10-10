@@ -16,3 +16,7 @@ cad/carro-luces.glb
 # Mallas de IA (Hunyuan3D, licencia NO comercial): solo referencia local
 cad/gem-mv*.glb
 cad/referencia-ia.glb
+
+# piezas intermedias de la maqueta (las regenera render/carro_v3.py --maqueta N)
+cad/_maqueta-*/
+cad/maqueta-*-blender.stl

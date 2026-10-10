@@ -161,7 +161,9 @@ K_ARISTA = tabla([(-0.134, 0.85), (-0.05, 0.90), (0.2, 0.93), (0.55, 0.92), (1.0
 Y_DLO = tabla([(0.75, 0.755), (0.95, 0.785), (1.2, 0.80), (1.6, 0.80), (2.0, 0.80),
                (2.3, 0.80), (2.55, 0.79), (2.9, 0.75)])
 # hondonada del cofre entre salpicaderas (m por debajo del lomo central)
-VALLE = tabla([(-0.134, 0.0), (0.0, 0.015), (0.25, 0.04), (0.55, 0.05), (0.8, 0.035),
+# 2026-10-09: más honda (0.05 -> 0.07) para que las salpicaderas se lean como dos lomos
+# sobre el cofre, como en la lámina; con 0.05 el frente se veía como una burbuja
+VALLE = tabla([(-0.134, 0.0), (0.0, 0.02), (0.25, 0.055), (0.55, 0.07), (0.8, 0.045),
                (0.95, 0.0), (2.3, 0.0), (2.6, 0.035), (2.9, 0.05), (3.1, 0.025),
                (3.246, 0.0)])
 X_CANOPY0, X_CANOPY1 = 0.75, 2.52     # de la planta medida
@@ -257,6 +259,8 @@ def crease_anillo(i, x):
         return 0.95 if (x < 0.95 or x > 2.35) else 0.65
     if i == 8:                                       # base del cristal
         return 0.95 if z_cristal(x) > 0.05 else 0.0
+    if i == 9 and z_cristal(x) <= 0.05 and x < 0.85:
+        return 0.45                                  # flecha del cofre (borde del lomo central)
     if i == 10:
         return 0.30 if z_cristal(x) > 0.05 else 0.0
     return 0.0

@@ -69,9 +69,12 @@ voladizos 684 / 566 mm · piso de la piel a 125 mm.
 | Vista | IoU | Por qué no es 1 |
 |---|---|---|
 | cenital | 0.967 | — |
-| trasera | 0.877 | la referencia lleva llantas de ~255 mm que llenan el ancho abajo; las nuestras son 175/70 |
-| frontal | 0.870 | ídem, y el labio de la referencia baja a ~50 mm del suelo; el nuestro a 125 |
-| lateral | 0.849 | el parabrisas sube por el chasis (abajo) y las llantas son más chicas que las de la lámina |
+| trasera | 0.867 | la referencia lleva llantas de ~255 mm que llenan el ancho abajo; las nuestras son 175/70 |
+| frontal | 0.860 | ídem, y el labio de la referencia baja a ~50 mm del suelo; el nuestro a 125 |
+| lateral | 0.850 | el parabrisas sube por el chasis (abajo) y las llantas son más chicas que las de la lámina |
+
+(2026-10-09: frontal y trasera bajan 0.01 porque los espejos nuevos son más bajos y
+chicos que la paleta anterior; no es la carrocería.)
 
 **Conflicto lámina vs chasis (no se esconde):** el techo medido en la lámina queda por
 debajo del nodo `dash_hi` (0.95, 0.72) y del pilar A hacia `hdr` (1.45, 0.95). Gana
@@ -86,6 +89,34 @@ el chasis, validado por FEM con la gaviota:
 
 Es el mismo conflicto reportado el 2026-08-18; con la línea medida de la lámina crece
 de 101 a 108 mm porque ahora el techo va donde la lámina lo pide en vez de a ojo.
+
+## Pulido del 2026-10-09
+
+Revisado contra la lámina en acercamientos (`--vistas detalle_frente,detalle_cola`):
+
+| Qué | Antes | Ahora |
+|---|---|---|
+| Pintura | clearcoat 1.0 tipo espejo: cada ondita de la piel se leía como defecto | satinada (el doc maestro pide wrap satinado) |
+| Luces delanteras | calcas envueltas por proyección frontal, de 35-55 mm y con la orilla mordida en las esquinas de la nariz | **surcos de 22 mm** barridos sobre la piel con la normal de la piel (`ranura_sobre_piel`); ejes trazados sobre la lámina |
+| Cola | todo lo que quedaba bajo la barra pintado de negro por altura (escalones de malla); barra sin tramo central | **difusor como bolsillo en V** real que deja en color carrocería las caderas y una V alrededor del triángulo; barra de tres tramos con gancho; triángulo como bolsillo con centro de malla |
+| Cofre | burbuja: valle de 50 mm entre salpicaderas | valle de 70 mm y crease 0.45 en el anillo 9: dos lomos y una flecha central |
+| Faldón | banda negra de 170 mm entre ruedas | color carrocería; el negro queda en el canto del piso |
+| Splitter | contorno dentado por rayos, 13 mm bajo el piso | suavizado y con la cara inferior en el plano del piso |
+| Rines / espejos | cromo / paleta redonda en poste | grafito satinado / gota baja sobre brazo corto |
+
+`bolsillo()` ahora hunde el fondo a lo largo del eje de proyección, no por la normal:
+con la normal el contorno se corría de lado en las zonas curvas y la orilla salía
+ondulada. `verificar_piel_v3.py` da los mismos 11 conflictos del arco/cabecera (el
+pendiente #0) y nada nuevo por el cofre más hondo.
+
+## Maqueta impresa (2026-10-09)
+
+`render/carro_v3.py --maqueta 16,12` + `calculos/maqueta.py` → `impresion/` (ver
+`impresion/LEEME.md`). 1:16 en una pieza de 211 mm para la Ender 3 V3 SE; 1:12 en dos
+piezas cortadas sobre la junta trasera de la puerta con pernos de filamento. Ruedas,
+arandelas y una regla de tolerancias para elegir el agujero del cubo. Los booleanos de
+la pieza imprimible van en manifold3d: el solver exacto de Blender, aplicado otra vez
+sobre la piel ya cortada, dejaba aristas abiertas y una unión le BAJABA el volumen.
 
 ## Auditoría numérica (2026-09-05, `calculos/verificar_piel_v3.py`)
 
