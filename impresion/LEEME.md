@@ -1,3 +1,25 @@
+# Juguete de la carrocería de Tripo (la nueva, 2026-10-09)
+
+Sale de `calculos/tripo_juguete.py` (ver ahí cómo se cierran los cristales y se rellena
+la cabina). Medidas reales de esa carrocería: 3.95 × 1.79 × 1.11 m, batalla 2.13.
+
+| Archivo | Qué es | Tamaño |
+|---|---|---|
+| `juguete-tripo-1a20.stl` | todo en una pieza, ruedas fijas | 198 × 89 × 56 mm, ~155 g |
+| `juguete-tripo-1a20-rodante-carroceria.stl` | carrocería sin ruedas, con ejes en gota de 2.1 | 198 × 89 × 52 mm, ~140 g |
+| `juguete-tripo-1a20-rodante-ruedas-x4.stl` | las 4 ruedas (rin de Tripo + llanta lisa), cara interior abajo | Ø30 × 14 mm c/u |
+| `juguete-tripo-1a64.stl` | tamaño Hot Wheels, una pieza | 62 × 28 × 17 mm, ~10 g |
+
+**Rodante:** dos ejes de filamento 1.75 de 87 mm. El eje gira libre en la carrocería y
+entra a presión en el cubo de la rueda (1.85). Antes, imprime
+`prueba-tolerancias-ejes.stl`: si el cubo bueno no es 1.85, cámbialo en
+`ruedas_que_giran(cubo_mm=...)`. Hay 0.75 mm de aire entre la llanta y el pozo.
+
+**Carrocería:** imprímela sobre su piso, con soportes de árbol que solo toquen la cama
+(debajo de la nariz, de la cola y de los pozos), y capas de 0.12 mm en el techo.
+
+---
+
 # Maqueta impresa — vista previa del diseño (antes del RC)
 
 Para **Ender 3 V3 SE** (cama 220 × 220 × 250, boquilla 0.4) en PLA. Todo sale de la

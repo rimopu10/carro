@@ -87,6 +87,63 @@ def rellenar_cabina(M, paso=10.0, solape=5.0):
     return M + relleno, n
 
 
+# Ruedas de la carrocería de Tripo (medidas sobre el sólido real, 2026-10-09, histograma
+# radial sobre el eje): centro a y = 300; la rodadura termina en ~300 mm de radio (Ø600,
+# rin ~17") y el forro del pozo empieza en ~308, casi rozándola (el vóxel de 4 mm los
+# funde). Se corta la rueda a 303 y el pozo se abre a 300 + holgura. La llanta ocupa
+# |z| 616-883 mm; el arco de la salpicadera queda a ~340 mm del eje.
+EJES_X = (550.0, 2680.0)
+Y_EJE, R_LLANTA, R_CORTE = 300.0, 297.0, 303.0
+R_RIN = 228.0                   # hasta aquí llegan los rayos (perfil lateral, rin ~17")
+Z_INT, Z_EXT = 616.0, 883.0
+
+
+def ruedas_que_giran(M, esc, eje_mm=2.1, cubo_mm=1.85):
+    """Separa las 4 ruedas para que giren. Todo se corta a escala real pero las
+    holguras y los agujeros se fijan en mm A ESCALA (lo que mide la pieza impresa):
+    0.75 mm de aire entre llanta y pozo, eje de filamento 1.75 que gira libre en la
+    carrocería (agujero en gota de 2.1) y entra a presión en el cubo (1.85)."""
+    mm = float(esc)                                   # 1 mm a escala, en mm reales
+    holgura = 0.75 * mm
+    ruedas, cuerpo = [], M
+    for x in EJES_X:
+        for lado in (1, -1):
+            z0 = Z_INT - 0.5 * holgura
+            cil = mf.Manifold.cylinder(Z_EXT + 40 - z0, R_CORTE, R_CORTE, 128)
+            hueco = mf.Manifold.cylinder(1200, R_LLANTA + holgura, R_LLANTA + holgura, 128)
+            if lado > 0:
+                cil, hueco = cil.translate([x, Y_EJE, z0]), hueco.translate([x, Y_EJE, Z_INT - holgura])
+            else:
+                cil = cil.translate([x, Y_EJE, -(Z_EXT + 40)])
+                hueco = hueco.translate([x, Y_EJE, -(Z_INT - holgura) - 1200])
+            # El forro del pozo va casi rozando la llanta y el vóxel los fundió en varios
+            # puntos, sin un radio de corte limpio entre los dos. Así que del modelo de
+            # Tripo sólo se toma el RIN (rayos, disco, centro: r < R_RIN, donde no hay
+            # forro) y la llanta se rehace limpia por revolución con las mismas medidas.
+            rin = mf.Manifold.cylinder(Z_EXT + 40 - z0, R_RIN, R_RIN, 128)
+            rin = rin.translate([x, Y_EJE, z0] if lado > 0 else [x, Y_EJE, -(Z_EXT + 40)])
+            pedazos = (M ^ rin).decompose()
+            rin = max(pedazos, key=lambda p: p.volume())
+            w = Z_EXT - Z_INT
+            h = 0.06 * w                                            # hombro redondeado
+            perfil = [(R_RIN - 6, 0), (R_LLANTA - h, 0), (R_LLANTA - h * 0.3, h * 0.3),
+                      (R_LLANTA, h), (R_LLANTA, w - h), (R_LLANTA - h * 0.3, w - h * 0.3),
+                      (R_LLANTA - h, w), (R_RIN - 6, w)]
+            llanta = mf.Manifold.revolve(mf.CrossSection([perfil]), 160)
+            llanta = llanta.translate([x, Y_EJE, Z_INT] if lado > 0 else [x, Y_EJE, -Z_EXT])
+            ruedas.append((x, lado, rin + llanta))
+            cuerpo = cuerpo - hueco
+    # ejes: gota (punta arriba) de lado a lado, a la altura del centro de la llanta
+    from maqueta import gota
+    for x in EJES_X:
+        cuerpo = cuerpo - gota(eje_mm * mm, 2400.0, eje="z").translate([x, Y_EJE, 0])
+    cubos = []
+    for x, lado, r in ruedas:
+        agujero = mf.Manifold.cylinder(800, cubo_mm * mm / 2, cubo_mm * mm / 2, 48).translate([x, Y_EJE, -400])
+        cubos.append((x, lado, r - agujero))
+    return cuerpo, cubos
+
+
 def solo_cascaron_exterior(M):
     """Quita los vacíos interiores (la cabina que quedó encerrada) y las astillas."""
     tm = a_trimesh(M)
@@ -98,6 +155,8 @@ def solo_cascaron_exterior(M):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--escalas", default="20,64")
+    ap.add_argument("--rodante-hasta", type=int, default=32,
+                    help="hasta qué escala se hace la versión con ruedas que giran (1:64 es muy chica)")
     a = ap.parse_args()
     tm = trimesh.load(SOLIDO)
     tm = max(tm.split(only_watertight=False), key=lambda p: p.volume)
@@ -111,12 +170,30 @@ def main():
           f"{M.volume()/1e9:.3f} m3; {quitados} vacíos/astillas fuera")
     for esc in [int(e) for e in a.escalas.split(",")]:
         k = 1.0 / esc
-        p = a_cama(M.scale([k, k, k]))
-        nom = f"juguete-tripo-1a{esc}.stl"
-        cabe, g = reporte(nom, p)
-        guardar(p, nom)
-        if not cabe:
-            print(f"   ! no cabe en la cama de {CAMA_MM:.0f} mm (margen {MARGEN_MM:.0f})")
+        piezas = [(f"juguete-tripo-1a{esc}.stl", a_cama(M.scale([k, k, k])))]
+        if esc <= a.rodante_hasta:
+            cuerpo, ruedas = ruedas_que_giran(M, esc)
+            piezas.append((f"juguete-tripo-1a{esc}-rodante-carroceria.stl", a_cama(cuerpo.scale([k, k, k]))))
+            # las 4 ruedas acostadas (cara interior abajo), en 2 x 2 sobre la cama
+            juego = mf.Manifold()
+            d = 2 * R_LLANTA * k + 4
+            for i, (x, lado, r) in enumerate(ruedas):
+                r = r.translate([-x, -Y_EJE, 0]).scale([k, k, k])
+                if lado < 0:                       # cara interior hacia -z -> girar
+                    r = r.rotate([180, 0, 0])
+                lo = r.bounding_box()
+                r = r.translate([(i % 2) * d, (i // 2) * d, -lo[2]])
+                juego = juego + r
+            piezas.append((f"juguete-tripo-1a{esc}-rodante-ruedas-x4.stl", juego))
+        for nom, p in piezas:
+            cabe, g = reporte(nom, p)
+            guardar(p, nom)
+            if not cabe:
+                print(f"   ! no cabe en la cama de {CAMA_MM:.0f} mm (margen {MARGEN_MM:.0f})")
+        if esc <= a.rodante_hasta:
+            eje = 2 * Z_EXT * k - 1
+            print(f"   ejes 1:{esc}: dos tramos de filamento 1.75 de {eje:.0f} mm; "
+                  f"probar antes el cubo con impresion/prueba-tolerancias-ejes.stl")
 
 
 if __name__ == "__main__":
