@@ -20,3 +20,6 @@ cad/referencia-ia.glb
 # piezas intermedias de la maqueta (las regenera render/carro_v3.py --maqueta N)
 cad/_maqueta-*/
 cad/maqueta-*-blender.stl
+
+# salidas de Tripo (mallas pesadas, se re-descargan por tarea)
+ref/tripo/*/
