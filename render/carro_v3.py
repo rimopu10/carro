@@ -1360,6 +1360,8 @@ def maqueta(cuerpo, escala):
     sumar += difusor(cuerpo, espesor=max(0.014, ALETA_MIN_MM * mm), modelo=False)
     for i, o in enumerate(sumar):
         _stl(o, os.path.join(d, f"sumar-{i:02d}.stl"))
+        if o not in MODELO:                   # las aletas engrosadas no se quedan en la escena
+            borrar(o)
     CORTADORES = []
     surcos_de_puerta(cuerpo, JUNTA_MM[0] * mm, JUNTA_MM[1] * mm)
     surcos_de_cristal(cuerpo, CRISTAL_MM[0] * mm, CRISTAL_MM[1] * mm)
