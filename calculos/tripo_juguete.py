@@ -263,9 +263,18 @@ def solo_cascaron_exterior(M):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--escalas", default="20,64")
+    ap.add_argument("--impresora", default=None,
+                    help="perfil de impresion/impresoras/; sin él, medidas de diseño en impresion/")
     ap.add_argument("--rodante-hasta", type=int, default=32,
                     help="hasta qué escala se hace la versión con ruedas que giran (1:64 es muy chica)")
     a = ap.parse_args()
+    import maqueta as Q
+    from impresora import cargar as perfil_de, util_mm
+    pf = perfil_de(a.impresora)
+    Q.SALIDA, Q.CAMA_MM = pf["salida"], float(pf["cama_mm"][0])
+    Q.MARGEN_MM = float(pf["cama_mm"][0]) - util_mm(pf)
+    comp = pf["compensa_agujero_mm"]
+    print(f"impresora: {pf['nombre']}  (agujeros +{comp} mm, pieza máx. {util_mm(pf):.0f} mm)")
     tm = trimesh.load(SOLIDO)
     tm = max(tm.split(only_watertight=False), key=lambda p: p.volume)
     M = a_manifold(tm)
@@ -280,7 +289,7 @@ def main():
         k = 1.0 / esc
         piezas = [(f"juguete-tripo-1a{esc}.stl", a_cama(M.scale([k, k, k])))]
         if esc <= a.rodante_hasta:
-            cuerpo, ruedas = ruedas_que_giran(M, esc)
+            cuerpo, ruedas = ruedas_que_giran(M, esc, eje_mm=2.1 + comp, cubo_mm=1.85 + comp)
             piezas.append((f"juguete-tripo-1a{esc}-rodante-carroceria.stl", a_cama(cuerpo.scale([k, k, k]))))
             # las 4 ruedas acostadas (cara interior abajo), en 2 x 2 sobre la cama
             juego = mf.Manifold()

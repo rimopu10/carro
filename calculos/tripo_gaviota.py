@@ -17,7 +17,10 @@ Diferencias con calculos/tripo_juguete.py (el de una pieza):
     nudillo de la puerta al centro, pasador de filamento 1.75 metido por la cara
     delantera del nudillo de adelante, que asoma sobre el techo.
 
-    python calculos/tripo_gaviota.py [--escala 20]
+    python calculos/tripo_gaviota.py [--escala 20] [--impresora ender3v3se]
+
+Con --impresora se leen impresion/impresoras/NOMBRE.json (holgura de puerta, compensación
+de agujeros, brim) y todo sale en impresion/NOMBRE/; sin ella, medidas de diseño.
 
 Salida en impresion/ (piezas acostadas para la cama) y en cad/_gaviota-1aN/ (las mismas
 piezas en su lugar, para armar la escena de Blender con render/abrir_gaviota.py).
@@ -170,8 +173,8 @@ def region_puerta(lado, o, seccion):
     return prisma_puerta(lado, o, seccion) ^ (techo + costado)
 
 
-def puertas_gaviota(cuerpo, esc):
-    g = HOLGURA_MM * esc / 2
+def puertas_gaviota(cuerpo, esc, holgura_mm=HOLGURA_MM, comp_mm=0.0):
+    g = holgura_mm * esc / 2
     R = R_NUDILLO
     (b1a, b1b), (b2a, b2b) = NUDILLOS_CARROCERIA
     d0, d1 = NUDILLO_PUERTA
@@ -196,8 +199,8 @@ def puertas_gaviota(cuerpo, esc):
         r_c = (region_puerta(lado, +g, SECCION) - cil(b1a - 50, b1b, R - g) - cil(b2a, b2b + 50, R - g))             + cil(b1b, b2a, R + g)
         resto = (cuerpo - r_c) + nucleo(b1a, b1b) + nucleo(b2a, b2b)
         # pasador: fijo en la carrocería, libre en la puerta
-        resto = resto - cil(X_ENTRADA_PASADOR, b2b - 2 * esc, PASADOR_FIJO_MM * esc / 2)
-        puerta = puerta - cil(d0 - 10, d1 + 10, PASADOR_LIBRE_MM * esc / 2)
+        resto = resto - cil(X_ENTRADA_PASADOR, b2b - 2 * esc, (PASADOR_FIJO_MM + comp_mm) * esc / 2)
+        puerta = puerta - cil(d0 - 10, d1 + 10, (PASADOR_LIBRE_MM + comp_mm) * esc / 2)
         cuerpo = resto
         puerta = max(puerta.decompose(), key=lambda p: p.volume())
         puertas.append((lado, puerta))
@@ -218,8 +221,18 @@ def choques(cuerpo, puertas, angulos=(15, 30, 45, 60, 65)):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--escala", type=int, default=20)
+    ap.add_argument("--impresora", default=None)
     a = ap.parse_args()
-    esc = a.escala
+    esc, impresora = a.escala, a.impresora      # `a` se reusa abajo en el lazo de choques
+    import maqueta as Q
+    from impresora import cargar as perfil_de, util_mm
+    pf = perfil_de(impresora)
+    Q.SALIDA, Q.CAMA_MM = pf["salida"], float(pf["cama_mm"][0])
+    Q.MARGEN_MM = float(pf["cama_mm"][0]) - util_mm(pf)
+    comp = pf["compensa_agujero_mm"]
+    holgura = pf["holgura_puerta_mm"] or HOLGURA_MM
+    print(f"impresora: {pf['nombre']}  (holgura puerta {holgura} mm, agujeros +{comp} mm, "
+          f"pieza máx. {util_mm(pf):.0f} mm con brim {pf['brim_mm']} mm)")
     k = 1.0 / esc
     tm = trimesh.load(SOLIDO)
     tm = max(tm.split(only_watertight=False), key=lambda p: p.volume)
@@ -227,13 +240,13 @@ def main():
     from tripo_juguete import cerrar_aberturas
     M, n = cerrar_aberturas(M, lamina=CRISTAL_MM * esc)
     print(f"cristal: lámina de {CRISTAL_MM} mm a escala en {n} cortes; cabina hueca con el interior de Tripo")
-    cuerpo, ruedas = ruedas_que_giran(M, esc)
-    cuerpo, puertas = puertas_gaviota(cuerpo, esc)
+    cuerpo, ruedas = ruedas_que_giran(M, esc, eje_mm=2.1 + comp, cubo_mm=1.85 + comp)
+    cuerpo, puertas = puertas_gaviota(cuerpo, esc, holgura, comp)
     cuerpo = max(cuerpo.decompose(), key=lambda p: p.volume())
     for (lado, a), v in choques(cuerpo, puertas).items():
         print(f"   puerta {'der' if lado > 0 else 'izq'} abierta {a:>4.0f}°: choque {v/1e3:8.1f} cm3 reales")
 
-    ens = os.path.join(RAIZ, "cad", f"_gaviota-1a{esc}")
+    ens = os.path.join(RAIZ, "cad", f"_gaviota-1a{esc}" + (f"-{impresora}" if impresora else ""))
     os.makedirs(ens, exist_ok=True)
 
     def en_su_lugar(m, nom):
@@ -266,9 +279,24 @@ def main():
         lo = r.bounding_box()
         juego = juego + r.translate([(i % 2) * d, (i // 2) * d, -lo[2]])
     piezas.append((f"gaviota-1a{esc}-ruedas-x4.stl", juego))
+    if impresora:
+        # placa 2: puertas y ruedas juntas, separadas lo bastante para que no se junten
+        # los brims (2·brim + 4 mm)
+        sep = 2 * pf["brim_mm"] + 4
+        placa, x = mf.Manifold(), 0.0
+        for nom, p in piezas[1:]:
+            lo = p.bounding_box()
+            placa = placa + p.translate([x - lo[0], -(lo[1] + lo[4]) / 2, 0])
+            x += lo[3] - lo[0] + sep
+        lo = placa.bounding_box()
+        placa = placa.translate([-(lo[0] + lo[3]) / 2, 0, 0])
+        piezas = [(f"gaviota-1a{esc}-placa1-carroceria.stl", piezas[0][1]),
+                  (f"gaviota-1a{esc}-placa2-puertas-y-ruedas.stl", placa)]
     for nom, p in piezas:
-        reporte(nom, p)
+        cabe, _ = reporte(nom, p)
         guardar(p, nom)
+        if not cabe:
+            print(f"   ! {nom} no cabe con el brim: separar las piezas en dos placas")
     largo_pasador = (NUDILLOS_CARROCERIA[1][1] - 2 * esc - X_ENTRADA_PASADOR) * k
     print(f"   pasadores de bisagra: 2 tramos de filamento 1.75 de {largo_pasador:.0f} mm, "
           f"entran por un agujerito en la cabecera del parabrisas (luego una gota de pintura)")

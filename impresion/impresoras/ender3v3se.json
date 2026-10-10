@@ -1,0 +1,15 @@
+{
+  "nombre": "Ender 3 V3 SE (la de andre), PLA, boquilla 0.4",
+  "fuente": "impresora3d.md (Descargas, 2026-10-09): perfiles OrcaSlicer corregidos en la PC Pop!_OS, carpeta perfiles_orcaslicer/",
+  "cama_mm": [220, 220, 250],
+  "brim_mm": 5,
+  "margen_mm": 2,
+  "boquilla_mm": 0.4,
+  "compensa_agujero_mm": 0.10,
+  "holgura_puerta_mm": 0.40,
+  "notas": [
+    "brim auto de 5 mm: sin brim una pieza se despegó al 80 %; la pieza debe caber en cama - 2·brim - 2·margen",
+    "flujo 1.05 y bordes abultados (mecánico, sin resolver): agujeros +0.1 mm y holgura de puerta 0.4 en vez de 0.3",
+    "laminar SIEMPRE con machine_fixed.json + process_fixed2.json + filament_fixed.json, y pasar el G-code por microSD (nunca USB)"
+  ]
+}
