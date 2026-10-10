@@ -30,6 +30,16 @@ def cargar(nombre=None):
     return p
 
 
+DISENO = {"cubo_rueda": 1.85, "eje_carroceria": 2.1, "pasador_carroceria": 1.90, "pasador_puerta": 2.1}
+
+
+def agujero(p, clave):
+    """Diámetro del agujero `clave` en mm a escala: el medido en la prueba de la
+    impresora (agujeros_mm) si lo hay; si no, el de diseño + compensa_agujero_mm."""
+    medidos = p.get("agujeros_mm") or {}
+    return medidos.get(clave, DISENO[clave] + p.get("compensa_agujero_mm", 0.0))
+
+
 def util_mm(p):
     """Lo más grande que cabe en la cama contando el brim y un margen por lado."""
     return p["cama_mm"][0] - 2 * p["brim_mm"] - 2 * p["margen_mm"]

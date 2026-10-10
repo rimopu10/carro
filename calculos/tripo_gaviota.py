@@ -173,7 +173,7 @@ def region_puerta(lado, o, seccion):
     return prisma_puerta(lado, o, seccion) ^ (techo + costado)
 
 
-def puertas_gaviota(cuerpo, esc, holgura_mm=HOLGURA_MM, comp_mm=0.0):
+def puertas_gaviota(cuerpo, esc, holgura_mm=HOLGURA_MM, fijo_mm=PASADOR_FIJO_MM, libre_mm=PASADOR_LIBRE_MM):
     g = holgura_mm * esc / 2
     R = R_NUDILLO
     (b1a, b1b), (b2a, b2b) = NUDILLOS_CARROCERIA
@@ -199,8 +199,8 @@ def puertas_gaviota(cuerpo, esc, holgura_mm=HOLGURA_MM, comp_mm=0.0):
         r_c = (region_puerta(lado, +g, SECCION) - cil(b1a - 50, b1b, R - g) - cil(b2a, b2b + 50, R - g))             + cil(b1b, b2a, R + g)
         resto = (cuerpo - r_c) + nucleo(b1a, b1b) + nucleo(b2a, b2b)
         # pasador: fijo en la carrocería, libre en la puerta
-        resto = resto - cil(X_ENTRADA_PASADOR, b2b - 2 * esc, (PASADOR_FIJO_MM + comp_mm) * esc / 2)
-        puerta = puerta - cil(d0 - 10, d1 + 10, (PASADOR_LIBRE_MM + comp_mm) * esc / 2)
+        resto = resto - cil(X_ENTRADA_PASADOR, b2b - 2 * esc, fijo_mm * esc / 2)
+        puerta = puerta - cil(d0 - 10, d1 + 10, libre_mm * esc / 2)
         cuerpo = resto
         puerta = max(puerta.decompose(), key=lambda p: p.volume())
         puertas.append((lado, puerta))
@@ -229,9 +229,8 @@ def main():
     pf = perfil_de(impresora)
     Q.SALIDA, Q.CAMA_MM = pf["salida"], float(pf["cama_mm"][0])
     Q.MARGEN_MM = float(pf["cama_mm"][0]) - util_mm(pf)
-    comp = pf["compensa_agujero_mm"]
     holgura = pf["holgura_puerta_mm"] or HOLGURA_MM
-    print(f"impresora: {pf['nombre']}  (holgura puerta {holgura} mm, agujeros +{comp} mm, "
+    print(f"impresora: {pf['nombre']}  (holgura puerta {holgura} mm, agujeros {'de la prueba' if pf.get('agujeros_mm') else 'de diseño'}, "
           f"pieza máx. {util_mm(pf):.0f} mm con brim {pf['brim_mm']} mm)")
     k = 1.0 / esc
     tm = trimesh.load(SOLIDO)
@@ -240,8 +239,13 @@ def main():
     from tripo_juguete import cerrar_aberturas
     M, n = cerrar_aberturas(M, lamina=CRISTAL_MM * esc)
     print(f"cristal: lámina de {CRISTAL_MM} mm a escala en {n} cortes; cabina hueca con el interior de Tripo")
-    cuerpo, ruedas = ruedas_que_giran(M, esc, eje_mm=2.1 + comp, cubo_mm=1.85 + comp)
-    cuerpo, puertas = puertas_gaviota(cuerpo, esc, holgura, comp)
+    from impresora import agujero
+    cuerpo, ruedas = ruedas_que_giran(M, esc, eje_mm=agujero(pf, "eje_carroceria"),
+                                      cubo_mm=agujero(pf, "cubo_rueda"))
+    cuerpo, puertas = puertas_gaviota(cuerpo, esc, holgura, agujero(pf, "pasador_carroceria"),
+                                      agujero(pf, "pasador_puerta"))
+    print("   agujeros (mm a escala): " + ", ".join(
+        f"{k} {agujero(pf, k):.2f}" for k in ("cubo_rueda", "eje_carroceria", "pasador_carroceria", "pasador_puerta")))
     cuerpo = max(cuerpo.decompose(), key=lambda p: p.volume())
     for (lado, a), v in choques(cuerpo, puertas).items():
         print(f"   puerta {'der' if lado > 0 else 'izq'} abierta {a:>4.0f}°: choque {v/1e3:8.1f} cm3 reales")

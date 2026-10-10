@@ -273,8 +273,7 @@ def main():
     pf = perfil_de(a.impresora)
     Q.SALIDA, Q.CAMA_MM = pf["salida"], float(pf["cama_mm"][0])
     Q.MARGEN_MM = float(pf["cama_mm"][0]) - util_mm(pf)
-    comp = pf["compensa_agujero_mm"]
-    print(f"impresora: {pf['nombre']}  (agujeros +{comp} mm, pieza máx. {util_mm(pf):.0f} mm)")
+    print(f"impresora: {pf['nombre']}  (agujeros {'de la prueba' if pf.get('agujeros_mm') else 'de diseño'}, pieza máx. {util_mm(pf):.0f} mm)")
     tm = trimesh.load(SOLIDO)
     tm = max(tm.split(only_watertight=False), key=lambda p: p.volume)
     M = a_manifold(tm)
@@ -289,7 +288,9 @@ def main():
         k = 1.0 / esc
         piezas = [(f"juguete-tripo-1a{esc}.stl", a_cama(M.scale([k, k, k])))]
         if esc <= a.rodante_hasta:
-            cuerpo, ruedas = ruedas_que_giran(M, esc, eje_mm=2.1 + comp, cubo_mm=1.85 + comp)
+            from impresora import agujero
+            cuerpo, ruedas = ruedas_que_giran(M, esc, eje_mm=agujero(pf, "eje_carroceria"),
+                                              cubo_mm=agujero(pf, "cubo_rueda"))
             piezas.append((f"juguete-tripo-1a{esc}-rodante-carroceria.stl", a_cama(cuerpo.scale([k, k, k]))))
             # las 4 ruedas acostadas (cara interior abajo), en 2 x 2 sobre la cama
             juego = mf.Manifold()
