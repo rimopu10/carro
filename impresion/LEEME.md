@@ -11,10 +11,12 @@
 
 **Armado:**
 1. Ruedas: dos ejes de filamento 1.75 de 87 mm (libres en la carrocería, a presión en las ruedas).
-2. Puertas: pon el nudillo de la puerta entre los dos nudillos del techo y mete por el
-   frente del nudillo delantero un tramo de filamento de **17 mm**. Entra justo en la
-   carrocería (1.9) y la puerta gira libre (2.1). Si queda flojo, una gota de pegamento
-   en la punta delantera.
+2. Puertas: la bisagra va OCULTA dentro del techo (por fuera sólo se ven las juntas).
+   Pon la puerta en su lugar, cerrada, y mete por el agujerito de la cabecera del
+   parabrisas (sobre el espinazo, uno por lado) un tramo de filamento de **24 mm**
+   hasta que tope. Entra justo en la carrocería (1.9) y la puerta gira libre (2.1).
+   Tapa el agujerito con una gota de pintura. La puerta abre hasta ~65° sin rozar
+   (verificado en `choques()`; más que eso, la piel del techo toca).
 
 **Impresión:** la carrocería lleva soportes de árbol también dentro de la cabina, bajo el
 techo; se sacan por los huecos de las puertas. La holgura puerta–carrocería es de

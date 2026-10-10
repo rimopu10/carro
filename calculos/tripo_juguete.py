@@ -62,6 +62,87 @@ def cerrar_invernadero(M, y_cintura=770.0, tramo=100.0, paso=50.0):
     return M + mf.Manifold.batch_boolean(cascos, mf.OpType.Add), len(cascos)
 
 
+def _area(p):
+    p = np.asarray(p)
+    return 0.5 * np.sum(p[:, 0] * np.roll(p[:, 1], -1) - np.roll(p[:, 0], -1) * p[:, 1])
+
+
+def cerrar_aberturas(M, lamina=None, paso=2.0, area_min=2.0e4, parabrisas=(880.0, 1450.0),
+                     tramo=60.0, paso_tramo=30.0):
+    """Cierra SOLO las aberturas que Tripo dejó sin cristal (ventanas laterales con la
+    cabina detrás, luneta, base del parabrisas) y no toca las curvas del diseño.
+
+    DÓNDE: en cada corte transversal (cada `paso` mm) se compara el contorno exterior
+    con su envolvente convexa por encima de la cintura; lo que hay entre los dos son
+    entradas. Una abertura lleva a la cabina y es grande (ventanas 23-37 dm2, luneta
+    4-14, base del parabrisas 4-6); una curva del diseño es una media luna poco honda
+    (la de detrás de la ventanita trasera no pasa de 1.4 dm2). Sólo cuentan las de más
+    de `area_min` mm2 (medido sobre el sólido real, 2026-10-09). En el tramo del
+    parabrisas cuenta todo: Tripo sí lo modeló, pero ondulado y con pedazos del tablero.
+
+    CON QUÉ SUPERFICIE: cascos convexos 3D por tramos de `tramo` mm traslapados (planos
+    lisos). Los cortes sólo dicen dónde; si la superficie saliera de los cortes, cada
+    corte la deja un poco distinta y el cristal sale rayado.
+
+    lamina=None: se rellena la abertura entera (juguete macizo). lamina=t (mm reales):
+    sólo una lámina de cristal de grueso t; la cabina queda hueca (el casco erosionado
+    se prolonga hasta el piso para no dejar una placa a la altura de la cintura)."""
+    A = np.array([[0, 1, 0, 0], [0, 0, 1, 0], [1, 0, 0, 0]], float)      # corte en (y, z)
+    B = np.array([[0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0]], float)      # de regreso
+    Ms = M.transform(A)
+    zonas = []
+    for x in np.arange(850.0, 3500.0, paso):
+        polys = Ms.slice(float(x)).to_polygons()
+        if not polys:
+            continue
+        y_cut = 748.0 if 850 < x < 2300 else 770.0
+        pts = np.vstack([np.asarray(p) for p in polys])
+        pts = pts[pts[:, 0] >= y_cut]
+        if len(pts) < 3:
+            continue
+        envolvente = mf.CrossSection.hull_points(pts)
+        if parabrisas[0] <= x <= parabrisas[1]:
+            zona = envolvente.offset(5.0, mf.JoinType.Round)
+        else:
+            exterior = mf.CrossSection([np.asarray(p) for p in polys if _area(p) > 0])
+            abiertas = [f for f in (envolvente - exterior).decompose() if f.area() > area_min]
+            if not abiertas:
+                continue
+            zona = mf.CrossSection.batch_boolean(abiertas, mf.OpType.Add).offset(5.0, mf.JoinType.Round)
+        zonas.append(mf.Manifold.extrude(zona, paso + 1.0).translate([0, 0, x - 0.5]))
+    if not zonas:
+        return M, 0
+    zona = mf.Manifold.batch_boolean(zonas, mf.OpType.Add).transform(B)
+
+    V = np.asarray(M.to_mesh().vert_properties)[:, :3]
+    corte = np.where((V[:, 0] > 850) & (V[:, 0] < 2300), 748.0, 770.0)
+    V = V[V[:, 1] >= corte]
+    cascos, huecos = [], []
+    # disco en el plano (y, z), no esfera: erosionar también a lo largo de x acortaría
+    # cada tramo 2t y los huecos dejarían costillas atravesadas en la cabina
+    bola = None
+    if lamina:
+        bola = mf.Manifold.cylinder(0.02, lamina, lamina, 24, True).transform(
+            np.array([[0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0]], float))
+    for x in np.arange(V[:, 0].min(), V[:, 0].max(), paso_tramo):
+        sel = V[(V[:, 0] >= x) & (V[:, 0] <= x + tramo)]
+        if len(sel) < 8:
+            continue
+        H = mf.Manifold.hull_points(sel.astype(np.float32))
+        cascos.append(H)
+        if bola is not None:
+            E = H.minkowski_difference(bola)
+            if not E.is_empty():
+                ev = np.asarray(E.to_mesh().vert_properties)[:, :3]
+                abajo = ev.copy()
+                abajo[:, 1] = 250.0
+                huecos.append(mf.Manifold.hull_points(np.vstack([ev, abajo]).astype(np.float32)))
+    H = mf.Manifold.batch_boolean(cascos, mf.OpType.Add)
+    if huecos:
+        H = H - mf.Manifold.batch_boolean(huecos, mf.OpType.Add)
+    return M + (H ^ zona), len(zonas)
+
+
 def rellenar_cabina(M, paso=10.0, solape=5.0):
     """La cabina bajo el cristal queda hueca y asomada al exterior por algún resquicio,
     así que no sale como vacío encerrado. Se rellena por dentro: en cada corte, cada
@@ -162,11 +243,11 @@ def main():
     tm = max(tm.split(only_watertight=False), key=lambda p: p.volume)
     M = a_manifold(tm)
     v0 = M.volume()
-    M, n = cerrar_invernadero(M)
+    M, n = cerrar_aberturas(M)
     M, nh = rellenar_cabina(M)
     M, quitados = solo_cascaron_exterior(M)
     print(f"cabina: {nh} huecos interiores rellenados")
-    print(f"cristales: invernadero cerrado en {n} tramos; volumen {v0/1e9:.3f} -> "
+    print(f"cristales: aberturas cerradas en {n} cortes; volumen {v0/1e9:.3f} -> "
           f"{M.volume()/1e9:.3f} m3; {quitados} vacíos/astillas fuera")
     for esc in [int(e) for e in a.escalas.split(",")]:
         k = 1.0 / esc

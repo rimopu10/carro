@@ -42,7 +42,6 @@ SOLIDO = os.path.join(RAIZ, "cad", "carroceria-tripo-solida-mm.stl")
 # ---- medidas a ESCALA (mm de la pieza impresa) -----------------------------------
 CRISTAL_MM = 1.2          # lámina de cristal
 HOLGURA_MM = 0.30         # aire entre puerta y carrocería
-NUDILLO_MM = 2.0          # radio de los nudillos de la bisagra
 PASADOR_LIBRE_MM = 2.1    # agujero de la puerta: gira libre sobre el filamento
 PASADOR_FIJO_MM = 1.90    # agujero de la carrocería: el filamento entra justo
 
@@ -60,12 +59,33 @@ SECCION = [(Z_ESPINAZO, 1400), (2000, 1400), (2000, 150), (600, 150), (600, 750)
 # en 800-890, así que queda de 80-170 mm reales, 4-8 mm a 1:20). El hueco de la
 # carrocería sí llega a 600 (SECCION), así que el panel interior de la puerta se va y la
 # cabina queda abierta al levantarla.
-SECCION_PUERTA = [(Z_ESPINAZO, 1400), (2000, 1400), (2000, 150), (720, 150), (720, 750),
-                  (470, 985), (Z_ESPINAZO, 985)]
-# bisagra: eje en x, a la altura del techo sobre el espinazo
-Y_BISAGRA = 1100.0
-NUDILLOS_CARROCERIA = [(1680, 1760), (1980, 2060)]
-NUDILLO_PUERTA = (1780, 1960)
+# En la zona del cristal (y > 750) la puerta se lleva lo MISMO que pierde la carrocería:
+# ahí el parabrisas de Tripo envuelve hacia el costado y la franja |z| 0.54-0.72 es
+# cristal; si se quedara sin dueño, abre un hueco junto al pilar delantero.
+SECCION_PUERTA = [(Z_ESPINAZO, 1400), (2000, 1400), (2000, 150), (720, 150), (720, 690),
+                  (600, 750), (450, 985), (Z_ESPINAZO, 985)]
+# BISAGRA OCULTA. El eje va DENTRO del techo, 30 mm bajo la piel (el techo en el
+# espinazo está a 1100-1110 entre x 1.70 y 2.10 m), así el filamento queda tapado.
+# Puerta y carrocería se reparten un cilindro de radio R_NUDILLO alrededor del eje en
+# tramos alternados (carrocería-puerta-carrocería): cada tramo gira dentro de su propio
+# cilindro, y la piel de la puerta que queda fuera de él, al girar, sube por encima del
+# techo antes de cruzar al otro lado. El ángulo libre es 180 - 2·asin(h/R), con h la
+# altura de la piel sobre el eje: en el centro del techo h = 40 mm (1110), así que con
+# R = 48 mm se abre hasta ~67° sin choque (verificado con choques()). Por fuera sólo se
+# ven las juntas, a ~1.3 mm del espinazo a 1:20.
+Y_BISAGRA = 1060.0
+R_NUDILLO = 60.0                # h máx = 1110 - 1060 = 50 -> 180 - 2·asin(50/60) = 67°
+R_NUCLEO = 40.0                 # mitad de abajo maciza del nudillo (cuelga en la cabina)
+# tramos a lo largo de x; la parte de techo de la puerta es exactamente [1600, 2080]
+NUDILLOS_CARROCERIA = [(1600, 1795), (1985, 2080)]
+NUDILLO_PUERTA = (1805, 1975)
+X_ENTRADA_PASADOR = 1560.0      # el eje sale a la piel justo detrás de la cabecera
+ANGULO_MAX = 60.0
+# la parte de techo de la puerta (por dentro de |z| = 470) sólo entre estas x: con el
+# contorno inclinado del pilar, la puerta se llevaba un pedazo de la cabecera del
+# parabrisas por dentro que al abrir chocaba con el resto de la cabecera
+X_TECHO_PUERTA = (1600.0, 2080.0)
+Z_TECHO = 470.0                 # por dentro de este |z| la puerta es "techo"
 
 Y_CINTURA = 770.0
 
@@ -123,34 +143,63 @@ def cilindro_x(x0, x1, r, y, z, n=48):
         np.array([[0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0]], float)).translate([x0, y, z])
 
 
+def region_puerta(lado, o, seccion):
+    """Volumen de la puerta crecido `o` mm (o < 0: encogido). Costado: |z| > Z_TECHO.
+    Techo: sólo entre X_TECHO_PUERTA. La carrocería se corta con o = +g y la puerta con
+    o = -g, así que entre las dos sólo queda la holgura: nada de huecos."""
+    x0, x1 = X_TECHO_PUERTA
+    # el techo traslapa 100 mm con el costado: si sólo topan en Z_TECHO, al encoger la
+    # puerta quedan separados por la holgura y la puerta pierde su pedazo de techo
+    techo = mf.Manifold.cube([x1 - x0 + 2 * o, 3000, 2 * Z_TECHO + 200]).translate([x0 - o, -1000, -Z_TECHO - 100])
+    costado = mf.Manifold.cube([6000, 4000, 2000]).translate([-1000, -1000, Z_TECHO - o])
+    if lado < 0:
+        costado = costado.mirror([0, 0, 1])
+    return prisma_puerta(lado, o, seccion) ^ (techo + costado)
+
+
 def puertas_gaviota(cuerpo, esc):
     g = HOLGURA_MM * esc / 2
-    rk = NUDILLO_MM * esc
+    R = R_NUDILLO
+    (b1a, b1b), (b2a, b2b) = NUDILLOS_CARROCERIA
+    d0, d1 = NUDILLO_PUERTA
     puertas = []
     for lado in (1, -1):
         zb = lado * Z_ESPINAZO
-        puerta = cuerpo ^ prisma_puerta(lado, -g, SECCION_PUERTA)
-        cuerpo = cuerpo - prisma_puerta(lado, +g)
-        kb = [cilindro_x(a, b, rk, Y_BISAGRA, zb) for a, b in NUDILLOS_CARROCERIA]
-        kd = cilindro_x(*NUDILLO_PUERTA, rk, Y_BISAGRA, zb)
-        # cada nudillo se abre paso en la pieza de enfrente, con holgura
-        cuerpo = cuerpo - cilindro_x(NUDILLO_PUERTA[0] - g * 2, NUDILLO_PUERTA[1] + g * 2,
-                                     rk + 2 * g, Y_BISAGRA, zb)
-        for a, b in NUDILLOS_CARROCERIA:
-            puerta = puerta - cilindro_x(a - g * 2, b + g * 2, rk + 2 * g, Y_BISAGRA, zb)
-        cuerpo = cuerpo + mf.Manifold.batch_boolean(kb, mf.OpType.Add)
-        puerta = puerta + kd
-        # pasador: entra por la cara delantera del nudillo de adelante (que asoma sobre el
-        # techo detrás del parabrisas), fijo en la carrocería, libre en la puerta; ciego
-        # 2 mm antes del final del nudillo de atrás
-        cuerpo = cuerpo - cilindro_x(NUDILLOS_CARROCERIA[0][0] - 5, NUDILLOS_CARROCERIA[1][1] - 2 * esc,
-                                     PASADOR_FIJO_MM * esc / 2, Y_BISAGRA, zb, 24)
-        puerta = puerta - cilindro_x(NUDILLO_PUERTA[0] - 10, NUDILLO_PUERTA[1] + 10,
-                                     PASADOR_LIBRE_MM * esc / 2, Y_BISAGRA, zb, 24)
-        piezas = puerta.decompose()
-        puerta = max(piezas, key=lambda p: p.volume())
+
+        def cil(x0, x1, r):
+            return cilindro_x(x0, x1, r, Y_BISAGRA, zb, 96)
+
+        def nucleo(x0, x1):
+            c = cil(x0, x1, R_NUCLEO)
+            abajo = mf.Manifold.cube([4000, 4000, 4000]).translate([-1000, Y_BISAGRA - 4000, -2000])
+            return c ^ abajo
+
+        # PUERTA: su región menos los tramos de la carrocería (con holgura), más su tramo
+        # de cilindro completo (también del lado del espinazo)
+        r_p = region_puerta(lado, -g, SECCION_PUERTA) - cil(b1a - 50, b1b + g, R + g)             - cil(b2a - g, b2b + 50, R + g)
+        puerta = (cuerpo ^ (r_p + cil(d0, d1, R - g))) + nucleo(d0, d1)
+        # CARROCERÍA: pierde la región de la puerta (crecida) y el cilindro entre sus dos
+        # tramos (hueco + tramo de la puerta + hueco); conserva sus tramos de cilindro
+        r_c = (region_puerta(lado, +g, SECCION) - cil(b1a - 50, b1b, R - g) - cil(b2a, b2b + 50, R - g))             + cil(b1b, b2a, R + g)
+        resto = (cuerpo - r_c) + nucleo(b1a, b1b) + nucleo(b2a, b2b)
+        # pasador: fijo en la carrocería, libre en la puerta
+        resto = resto - cil(X_ENTRADA_PASADOR, b2b - 2 * esc, PASADOR_FIJO_MM * esc / 2)
+        puerta = puerta - cil(d0 - 10, d1 + 10, PASADOR_LIBRE_MM * esc / 2)
+        cuerpo = resto
+        puerta = max(puerta.decompose(), key=lambda p: p.volume())
         puertas.append((lado, puerta))
     return cuerpo, puertas
+
+
+def choques(cuerpo, puertas, angulos=(15, 30, 45, 60, 65)):
+    """Volumen (mm3 reales) que cada puerta, girada sobre su bisagra, mete en la carrocería."""
+    out = {}
+    for lado, p in puertas:
+        zb = lado * Z_ESPINAZO
+        for a in angulos:
+            r = p.translate([0, -Y_BISAGRA, -zb]).rotate([-a * lado, 0, 0]).translate([0, Y_BISAGRA, zb])
+            out[(lado, a)] = (r ^ cuerpo).volume()
+    return out
 
 
 def main():
@@ -162,11 +211,14 @@ def main():
     tm = trimesh.load(SOLIDO)
     tm = max(tm.split(only_watertight=False), key=lambda p: p.volume)
     M = a_manifold(tm)
-    M, n = invernadero_hueco(M, esc)
-    print(f"cristal: lámina de {CRISTAL_MM} mm a escala en {n} tramos; cabina hueca con el interior de Tripo")
+    from tripo_juguete import cerrar_aberturas
+    M, n = cerrar_aberturas(M, lamina=CRISTAL_MM * esc)
+    print(f"cristal: lámina de {CRISTAL_MM} mm a escala en {n} cortes; cabina hueca con el interior de Tripo")
     cuerpo, ruedas = ruedas_que_giran(M, esc)
     cuerpo, puertas = puertas_gaviota(cuerpo, esc)
     cuerpo = max(cuerpo.decompose(), key=lambda p: p.volume())
+    for (lado, a), v in choques(cuerpo, puertas).items():
+        print(f"   puerta {'der' if lado > 0 else 'izq'} abierta {a:>4.0f}°: choque {v/1e3:8.1f} cm3 reales")
 
     ens = os.path.join(RAIZ, "cad", f"_gaviota-1a{esc}")
     os.makedirs(ens, exist_ok=True)
@@ -179,8 +231,9 @@ def main():
         en_su_lugar(p, f"puerta-{'der' if lado > 0 else 'izq'}.stl")
     for i, (x, lado, r) in enumerate(ruedas):
         en_su_lugar(r, f"rueda-{i}.stl")
-    json.dump({"escala": esc, "bisagra": {"y": Y_BISAGRA, "z": Z_ESPINAZO,
-                                          "x": [NUDILLOS_CARROCERIA[0][0], NUDILLOS_CARROCERIA[1][1]]},
+    json.dump({"escala": esc, "angulo_max": ANGULO_MAX,
+               "bisagra": {"y": Y_BISAGRA, "z": Z_ESPINAZO,
+                           "x": [X_ENTRADA_PASADOR, NUDILLOS_CARROCERIA[1][1] - 2 * esc]},
                "ejes_x": EJES_X, "y_eje": Y_EJE, "z_ext": Z_EXT},
               open(os.path.join(ens, "datos.json"), "w", encoding="utf-8"), indent=1)
 
@@ -203,9 +256,9 @@ def main():
     for nom, p in piezas:
         reporte(nom, p)
         guardar(p, nom)
-    largo_pasador = (NUDILLOS_CARROCERIA[1][1] - 2 * esc - NUDILLOS_CARROCERIA[0][0]) * k
+    largo_pasador = (NUDILLOS_CARROCERIA[1][1] - 2 * esc - X_ENTRADA_PASADOR) * k
     print(f"   pasadores de bisagra: 2 tramos de filamento 1.75 de {largo_pasador:.0f} mm, "
-          f"entran por el frente del nudillo delantero, sobre el techo")
+          f"entran por un agujerito en la cabecera del parabrisas (luego una gota de pintura)")
     print(f"   ejes de rueda: 2 tramos de {2 * Z_EXT * k - 1:.0f} mm")
 
 

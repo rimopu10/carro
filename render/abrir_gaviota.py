@@ -3,7 +3,10 @@
 carrocería, las dos puertas en su bisagra (la izquierda abierta), las 4 ruedas en sus
 ejes y los pasadores de filamento. Se abre con ventana:
 
-    blender --python render/abrir_gaviota.py -- [cad/_gaviota-1a20] [--angulo 65]
+    blender --python render/abrir_gaviota.py -- [cad/_gaviota-1a20] [--angulo 60]
+
+La bisagra va oculta dentro del techo; la puerta abre sin choque hasta ~65°
+(calculos/tripo_gaviota.py lo verifica con choques()).
 
 Las piezas vienen en mm a escala con los ejes del proyecto (Y arriba); todo se cuelga
 de un vacío girado 90° en X para que en Blender quede parado.
@@ -19,8 +22,8 @@ from mathutils import Euler
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 D = os.path.abspath(ARGS[0]) if ARGS and not ARGS[0].startswith("--") else os.path.join(RAIZ, "cad", "_gaviota-1a20")
-ANG = float(ARGS[ARGS.index("--angulo") + 1]) if "--angulo" in ARGS else 65.0
 dat = json.load(open(os.path.join(D, "datos.json"), encoding="utf-8"))
+ANG = float(ARGS[ARGS.index("--angulo") + 1]) if "--angulo" in ARGS else dat.get("angulo_max", 60.0)
 k = 1.0 / dat["escala"]
 
 for o in list(bpy.data.objects):
@@ -96,6 +99,8 @@ for lado in (1, -1):
 
 
 def vista():
+    for o in bpy.context.view_layer.objects:
+        o.select_set(False)
     for win in bpy.context.window_manager.windows:
         for area in win.screen.areas:
             if area.type != "VIEW_3D":
