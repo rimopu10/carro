@@ -24,3 +24,6 @@ cad/maqueta-*-blender.stl
 # salidas de Tripo (mallas pesadas, se re-descargan por tarea)
 ref/tripo/*/
 !ref/tripo/multivista/
+
+# mallas de Tripo (60+ MB): se guardan fuera de git; el origen queda en ref/tripo/LEEME.md
+ref/tripo/*.glb
