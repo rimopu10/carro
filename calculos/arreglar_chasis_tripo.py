@@ -5,7 +5,7 @@ mueve dash_hi (pie del pilar A) y hdr (esquina de cabecera) lo MÍNIMO para deja
 de aire hasta la piel exterior (ya descontado el cascarón de 12 mm), re-corre el FEM entero
 y reporta K_torsional y los FS de cada caso. La carrocería no se toca.
 
-    python calculos/arreglar_chasis_tripo.py <stl_cerrado_sin_ruedas>
+    python calculos/arreglar_chasis_tripo.py cad/_vista/tripo-cerrado-sin-ruedas-mm.stl
 """
 import contextlib, io, itertools, os, re, sys
 import numpy as np

@@ -30,3 +30,4 @@ ref/tripo/*.glb
 cad/carroceria-tripo.glb
 cad/carroceria-tripo-solida-mm.stl
 cad/_gaviota-*/
+cad/_vista/

@@ -12,7 +12,7 @@ la piel EXTERIOR en tres direcciones: arriba (+y) y a los lados (±z), con un ra
 Negativo = el tubo asoma o toca la piel. Cerca de las ruedas el rayo lateral choca con la llanta
 de Tripo y sobreestima el aire: esos tubos se marcan con (*).
 
-    python calculos/verificar_piel_tripo.py [stl_con_ventanas_cerradas_y_sin_ruedas]
+    python calculos/verificar_piel_tripo.py cad/_vista/tripo-cerrado-sin-ruedas-mm.stl   (se genera con preparar_piel_tripo.py)
 (ver cierre en calculos/arreglar_chasis_tripo.py)
 """
 import json
