@@ -36,12 +36,12 @@ def test_lc7_es_simetrica_y_tiene_las_tres_estaciones():
     assert set(lc) == {"h1L", "h2L", "saL", "h1R", "h2R", "saR"}
     for n in ("h1", "h2", "sa"):
         L, R = lc[n + "L"], lc[n + "R"]
-        assert np.allclose([L[0], L[1], -L[2]], R)       # espejo en z
+        assert np.allclose([L[0], L[1], -L[2], -L[3], -L[4], L[5]], R)       # espejo en z
 
 
 def test_lc7_transmite_peso_y_viento_al_chasis():
     lc = P.lc7()
-    suma_chasis = lc["h1L"] + lc["h2L"] + lc["saL"]
+    suma_chasis = (lc["h1L"] + lc["h2L"] + lc["saL"])[:3]
     esperado = np.array([0.0, -P.MASA_PUERTA * P.G * P.FACTOR_BACHE, P.VIENTO_N])
     assert np.allclose(suma_chasis, esperado, atol=1e-6)
 

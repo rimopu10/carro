@@ -596,7 +596,7 @@ def un_intento():
     return d, ok
 
 
-def cruces_ids(miembros, paso=12):
+def cruces_ids(miembros, paso=40):
     """Como cruces(), pero devuelve los pares de ids (frozenset de nodos) que se cruzan."""
     out = []
     for a1, b1, a2, b2 in ((x[0], x[1], y[0], y[1]) for i, x in enumerate(miembros) for y in miembros[i + 1:]):

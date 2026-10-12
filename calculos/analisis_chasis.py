@@ -350,7 +350,7 @@ if "h1L" in NODES:     # el rediseño trae bisagras y amortiguador: LC7 puertas 
     import puertas as _PU
     _F7 = np.zeros(ndof)
     for _n, _f in _PU.lc7().items():
-        _F7[6*idx[_n]:6*idx[_n]+3] += _f
+        _F7[6*idx[_n]:6*idx[_n]+6] += _f
     resultados["LC7 Puertas abiertas a 65° (3g + viento 400 N + amortiguador)"] = analizar("LC7", _F7)
 resultados["LC3 Frenada 1g"] = analizar("LC3", F_vector(-1.0, -1.0, 0))
 resultados["LC4 Curva 1g"]   = analizar("LC4", F_vector(0, -1.0, 1.0))

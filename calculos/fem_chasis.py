@@ -114,7 +114,7 @@ def _F_puerta():
     F = np.zeros(NDOF)
     for n, f in _PU.lc7().items():
         if n in IDX:
-            F[6 * IDX[n]:6 * IDX[n] + 3] += f
+            F[6 * IDX[n]:6 * IDX[n] + 6] += f
     return F
 
 

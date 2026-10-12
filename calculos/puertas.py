@@ -18,12 +18,15 @@ FACTOR_BACHE = 3.0          # la puerta abierta recibe 3 g al pasar un bache / u
 VIENTO_N = 400.0            # N laterales, en el centro de la puerta abierta
 THETA_MAX = 65.0
 
-# eje: el riel del espinazo sp_f -> sp_r, lado izquierdo
+# riel del espinazo sp_f -> sp_r (chasis), lado izquierdo: ahí van soldadas las BASES de las bisagras
 A_SF = np.array([1.45, 0.965, 0.15])
 A_SR = np.array([2.02, 1.01, 0.15])
-EJE_A0 = A_SF.copy()
-EJE_U = (A_SR - A_SF) / np.linalg.norm(A_SR - A_SF)
-S_H1, S_H2 = 0.12, 0.86     # estaciones de las 2 bisagras a lo largo del riel (fracción)
+# eje de giro: horizontal, a y=1.06 (dentro de la piel del techo, ~50 mm bajo su cara exterior), igual que en las
+# piezas de la puerta (tripo_gaviota.py: Y_BISAGRA). Las ménsulas de la bisagra salvan los 5-9 cm entre el riel y el eje.
+EJE_A0 = np.array([1.45, 1.06, 0.15])
+EJE_U = np.array([1.0, 0.0, 0.0])
+X_H1, X_H2 = 1.55, 1.85     # x de las 2 bisagras: flanquean el centro de masa de la puerta (x=1.70)
+S_H1, S_H2 = (X_H1 - A_SF[0]) / (A_SR[0] - A_SF[0]), (X_H2 - A_SF[0]) / (A_SR[0] - A_SF[0])
 
 CM_CERRADA = np.array([1.70, 0.72, 0.70])     # centro de masa de la puerta cerrada
 BORDE_INF = np.array([1.70, 0.28, 0.90])      # punto bajo del borde de la puerta
@@ -113,26 +116,31 @@ def estatica(theta, factor_peso=1.0, viento=0.0):
     f_ext = np.array([0.0, -MASA_PUERTA * G * factor_peso, viento])
     f_amort = fs * (p - SA) / np.linalg.norm(p - SA)
     f_bis = -(f_ext + f_amort)
-    punto_bisagras = punto_riel((S_H1 + S_H2) / 2)
+    punto_bisagras = np.array([(X_H1 + X_H2) / 2, EJE_A0[1], EJE_A0[2]])      # el perno está SOBRE el eje
     return dict(fuerza_amortiguador=fs,
                 fuerzas_en_puerta=[(cm, f_ext), (p, f_amort), (punto_bisagras, f_bis)])
 
 
 def lc7(theta=THETA_MAX):
-    """Cargas sobre el CHASIS con la puerta abierta: reacción de las 2 bisagras (reparto por posición del centro
-    de masa) y del amortiguador. Dict nodo -> fuerza (3,) en N, ambos lados."""
-    # peso x3 g y viento sobre la puerta; el amortiguador empuja con su fuerza NOMINAL (el exceso lo toma el tope)
+    """Cargas sobre el CHASIS con la puerta abierta. Dict nodo -> (fx, fy, fz, mx, my, mz) en N y N·m, ambos lados.
+    Bisagras: reacción repartida por la posición del centro de masa, aplicada en el PERNO (y=1.06) y trasladada al
+    nodo del riel con su momento de excentricidad. Amortiguador: su fuerza nominal en el ancla de la cabecera."""
     p = giro(PD, theta)
     f_ext = np.array([0.0, -MASA_PUERTA * G * FACTOR_BACHE, VIENTO_N])
-    f_amort = FUERZA_NOMINAL * (p - SA) / np.linalg.norm(p - SA)
+    f_amort = FUERZA_NOMINAL * (p - SA) / np.linalg.norm(p - SA)    # el exceso lo toma el tope de apertura
     f_bis = -(f_ext + f_amort)
     cm_x = giro(CM_CERRADA, theta)[0]
-    x1, x2 = punto_riel(S_H1)[0], punto_riel(S_H2)[0]
-    w2 = float(np.clip((cm_x - x1) / (x2 - x1), 0.0, 1.0))
-    L = {"h1L": -f_bis * (1 - w2), "h2L": -f_bis * w2, "saL": -f_amort}
+    w2 = float(np.clip((cm_x - X_H1) / (X_H2 - X_H1), 0.0, 1.0))
+    L = {}
+    for nombre, x, w in (("h1L", X_H1, 1 - w2), ("h2L", X_H2, w2)):
+        f = -f_bis * w
+        pin = np.array([x, EJE_A0[1], 0.15])
+        nodo = np.array([x, A_SF[1] + (A_SR[1] - A_SF[1]) * (x - A_SF[0]) / (A_SR[0] - A_SF[0]), 0.15])
+        L[nombre] = np.concatenate([f, np.cross(pin - nodo, f)])
+    L["saL"] = np.concatenate([-f_amort, np.zeros(3)])
     out = dict(L)
-    for k, v in L.items():
-        out[k[:-1] + "R"] = np.array([v[0], v[1], -v[2]])
+    for k, v in L.items():     # espejo en z: las fuerzas cambian fz; los momentos (vectores axiales) cambian mx y my
+        out[k[:-1] + "R"] = np.array([v[0], v[1], -v[2], -v[3], -v[4], v[5]])
     return out
 
 
@@ -143,7 +151,7 @@ def borde_inferior_abierto(theta):
 def herraje():
     """Coordenadas (lado izquierdo, puerta cerrada) del herraje, en metros."""
     return {
-        "bisagra_1": punto_riel(S_H1), "bisagra_2": punto_riel(S_H2),
+        "bisagra_1": np.array([X_H1, EJE_A0[1], 0.15]), "bisagra_2": np.array([X_H2, EJE_A0[1], 0.15]),   # pernos
         "amortiguador_chasis": SA.copy(), "amortiguador_puerta": PD.copy(),
         "cierre_techo_delantero": np.array([1.45, 0.94, 0.40]),     # esquina de la cabecera
         "cierre_estribo_delantero": np.array([1.40, 0.16, 0.59]),
@@ -159,4 +167,4 @@ if __name__ == "__main__":
         print(f"  puerta a {th:2d}°: esfuerzo en la manija {esfuerzo_manual(th):+6.0f} N (+ = levantar)")
     print("borde inferior abierto a 65°:", np.round(borde_inferior_abierto(65.0), 3))
     for k, v in lc7().items():
-        print(f"  LC7 {k}: {np.round(v, 1)} N")
+        print(f"  LC7 {k}: F {np.round(v[:3], 1)} N   M {np.round(v[3:], 1)} N·m")
