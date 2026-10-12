@@ -352,6 +352,14 @@ if "h1L" in NODES:     # el rediseño trae bisagras y amortiguador: LC7 puertas 
     for _n, _f in _PU.lc7().items():
         _F7[6*idx[_n]:6*idx[_n]+6] += _f
     resultados["LC7 Puertas abiertas a 65° (3g + viento 400 N + amortiguador)"] = analizar("LC7", _F7)
+if "baL" in NODES:     # choque frontal a 10 g: el arnés tira de la barra de cinturones (5.3 kN por asiento)
+    _F8 = np.zeros(ndof); _tot = 0.0
+    for _n in ("baL", "baR"):
+        _F8[6*idx[_n]] -= 0.6 * 90.0 * g * 10.0; _tot -= 0.6 * 90.0 * g * 10.0
+    _Mt = sum(MASAS.values())
+    for _n, _m in MASAS.items():
+        _F8[6*idx[_n]] -= _tot * _m / _Mt          # el chasis se equilibra por inercia
+    resultados["LC8 Arnés 10 g (5.3 kN por asiento en la barra de cinturones)"] = analizar("LC8", _F8)
 resultados["LC3 Frenada 1g"] = analizar("LC3", F_vector(-1.0, -1.0, 0))
 resultados["LC4 Curva 1g"]   = analizar("LC4", F_vector(0, -1.0, 1.0))
 
@@ -409,7 +417,7 @@ with open(out_csv, "w", newline="", encoding="utf-8") as f:
     # redondo). CORREGIDO 2026-08-05: antes solo salía la longitud entre centros.
     # Nodos VIRTUALES (bases de bisagra h1/h2 y ancla del amortiguador sa): en el FEM parten el tubo para aplicar la
     # carga, pero en el taller son placas soldadas sobre UN tubo continuo -> en la lista de corte se fusionan.
-    VIRTUALES = {"h1L", "h2L", "saL", "h1R", "h2R", "saR"}
+    VIRTUALES = {"h1L", "h2L", "saL", "h1R", "h2R", "saR", "baL", "baR"}
     def fusionar(lista):
         lista = list(lista)
         for vn in VIRTUALES:

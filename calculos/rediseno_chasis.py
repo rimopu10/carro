@@ -41,10 +41,11 @@ import buck_piloto as BK                                  # noqa: E402
 import puertas as PU                                      # noqa: E402
 
 K_MIN = float(sys.argv[1]) if len(sys.argv) > 1 else 8000.0   # N·m/° (doc maestro pide >4,000; el vigente da 14,177)
-FS_MIN, FS_VUELCO, FS_PANDEO = 2.0, 1.5, 2.0
+FS_MIN, FS_VUELCO, FS_PANDEO = 2.0, 1.65, 2.0      # volcadura 1.65 = lo que daba el diseño anterior (auditoría 2026-10-12)
 FS_CABECERA = 1.3      # volcadura cargando la cabecera (el diseño anterior daba 1.30)
 FS_TORSION = 2.0       # par de 4,500 N·m (bache en una rueda a 3g; el anterior daba 2.25)
-FS_PUERTA = 2.0        # LC7: puertas abiertas a 65 grados (3 g + viento + amortiguador)
+FS_PUERTA = 2.0        # LC7: puertas abiertas a 65 grados (3 g + viento + amortiguador a tope)
+FS_ARNES = 1.5         # LC8: choque frontal a 10 g con arnés (5.3 kN por asiento en la barra de cinturones)
 if os.environ.get("MISMA_RESISTENCIA"):   # variante: no peor que el diseño anterior en NINGÚN caso
     FS_MIN, FS_VUELCO, FS_CABECERA, FS_TORSION = 2.05, 1.64, 1.30, 2.25
 OUT_JSON = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "chasis_rediseno.json")
@@ -86,7 +87,8 @@ def sec_por_nombre(n):
 #        la llanta (frenada/curva en el contacto), así que no hay análisis que justifique adelgazarlos
 #  belt: barra de cinturones: con arnés a 10 g la 38x1.9 llegaba a 200 MPa (FS 1.2) -> 38x3.0
 #  ext : nariz (estructura de choque) y cola -> 32x1.9
-PISO = {"cell": "RED 50.8x2.1", "belt": "PTR 38x38x3.0", "batt": "PTR 32x32x1.9",
+#  arco: patas del arco principal y barra de cinturones -> RED 50.8x3.2 (con arnés de 10 g, 2.1 mm no alcanza)
+PISO = {"cell": "RED 50.8x2.1", "arco": "RED 50.8x3.2", "belt": "PTR 38x38x3.0", "batt": "PTR 32x32x1.9",
         "susp": "PTR 38x38x1.9", "ext": "PTR 32x32x1.9", "otro": "PTR 25x25x1.9"}
 NODOS_SUSP = {"fb_loL", "fb_loR", "fb_hiL", "fb_hiR", "fx_loL", "fx_loR", "fx_hiL", "fx_hiR", "taL", "taR",
               "coilL", "coilR", "r_loL", "r_loR", "r_hiL", "r_hiR"}
@@ -120,8 +122,9 @@ NUEVOS = {
     "h1L": tuple(float(v) for v in H1), "h2L": tuple(float(v) for v in H2), "saL": tuple(float(v) for v in SA),
     "h1R": (float(H1[0]), float(H1[1]), -float(H1[2])), "h2R": (float(H2[0]), float(H2[1]), -float(H2[2])),
     "saR": (float(SA[0]), float(SA[1]), -float(SA[2])),
+    "baL": (2.02, 0.660, 0.31), "baR": (2.02, 0.660, -0.31),      # anclajes del arnés sobre la barra de cinturones
 }
-OBLIGADOS = {"smFL", "smFR", "smRL", "smRR", "seatFL", "seatFR", "h1L", "h2L", "saL", "h1R", "h2R", "saR"}
+OBLIGADOS = {"smFL", "smFR", "smRL", "smRR", "seatFL", "seatFR", "h1L", "h2L", "saL", "h1R", "h2R", "saR", "baL", "baR"}
 MOVIDOS = {"seatL": (XR, 0.16, 0.591), "seatR": (XR, 0.16, -0.591)}        # el nodo del estribo pasa al riel trasero
 MASAS_MOVER = {"seatL": {"smFL": 0.5, "smRL": 0.5}, "seatR": {"smFR": 0.5, "smRR": 0.5}}
 for n, p in NUEVOS.items():
@@ -149,9 +152,20 @@ SPLIT = {  # miembro -> nodos intermedios, en orden desde el primer nodo del mie
     frozenset(("sp_fR", "sp_rR")): ["h1R", "h2R"],
     frozenset(("hdrL", "sp_fL")): ["saL"],
     frozenset(("hdrR", "sp_fR")): ["saR"],
+    frozenset(("mh_beltL", "mh_beltR")): ["baL", "baR"],
 }
 
+ARCO_IDS = {frozenset(("mh_loL", "mh_beltL")), frozenset(("mh_loR", "mh_beltR")), frozenset(("mh_beltL", "mh_hiL")),
+            frozenset(("mh_beltR", "mh_hiR")), frozenset(("mh_beltL", "mh_beltR"))}
+# pilar A y cabecera: se ven a través del parabrisas -> sección acotada (RED 50.8x2.1, la del cálculo de visibilidad)
+VISTA_IDS = {frozenset(("dash_hiL", "hdrL")), frozenset(("dash_hiR", "hdrR")), frozenset(("hdrL", "saL")),
+             frozenset(("saL", "sp_fL")), frozenset(("hdrR", "saR")), frozenset(("saR", "sp_fR")),
+             frozenset(("sp_fL", "sp_fR"))}
+
+
 def clase(a, b, tag, s):
+    if frozenset((a, b)) in ARCO_IDS:
+        return "arco"
     if tag == "safe" and s["tipo"] == "RED":
         return "cell"
     if tag == "safe":
@@ -174,7 +188,7 @@ def base_miembros():
         i = mid((a, b))
         if i in BLOQUEAN or i in DUPLICADOS:
             continue
-        s = sec_por_nombre(s["nombre"])
+        s = sec_por_nombre("RED 57.2x3.2" if i == frozenset(("mh_beltL", "mh_beltR")) else s["nombre"])   # la barra pasa a redondo
         c0 = clase(a, b, tag, s)
         cat0, ip0 = piso_idx(dict(clase=c0))
         if s["nombre"] not in {x["nombre"] for x in cat0}:
@@ -309,7 +323,7 @@ class Diseno:
 def cumple(res):
     if any(res["fs"][c] < FS_MIN for c in ("LC1", "LC3", "LC4")) or res["fs"]["LC5"] < FS_VUELCO:
         return False
-    if res["K_tors"] < K_MIN or res["fs"]["LC5c"] < FS_CABECERA or res["fs"]["LC6"] < FS_TORSION or res["fs"]["LC7"] < FS_PUERTA:
+    if res["K_tors"] < K_MIN or res["fs"]["LC5c"] < FS_CABECERA or res["fs"]["LC6"] < FS_TORSION or res["fs"]["LC7"] < FS_PUERTA or res["fs"]["LC8"] < FS_ARNES:
         return False
     if min(res["pandeo"].values(), default=np.inf) < FS_PANDEO or min(res["pandeo5"].values(), default=np.inf) < FS_VUELCO:
         return False
@@ -335,7 +349,7 @@ def evaluar(d):
 
 
 def piso_idx(d_):
-    cat = CAT_RED if d_["clase"] == "cell" else CAT_PTR
+    cat = CAT_RED if d_["clase"] in ("cell", "arco") else CAT_PTR
     objetivo = POR_NOMBRE[PISO[d_["clase"]]]["kg_m"]
     return cat, next((j for j, x in enumerate(cat) if x["kg_m"] >= objetivo - 1e-9), len(cat) - 1)
 
@@ -379,7 +393,7 @@ def dimensionar(d, log):
 def margenes(res):
     return np.array([res["K_tors"] / K_MIN, res["fs"]["LC1"] / FS_MIN, res["fs"]["LC3"] / FS_MIN,
                      res["fs"]["LC4"] / FS_MIN, res["fs"]["LC5"] / FS_VUELCO,
-                     res["fs"]["LC5c"] / FS_CABECERA, res["fs"]["LC6"] / FS_TORSION, min(res["fs"]["LC7"], 1e3) / FS_PUERTA,
+                     res["fs"]["LC5c"] / FS_CABECERA, res["fs"]["LC6"] / FS_TORSION, min(res["fs"]["LC7"], 1e3) / FS_PUERTA, min(res["fs"]["LC8"], 1e3) / FS_ARNES,
                      min(min(res["pandeo"].values(), default=1e3), 1e3) / FS_PANDEO,
                      min(min(res["pandeo5"].values(), default=1e3), 1e3) / FS_VUELCO])
 
@@ -482,7 +496,8 @@ def construir():
     # partida SOBRADA y factible: todo en la sección más grande de su familia (luego se recorta)
     for v in d.p.values():
         if v["sec"] is not None:
-            v["sec"] = (CAT_RED if v["clase"] == "cell" else CAT_PTR)[-1]
+            v["sec"] = (CAT_RED if v["clase"] in ("cell", "arco") else CAT_PTR)[-1]
+            # (acotar pilar A/cabecera a Ø50.8 compraba ~1° de visibilidad y costaba la volcadura: se descartó 2026-10-12)
     for k, v in d.p.items():
         viol = [m for m in v["ids"] if bloquea(NODES[tuple(m)[0]], NODES[tuple(m)[1]])]
         if viol and v["removible"] and v["tag"] != "tors":
@@ -657,10 +672,10 @@ def main():
         print(f"  intento {intento}: nodo {n} saturado -> se veta {sorted(map(sorted, d.p[k]['ids']))}")
     mem, extra = partir_cruces(d.miembros())
     cr = cruces(mem)
-    print("cruces sin nodo:", cr if cr else "ninguno")
+    print("cruces sin nodo:", (str(cr[:4]) + f" ... ({len(cr)})") if cr else "ninguno")
     r = F.evaluar(mem)
     print(f"final: {len(mem)} miembros {r['masa']:.1f} kg K {r['K_tors']:,.0f} "
-          f"FS {[round(float(r['fs'][c]), 2) for c in ('LC1', 'LC3', 'LC4', 'LC5', 'LC5c', 'LC6', 'LC7')]}")
+          f"FS {[round(float(r['fs'][c]), 2) for c in ('LC1', 'LC3', 'LC4', 'LC5', 'LC5c', 'LC6', 'LC7', 'LC8')]}")
     out = dict(nodos_nuevos={**{k: list(v) for k, v in NUEVOS.items()}, **extra},
                masas_mover=MASAS_MOVER, nodos_movidos={k: list(v) for k, v in MOVIDOS.items()},
                miembros=[[a, b, s["nombre"], t] for a, b, s, t in mem],

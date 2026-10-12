@@ -13,7 +13,7 @@ import itertools
 import numpy as np
 
 G = 9.81
-MASA_PUERTA = 10.0          # kg (piel sándwich + esqueleto Ø16 + cristal PC + herraje)
+MASA_PUERTA = 12.0          # kg de DISEÑO (objetivo 9-10 kg: piel sándwich + esqueleto Ø16 + cristal PC + herraje; margen 20%)
 FACTOR_BACHE = 3.0          # la puerta abierta recibe 3 g al pasar un bache / un portazo
 VIENTO_N = 400.0            # N laterales, en el centro de la puerta abierta
 THETA_MAX = 65.0
@@ -21,12 +21,20 @@ THETA_MAX = 65.0
 # riel del espinazo sp_f -> sp_r (chasis), lado izquierdo: ahí van soldadas las BASES de las bisagras
 A_SF = np.array([1.45, 0.965, 0.15])
 A_SR = np.array([2.02, 1.01, 0.15])
-# eje de giro: horizontal, a y=1.06 (dentro de la piel del techo, ~50 mm bajo su cara exterior), igual que en las
-# piezas de la puerta (tripo_gaviota.py: Y_BISAGRA). Las ménsulas de la bisagra salvan los 5-9 cm entre el riel y el eje.
-EJE_A0 = np.array([1.45, 1.06, 0.15])
-EJE_U = np.array([1.0, 0.0, 0.0])
+# eje de giro: sigue la pendiente del techo, ~50 mm bajo su cara exterior (el techo de Tripo baja hacia adelante: a x=1.55
+# la piel exterior está en y=1.065 y a x=1.85 en 1.109). Un eje horizontal a y=1.06 asomaba 5 mm en la bisagra delantera
+# (auditoría 2026-10-12). Las ménsulas de la bisagra salvan los 3-6 cm entre el riel y el eje.
+EJE_A0 = np.array([1.45, 1.00, 0.15])
+_EJE_FIN = np.array([2.02, 1.07, 0.15])
+EJE_U = (_EJE_FIN - EJE_A0) / np.linalg.norm(_EJE_FIN - EJE_A0)
 X_H1, X_H2 = 1.55, 1.85     # x de las 2 bisagras: flanquean el centro de masa de la puerta (x=1.70)
 S_H1, S_H2 = (X_H1 - A_SF[0]) / (A_SR[0] - A_SF[0]), (X_H2 - A_SF[0]) / (A_SR[0] - A_SF[0])
+
+
+def punto_eje(x):
+    """Punto del eje de giro con esa x (el perno de la bisagra)."""
+    return EJE_A0 + EJE_U * (x - EJE_A0[0]) / EJE_U[0]
+
 
 CM_CERRADA = np.array([1.70, 0.72, 0.70])     # centro de masa de la puerta cerrada
 BORDE_INF = np.array([1.70, 0.28, 0.90])      # punto bajo del borde de la puerta
@@ -56,13 +64,37 @@ def _fuerza_para(pd, theta, factor_peso=1.0, viento=0.0):
     return None if abs(lever) < 1e-9 else float(-tau_ext / lever)
 
 
+PILAR_A = (np.array([0.95, 0.65, 0.48]), np.array([1.45, 0.94, 0.40]))     # dash_hi -> hdr
+R_PILAR_A = 0.0254
+HOLGURA_PILAR = 0.020
+
+
+def _libre_del_pilar(pd):
+    """El eje del amortiguador (de SA a la puerta, para varios ángulos) no debe pasar a menos de R+20 mm del pilar A.
+    Se ignoran los primeros 12 cm junto al ancla (ahí el amortiguador nace sobre el nodo de la cabecera)."""
+    a, b = PILAR_A
+    ab = b - a
+    for th in (0.0, 10.0, 20.0, 30.0, 45.0, 65.0):
+        p = giro(pd, th)
+        d = p - SA
+        L = np.linalg.norm(d)
+        for t in np.linspace(0.12 / L, 1.0, 40):
+            q = SA + d * t
+            u = np.clip(np.dot(q - a, ab) / np.dot(ab, ab), 0.0, 1.0)
+            if np.linalg.norm(q - (a + ab * u)) < R_PILAR_A + HOLGURA_PILAR:
+                return False
+    return True
+
+
 def _disenar_ancla():
     """Busca el ancla del amortiguador en la puerta (PD, cerrada) que sostenga THETA_MAX con la MENOR fuerza,
     con carrera de 80-180 mm y longitud comprimida >= 0.20 m."""
     best, best_score = None, 1e9
-    for x, y, z in itertools.product(np.arange(1.30, 1.56, 0.05), np.arange(0.55, 0.91, 0.05),
+    for x, y, z in itertools.product(np.arange(1.45, 1.76, 0.05), np.arange(0.55, 0.91, 0.05),
                                      np.arange(0.50, 0.91, 0.05)):
         pd = np.array([x, y, z])
+        if not _libre_del_pilar(pd):
+            continue
         l0 = np.linalg.norm(pd - SA)
         carrera = np.linalg.norm(giro(pd, THETA_MAX) - SA) - l0
         if not (0.08 <= carrera <= 0.18) or l0 < 0.20:
@@ -116,25 +148,25 @@ def estatica(theta, factor_peso=1.0, viento=0.0):
     f_ext = np.array([0.0, -MASA_PUERTA * G * factor_peso, viento])
     f_amort = fs * (p - SA) / np.linalg.norm(p - SA)
     f_bis = -(f_ext + f_amort)
-    punto_bisagras = np.array([(X_H1 + X_H2) / 2, EJE_A0[1], EJE_A0[2]])      # el perno está SOBRE el eje
+    punto_bisagras = punto_eje((X_H1 + X_H2) / 2)      # el perno está SOBRE el eje
     return dict(fuerza_amortiguador=fs,
                 fuerzas_en_puerta=[(cm, f_ext), (p, f_amort), (punto_bisagras, f_bis)])
 
 
 def lc7(theta=THETA_MAX):
-    """Cargas sobre el CHASIS con la puerta abierta. Dict nodo -> (fx, fy, fz, mx, my, mz) en N y N·m, ambos lados.
-    Bisagras: reacción repartida por la posición del centro de masa, aplicada en el PERNO (y=1.06) y trasladada al
-    nodo del riel con su momento de excentricidad. Amortiguador: su fuerza nominal en el ancla de la cabecera."""
-    p = giro(PD, theta)
-    f_ext = np.array([0.0, -MASA_PUERTA * G * FACTOR_BACHE, VIENTO_N])
-    f_amort = FUERZA_NOMINAL * (p - SA) / np.linalg.norm(p - SA)    # el exceso lo toma el tope de apertura
-    f_bis = -(f_ext + f_amort)
+    """Cargas sobre el CHASIS con la puerta abierta a theta, EN EQUILIBRIO: peso x3 g (bache/portazo) + 400 N de viento,
+    con el amortiguador extendido a tope actuando como biela rígida (la fuerza que equilibra el momento sobre el eje).
+    Dict nodo -> (fx, fy, fz, mx, my, mz) en N y N·m, ambos lados. Bisagras: reacción repartida por la posición del centro de
+    masa, aplicada en el PERNO y trasladada al nodo del riel con su momento de excentricidad."""
+    est = estatica(theta, factor_peso=FACTOR_BACHE, viento=VIENTO_N)
+    f_amort = est["fuerzas_en_puerta"][1][1]
+    f_bis = est["fuerzas_en_puerta"][2][1]
     cm_x = giro(CM_CERRADA, theta)[0]
     w2 = float(np.clip((cm_x - X_H1) / (X_H2 - X_H1), 0.0, 1.0))
     L = {}
     for nombre, x, w in (("h1L", X_H1, 1 - w2), ("h2L", X_H2, w2)):
         f = -f_bis * w
-        pin = np.array([x, EJE_A0[1], 0.15])
+        pin = punto_eje(x)
         nodo = np.array([x, A_SF[1] + (A_SR[1] - A_SF[1]) * (x - A_SF[0]) / (A_SR[0] - A_SF[0]), 0.15])
         L[nombre] = np.concatenate([f, np.cross(pin - nodo, f)])
     L["saL"] = np.concatenate([-f_amort, np.zeros(3)])
@@ -144,6 +176,20 @@ def lc7(theta=THETA_MAX):
     return out
 
 
+def punto_mas_bajo_abierto(theta, carpeta=None, z_min=0.70):
+    """Punto más bajo del ALA EXTERIOR (z > z_min: donde se para una persona) de la puerta real (pieza del juguete
+    1:20 a escala) con la puerta a theta. El borde interior junto a la bisagra es más bajo pero no estorba."""
+    import os
+    import trimesh
+    carpeta = carpeta or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "cad", "_gaviota-1a20")
+    m = trimesh.load(os.path.join(carpeta, "puerta-der.stl"))        # el juguete llama 'der' a z>0 = lado izquierdo del chasis
+    V = np.asarray(m.vertices) * 0.02
+    P = np.array([giro(v, theta) for v in V[::10]])
+    P = P[P[:, 2] > z_min]
+    i = int(np.argmin(P[:, 1]))
+    return P[i]
+
+
 def borde_inferior_abierto(theta):
     return giro(BORDE_INF, theta)
 
@@ -151,12 +197,12 @@ def borde_inferior_abierto(theta):
 def herraje():
     """Coordenadas (lado izquierdo, puerta cerrada) del herraje, en metros."""
     return {
-        "bisagra_1": np.array([X_H1, EJE_A0[1], 0.15]), "bisagra_2": np.array([X_H2, EJE_A0[1], 0.15]),   # pernos
+        "bisagra_1": punto_eje(X_H1), "bisagra_2": punto_eje(X_H2),   # pernos, sobre el eje
         "amortiguador_chasis": SA.copy(), "amortiguador_puerta": PD.copy(),
         "cierre_techo_delantero": np.array([1.45, 0.94, 0.40]),     # esquina de la cabecera
         "cierre_estribo_delantero": np.array([1.40, 0.16, 0.59]),
         "cierre_estribo_trasero": np.array([1.90, 0.16, 0.59]),
-        "cierre_trasero": np.array([2.02, 0.742, 0.492]),           # pierna del arco
+        "cierre_trasero": np.array([2.02, 0.660, 0.506]),           # pierna del arco (nodo mh_belt)
     }
 
 
@@ -165,6 +211,7 @@ if __name__ == "__main__":
     print(f"sostener 65° pide {fuerza_amortiguador(65.0):.0f} N -> amortiguador de catálogo {FUERZA_NOMINAL:.0f} N")
     for th in (0, 10, 30, 45, 65):
         print(f"  puerta a {th:2d}°: esfuerzo en la manija {esfuerzo_manual(th):+6.0f} N (+ = levantar)")
-    print("borde inferior abierto a 65°:", np.round(borde_inferior_abierto(65.0), 3))
+    print("borde inferior abierto a 65°:", np.round(borde_inferior_abierto(65.0), 3),
+          "| punto más bajo de la puerta real:", np.round(punto_mas_bajo_abierto(65.0), 3))
     for k, v in lc7().items():
         print(f"  LC7 {k}: F {np.round(v[:3], 1)} N   M {np.round(v[3:], 1)} N·m")

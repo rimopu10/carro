@@ -118,6 +118,26 @@ def _F_puerta():
     return F
 
 
+ARNES_N = 0.6 * 90.0 * 9.81 * 10.0      # 5.3 kN por asiento: 60% de 90 kg a 10 g, en la barra de cinturones
+
+
+def _F_arnes(masas):
+    """LC8: choque frontal a 10 g. El arnés tira de la barra de cinturones hacia adelante (-x) con ARNES_N en cada asiento
+    (nodos baL/baR, z=+-0.31); el chasis se equilibra por inercia, repartida en proporción a la masa de cada nodo."""
+    F = np.zeros(NDOF)
+    tot = 0.0
+    for n in ("baL", "baR"):
+        if n in IDX:
+            F[6 * IDX[n]] -= ARNES_N
+            tot -= ARNES_N
+    if tot == 0.0:
+        return F
+    M = sum(masas.values())
+    for n, m in masas.items():
+        F[6 * IDX[n]] -= tot * m / M
+    return F
+
+
 def _F_vuelco_frontal(nv, nl):
     """LC5c: la volcadura también carga la CABECERA del parabrisas (esquinas hdr), no sólo el arco."""
     W = MASA_TOTAL * g
@@ -176,9 +196,9 @@ def evaluar(miembros):
     pandeo={(a,b): FS Euler mín LC1/3/4}, pandeo5={(a,b): FS Euler LC5}, peor={caso: nombre})"""
     K, elems = ensamblar(miembros)
     masas = _masas(miembros)
-    nombres = ["LC1", "LC3", "LC4", "LC5", "LC5c", "LC7"]
+    nombres = ["LC1", "LC3", "LC4", "LC5", "LC5c", "LC7", "LC8"]
     Fm = np.column_stack([_F(masas, 0, -3.0, 0), _F(masas, -1.0, -1.0, 0), _F(masas, 0, -1.0, 1.0),
-                          _F_vuelco(2.0, 0.75), _F_vuelco_frontal(1.0, 0.5), _F_puerta()])
+                          _F_vuelco(2.0, 0.75), _F_vuelco_frontal(1.0, 0.5), _F_puerta(), _F_arnes(masas)])
     Um = _resolver_multi(K, Fm, _sup())
     out = dict(masa=sum(e["L"] * e["sec"]["A"] * RHO for e in elems), fs={}, peor={},
                fs_miembro={}, fs5={}, pandeo={}, pandeo5={})

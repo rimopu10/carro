@@ -21,11 +21,13 @@ Salidas:
   docs/bom-maestro.md
   docs/bom-maestro.csv
 """
-import csv, os, glob
+import csv, os, glob, sys
 from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.normpath(os.path.join(HERE, ".."))
+sys.path.insert(0, HERE)
+import puertas as _PU
 PLANOS = os.path.join(RAIZ, "planos")
 DOCS = os.path.join(RAIZ, "docs")
 
@@ -164,9 +166,9 @@ add("Puertas", "Bisagras de acero forjado",
     "Se atornillan a ménsulas de placa de 3 mm que bajan del riel del espinazo hasta el eje (y=1.06 m), con "
     "agujeros ranurados para ajustar el encaje en 3 ejes",
     4, "pza", 1000, 1800, "local/ML, días", "docs/herraje-puertas.md", "F2")
-add("Puertas", "Amortiguadores de gas 350 N",
-    "2 (1 por puerta): fuerza nominal **350 N**, carrera ≥ 160 mm, rótulas M8, Ø cilindro 14-16 mm. Sostienen la "
-    "puerta a 65° con 10% de margen; esfuerzo de manija 50 N al abrir",
+add("Puertas", f"Amortiguadores de gas {_PU.FUERZA_NOMINAL:.0f} N",
+    f"2 (1 por puerta): fuerza nominal **{_PU.FUERZA_NOMINAL:.0f} N**, carrera ≥ {_PU.carrera_amortiguador()*1000+20:.0f} mm, rótulas M8, Ø cilindro 14-16 mm. "
+    f"Sostienen la puerta de {_PU.MASA_PUERTA:.0f} kg a 65° con 10% de margen; esfuerzo de manija {_PU.esfuerzo_manual(0.0):.0f} N al abrir",
     2, "pza", 700, 1400, "local/ML, días", "calculos/puertas.py", "F2")
 add("Puertas", "Cierres rotativos con perno ajustable",
     "6 cierres (3 por puerta: esquina de cabecera, estribo, pierna del arco) + 2 manijas exteriores al ras + 2 "

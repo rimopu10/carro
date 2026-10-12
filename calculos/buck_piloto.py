@@ -29,7 +29,7 @@ TECHO_INT = [(1.45, 0.998), (1.60, 1.025), (1.75, 1.045), (1.90, 1.053), (2.00, 
 FORRO = 0.020
 ARCO_X_FRENTE = 2.02 - 0.0254      # cara delantera del arco (RED 50.8)
 CABECERA = (1.45, 0.949)           # eje de la cabecera sobre el piloto (x, y), a z=0.31 (hdr 0.94 -> sp_f 0.965)
-CABECERA_R = 0.0254
+CABECERA_R = 0.0286                # cabecera RED 57.2 (radio real; con 25.4 se sobrestimaba el ángulo)
 
 
 def limite_techo(x):

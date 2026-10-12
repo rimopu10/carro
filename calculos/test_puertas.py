@@ -46,5 +46,16 @@ def test_lc7_transmite_peso_y_viento_al_chasis():
     assert np.allclose(suma_chasis, esperado, atol=1e-6)
 
 
-def test_la_puerta_abierta_deja_el_borde_alto():
-    assert P.borde_inferior_abierto(65.0)[1] > 1.30
+def test_el_amortiguador_no_cruza_el_pilar_a():
+    assert P._libre_del_pilar(P.PD)
+
+
+def test_la_bisagra_queda_bajo_la_piel_del_techo():
+    # piel exterior de Tripo sobre el espinazo: 1.065 (x=1.55) y 1.109 (x=1.85); el perno debe quedar >= 40 mm abajo
+    assert 1.065 - P.punto_eje(1.55)[1] >= 0.040
+    assert 1.109 - P.punto_eje(1.85)[1] >= 0.040
+
+
+def test_la_puerta_abierta_deja_pasar_agachado():
+    # el punto más bajo de la puerta real abierta a 65° debe quedar > 1.20 m (se mide, no se supone)
+    assert P.punto_mas_bajo_abierto(65.0)[1] > 1.20

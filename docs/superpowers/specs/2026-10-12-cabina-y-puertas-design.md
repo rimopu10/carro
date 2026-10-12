@@ -123,3 +123,20 @@ pedalera y de la columna de dirección (aquí sólo se reserva su espacio), tapi
 LC7), `calculos/puertas.py` (geometría de apertura, fuerzas de bisagra/amortiguador, coordenadas de herraje),
 visor con vistas "Ojos piloto" y puerta abierta, filas nuevas en `docs/bom-maestro.*` (herraje, amortiguadores, policarbonato,
 tubo Ø16, placas) y secuencia de armado "encaje sobre el carro".
+
+## 10. Cambios respecto a este diseño (después de implementar y de dos auditorías cruzadas)
+
+El detalle con números está en `docs/herraje-puertas.md`. Lo que cambió:
+
+- **Rieles del asiento:** recorrido de la cadera x **1.43–1.52** (no 1.42–1.58), porque con pedales fijos cada estatura se sienta donde sus
+  pies alcanzan el mismo pedal. Cabe hasta **~1.78 m**; a 1.80 m la espalda roza la barra de cinturones y a 1.85 m la toca (§3 decía 1.80–1.85).
+- **Pedales:** la bola del pie queda en x≈**0.52**, no 0.62–0.70.
+- **Cabecera:** +**12.9°** a 1.75 m con el radio real del tubo (Ø57.2); el +13.4° inicial usaba un radio de 25.4 mm.
+- **Eje de bisagra:** **inclinado** (y 1.00→1.07), no horizontal a 1.06: a x=1.55 el perno asomaba 5 mm sobre la piel.
+- **Puerta de 12 kg de diseño** (objetivo 9–10 kg) → amortiguador de **500 N**, no 350 N. El amortiguador tiene el ancla en (1.55, 0.90, 0.50) para
+  no cruzar el pilar A (con el ancla original lo cruzaba entre 0° y 27°).
+- **Puerta abierta a 65°:** el punto más bajo del ala queda a **1.26 m**, no 1.41; hay que agacharse junto al estribo.
+- **LC7** en equilibrio con el amortiguador a tope; **LC8 (arnés a 10 g, 5.3 kN por asiento) añadido**: las patas del arco y la barra de cinturones
+  pasan a RED 57.2×3.2. El piso de volcadura sube a 1.65 (el valor del diseño anterior).
+- **Paleta de 6 secciones de tubo** (PTR 25×1.9, 38×1.9, 38×3.0, 44×1.9; RED 50.8×2.1, 57.2×3.2): 90.1 kg; con 9 secciones sería ~3.5 kg menos.
+- **Resultado:** 91 miembros, 83 tubos de corte, 90.1 kg, K 8,702 N·m/° (−38% vs el diseño anterior).
