@@ -1,78 +1,85 @@
 #,de_nodo,a_nodo,seccion,funcion,largo_entre_centros_mm,largo_de_corte_mm,extremo_A_topa_contra,angulo_A_grados,corte_A,extremo_B_topa_contra,angulo_B_grados,corte_B,x1,y1,z1,x2,y2,z2
-1,dash_loL,mh_loR,PTR 25x25x1.5,tors,1496,1443,dash_loL-dash_loR,38,inglete 19°,mh_loR-mh_beltR,82,destaje de silla,1100,160,580,2020,160,-600
-2,dash_loR,mh_loL,PTR 25x25x1.5,tors,1496,1437,dash_loL-dash_loR,38,inglete 19°,mh_loL-mh_hiR,52,destaje de silla,1100,160,-580,2020,160,600
-3,dash_hiL,mh_loL,PTR 25x25x1.5,tors,1214,1161,dash_hiL-hdrL,54,destaje de silla,mh_loL-mh_beltL,62,destaje de silla,950,720,480,2020,160,600
-4,dash_hiR,mh_loR,PTR 25x25x1.5,tors,1214,1161,dash_hiR-hdrR,54,destaje de silla,mh_loR-mh_beltR,62,destaje de silla,950,720,-480,2020,160,-600
-5,fx_hiL,fb_hiR,PTR 25x25x1.5,tors,1124,1017,fx_hiL-fx_hiR,21,inglete 10°,fb_hiL-fb_hiR,21,inglete 10°,750,480,550,350,480,-500
-6,mh_loL,r_hiL,PTR 25x25x1.5,tors,887,829,mh_loL-mh_beltL,60,destaje de silla,coilL-r_hiL,63,destaje de silla,2020,160,600,2780,580,420
-7,mh_loR,r_hiR,PTR 25x25x1.5,tors,887,829,mh_loR-mh_beltR,60,destaje de silla,coilR-r_hiR,63,destaje de silla,2020,160,-600,2780,580,-420
-8,fb_hiL,fx_loL,PTR 25x25x1.5,tors,491,418,fb_hiL-fx_hiL,35,inglete 17°,fx_loL-dash_loL,28,inglete 14°,350,480,500,750,200,550
-9,fb_hiR,fx_loR,PTR 25x25x1.5,tors,491,418,fb_hiR-fx_hiR,35,inglete 17°,fx_loR-dash_loR,28,inglete 14°,350,480,-500,750,200,-550
-10,bat_fL,bat_fR,PTR 38x38x1.9,batt,1170,1131,mh_loL-bat_fL,79,inglete 40°,mh_loR-bat_fR,79,inglete 40°,2100,160,585,2100,160,-585
-11,dash_loL,dash_loR,PTR 38x38x1.9,gen,1160,1121,dash_loL-dash_hiL,80,inglete 40°,dash_loR-dash_hiR,80,inglete 40°,1100,160,580,1100,160,-580
-12,fx_hiL,fx_hiR,PTR 38x38x1.9,gen,1100,1061,fx_hiL-dash_hiL,77,inglete 39°,fx_hiR-dash_hiR,77,inglete 39°,750,480,550,750,480,-550
-13,fb_loL,fb_loR,PTR 38x38x1.9,gen,1000,951,noseL-fb_loL,51,inglete 25°,noseR-fb_loR,51,inglete 25°,350,200,500,350,200,-500
-14,fb_hiL,fb_hiR,PTR 38x38x1.9,gen,1000,953,noseL-fb_hiL,54,inglete 27°,noseR-fb_hiR,54,inglete 27°,350,480,500,350,480,-500
-15,mh_beltL,mh_beltR,PTR 38x38x1.9,safe,984,939,mh_beltL-mh_hiL,79,destaje de silla,mh_beltR-mh_hiR,79,destaje de silla,2020,742,492,2020,742,-492
-16,bat_rL,bat_rR,PTR 38x38x1.9,batt,972,933,bat_rL-r_loL,79,inglete 40°,bat_rR-r_loR,79,inglete 40°,2640,160,486,2640,160,-486
-17,r_loL,r_loR,PTR 38x38x1.9,gen,920,877,r_loL-tailL,61,inglete 31°,r_loR-tailR,61,inglete 31°,2780,160,460,2780,160,-460
-18,r_hiL,r_hiR,PTR 38x38x1.9,gen,840,783,coilL-r_hiL,89,destaje de silla,coilR-r_hiR,89,destaje de silla,2780,580,420,2780,580,-420
-19,tailL,tailR,PTR 38x38x1.9,gen,600,557,r_loL-tailL,61,inglete 31°,r_loR-tailR,61,inglete 31°,3000,350,300,3000,350,-300
-20,dash_loL,dash_hiL,PTR 38x38x1.9,safe,588,545,fx_loL-dash_loL,68,inglete 34°,dash_hiL-hdrL,79,destaje de silla,1100,160,580,950,720,480
-21,dash_loR,dash_hiR,PTR 38x38x1.9,safe,588,545,fx_loR-dash_loR,68,inglete 34°,dash_hiR-hdrR,79,destaje de silla,1100,160,-580,950,720,-480
-22,noseL,noseR,PTR 38x38x1.9,gen,560,511,noseL-fb_loL,51,inglete 25°,noseR-fb_loR,51,inglete 25°,100,300,280,100,300,-280
-23,bat_fL,bat_rL,PTR 38x38x1.9,batt,549,366,bat_fL-taL,12,inglete 6°,taL-bat_rL,12,inglete 6°,2100,160,585,2640,160,486
-24,bat_fR,bat_rR,PTR 38x38x1.9,batt,549,366,bat_fR-taR,12,inglete 6°,taR-bat_rR,12,inglete 6°,2100,160,-585,2640,160,-486
-25,dash_loL,seatL,PTR 38x38x1.9,gen,520,337,fx_loL-dash_loL,12,inglete 6°,seatL-mh_loL,12,inglete 6°,1100,160,580,1620,160,591
-26,dash_loR,seatR,PTR 38x38x1.9,gen,520,337,fx_loR-dash_loR,12,inglete 6°,seatR-mh_loR,12,inglete 6°,1100,160,-580,1620,160,-591
-27,r_loL,r_hiL,PTR 38x38x1.9,susp,422,364,r_loL-tailL,52,inglete 26°,coilL-r_hiL,57,destaje de silla,2780,160,460,2780,580,420
-28,r_loR,r_hiR,PTR 38x38x1.9,susp,422,364,r_loR-tailR,52,inglete 26°,coilR-r_hiR,57,destaje de silla,2780,160,-460,2780,580,-420
-29,fb_loL,fx_loL,PTR 38x38x1.9,susp,403,281,noseL-fb_loL,38,inglete 19°,fx_loL-dash_loL,12,inglete 6°,350,200,500,750,200,550
-30,fb_loR,fx_loR,PTR 38x38x1.9,susp,403,281,noseR-fb_loR,38,inglete 19°,fx_loR-dash_loR,12,inglete 6°,350,200,-500,750,200,-550
-31,fb_hiL,fx_hiL,PTR 38x38x1.9,susp,403,352,noseL-fb_hiL,43,inglete 22°,fx_hiL-dash_hiL,54,inglete 27°,350,480,500,750,480,550
-32,fb_hiR,fx_hiR,PTR 38x38x1.9,susp,403,352,noseR-fb_hiR,43,inglete 22°,fx_hiR-dash_hiR,54,inglete 27°,350,480,-500,750,480,-550
-33,seatL,mh_loL,PTR 38x38x1.9,gen,400,286,dash_loL-seatL,12,inglete 6°,mh_loL-mh_hiR,89,destaje de silla,1620,160,591,2020,160,600
-34,seatR,mh_loR,PTR 38x38x1.9,gen,400,286,dash_loR-seatR,12,inglete 6°,mh_loR-mh_beltR,90,destaje de silla,1620,160,-591,2020,160,-600
-35,noseL,fb_hiL,PTR 38x38x1.9,gen,379,324,noseL-fb_loL,45,inglete 23°,fb_hiL-fx_hiL,43,inglete 22°,100,300,280,350,480,500
-36,noseR,fb_hiR,PTR 38x38x1.9,gen,379,324,noseR-fb_loR,45,inglete 23°,fb_hiR-fx_hiR,43,inglete 22°,100,300,-280,350,480,-500
-37,taL,bat_rL,PTR 38x38x1.9,gen,366,183,bat_fL-taL,12,inglete 6°,bat_fL-bat_rL,12,inglete 6°,2280,160,552,2640,160,486
-38,taR,bat_rR,PTR 38x38x1.9,gen,366,183,bat_fR-taR,12,inglete 6°,bat_fR-bat_rR,12,inglete 6°,2280,160,-552,2640,160,-486
-39,fx_loL,dash_loL,PTR 38x38x1.9,gen,354,171,fb_loL-fx_loL,12,inglete 6°,dash_loL-seatL,12,inglete 6°,750,200,550,1100,160,580
-40,fx_loR,dash_loR,PTR 38x38x1.9,gen,354,171,fb_loR-fx_loR,12,inglete 6°,dash_loR-seatR,12,inglete 6°,750,200,-550,1100,160,-580
-41,noseL,fb_loL,PTR 38x38x1.9,gen,348,290,noseL-fb_hiL,45,inglete 23°,fb_loL-fx_loL,38,inglete 19°,100,300,280,350,200,500
-42,noseR,fb_loR,PTR 38x38x1.9,gen,348,290,noseR-fb_hiR,45,inglete 23°,fb_loR-fx_loR,38,inglete 19°,100,300,-280,350,200,-500
-43,r_hiL,tailL,PTR 38x38x1.9,gen,340,247,coilL-r_hiL,23,destaje de silla,tailL-tailR,69,inglete 35°,2780,580,420,3000,350,300
-44,r_hiR,tailR,PTR 38x38x1.9,gen,340,247,coilR-r_hiR,23,destaje de silla,tailL-tailR,69,inglete 35°,2780,580,-420,3000,350,-300
-45,r_loL,tailL,PTR 38x38x1.9,gen,332,282,bat_rL-r_loL,42,inglete 21°,tailL-tailR,61,inglete 31°,2780,160,460,3000,350,300
-46,r_loR,tailR,PTR 38x38x1.9,gen,332,282,bat_rR-r_loR,42,inglete 21°,tailL-tailR,61,inglete 31°,2780,160,-460,3000,350,-300
-47,fb_loL,fb_hiL,PTR 38x38x1.9,susp,280,239,noseL-fb_loL,73,inglete 37°,noseL-fb_hiL,62,inglete 31°,350,200,500,350,480,500
-48,fb_loR,fb_hiR,PTR 38x38x1.9,susp,280,239,noseR-fb_loR,73,inglete 37°,noseR-fb_hiR,62,inglete 31°,350,200,-500,350,480,-500
-49,fx_loL,fx_hiL,PTR 38x38x1.9,susp,280,232,fx_loL-dash_loL,84,inglete 42°,fx_hiL-dash_hiL,41,inglete 21°,750,200,550,750,480,550
-50,fx_loR,fx_hiR,PTR 38x38x1.9,susp,280,232,fx_loR-dash_loR,84,inglete 42°,fx_hiR-dash_hiR,41,inglete 21°,750,200,-550,750,480,-550
-51,bat_fL,taL,PTR 38x38x1.9,gen,183,0,bat_fL-bat_rL,12,inglete 6°,taL-bat_rL,12,inglete 6°,2100,160,585,2280,160,552
-52,bat_fR,taR,PTR 38x38x1.9,gen,183,0,bat_fR-bat_rR,12,inglete 6°,taR-bat_rR,12,inglete 6°,2100,160,-585,2280,160,-552
-53,bat_rL,r_loL,PTR 38x38x1.9,gen,142,23,taL-bat_rL,12,inglete 6°,r_loL-tailL,42,inglete 21°,2640,160,486,2780,160,460
-54,bat_rR,r_loR,PTR 38x38x1.9,gen,142,23,taR-bat_rR,12,inglete 6°,r_loR-tailR,42,inglete 21°,2640,160,-486,2780,160,-460
-55,mh_loL,bat_fL,PTR 38x38x1.9,gen,81,-32,mh_loL-mh_hiR,82,destaje de silla,bat_fL-taL,12,inglete 6°,2020,160,600,2100,160,585
-56,mh_loR,bat_fR,PTR 38x38x1.9,gen,81,-32,mh_loR-mh_beltR,88,destaje de silla,bat_fR-taR,12,inglete 6°,2020,160,-600,2100,160,-585
-57,fx_hiL,dash_hiL,PTR 38x38x3.0,safe,320,241,fx_loL-fx_hiL,41,inglete 21°,dash_hiL-hdrL,26,destaje de silla,750,480,550,950,720,480
-58,fx_hiR,dash_hiR,PTR 38x38x3.0,safe,320,241,fx_loR-fx_hiR,41,inglete 21°,dash_hiR-hdrR,26,destaje de silla,750,480,-550,950,720,-480
-59,mh_loL,mh_hiR,RED 44.5x3.2,safe,1343,1264,mh_loL-mh_beltL,40,destaje de silla,sp_rR-mh_hiR,39,destaje de silla,2020,160,600,2020,1010,-440
-60,mh_loL,mh_beltL,RED 44.5x3.2,safe,592,450,mh_loL-mh_hiR,40,destaje de silla,mh_beltL-mh_hiL,12,destaje de silla,2020,160,600,2020,742,492
-61,mh_loR,mh_beltR,RED 44.5x3.2,safe,592,466,mh_loR-bat_fR,88,inglete 44°,mh_beltR-mh_hiR,12,destaje de silla,2020,160,-600,2020,742,-492
-62,dash_hiL,hdrL,RED 44.5x3.2,safe,554,481,fx_hiL-dash_hiL,26,inglete 13°,hdrL-sp_fL,84,destaje de silla,950,720,480,1450,950,420
-63,dash_hiR,hdrR,RED 44.5x3.2,safe,554,481,fx_hiR-dash_hiR,26,inglete 13°,sp_fR-hdrR,84,destaje de silla,950,720,-480,1450,950,-420
-64,mh_beltL,mh_hiL,RED 44.5x3.2,safe,273,134,mh_loL-mh_beltL,12,destaje de silla,mh_hiL-coilL,63,destaje de silla,2020,742,492,2020,1010,440
-65,mh_beltR,mh_hiR,RED 44.5x3.2,safe,273,134,mh_loR-mh_beltR,12,destaje de silla,mh_hiR-coilR,63,destaje de silla,2020,742,-492,2020,1010,-440
-66,mh_hiL,coilL,RED 57.2x3.2,safe,635,468,mh_hiL-sp_rL,89,destaje de silla,coilL-r_hiL,12,destaje de silla,2020,1010,440,2580,712,425
-67,mh_hiR,coilR,RED 57.2x3.2,safe,635,468,sp_rR-mh_hiR,89,destaje de silla,coilR-r_hiR,12,destaje de silla,2020,1010,-440,2580,712,-425
-68,sp_fL,sp_rL,RED 57.2x3.2,safe,573,516,hdrL-sp_fL,90,destaje de silla,mh_hiL-sp_rL,90,destaje de silla,1450,950,150,2020,1010,150
-69,sp_fR,sp_rR,RED 57.2x3.2,safe,573,516,sp_fL-sp_fR,90,destaje de silla,sp_rL-sp_rR,90,destaje de silla,1450,950,-150,2020,1010,-150
-70,sp_fL,sp_fR,RED 57.2x3.2,safe,300,25,hdrL-sp_fL,12,destaje de silla,sp_fR-hdrR,12,destaje de silla,1450,950,150,1450,950,-150
-71,sp_rL,sp_rR,RED 57.2x3.2,safe,300,25,mh_hiL-sp_rL,12,destaje de silla,sp_rR-mh_hiR,12,destaje de silla,2020,1010,150,2020,1010,-150
-72,mh_hiL,sp_rL,RED 57.2x3.2,safe,290,124,mh_hiL-coilL,89,destaje de silla,sp_rL-sp_rR,12,destaje de silla,2020,1010,440,2020,1010,150
-73,sp_rR,mh_hiR,RED 57.2x3.2,safe,290,124,sp_rL-sp_rR,12,destaje de silla,mh_hiR-coilR,89,destaje de silla,2020,1010,-150,2020,1010,-440
-74,hdrL,sp_fL,RED 57.2x3.2,safe,270,110,dash_hiL-hdrL,84,destaje de silla,sp_fL-sp_fR,12,destaje de silla,1450,950,420,1450,950,150
-75,sp_fR,hdrR,RED 57.2x3.2,safe,270,110,sp_fL-sp_fR,12,destaje de silla,dash_hiR-hdrR,84,destaje de silla,1450,950,-150,1450,950,-420
-76,coilL,r_hiL,RED 57.2x3.2,safe,240,54,mh_hiL-coilL,12,destaje de silla,r_hiL-tailL,23,inglete 12°,2580,712,425,2780,580,420
-77,coilR,r_hiR,RED 57.2x3.2,safe,240,54,mh_hiR-coilR,12,destaje de silla,r_hiR-tailR,23,inglete 12°,2580,712,-425,2780,580,-420
+1,dash_loL,cf1,PTR 25x25x1.9,gen,580,558,dash_loL-seatFL,88,inglete 44°,dash_loR-cf1,180,recto,1100,160,580,1100,160,0
+2,dash_loR,cf1,PTR 25x25x1.9,gen,580,558,dash_loR-seatFR,88,inglete 44°,dash_loL-cf1,180,recto,1100,160,-580,1100,160,0
+3,bat_fL,smRL,PTR 25x25x1.9,tors,519,467,bat_fL-taL,42,inglete 21°,seatL-smRL,58,inglete 29°,2100,160,585,1660,160,310
+4,bat_fR,smRR,PTR 25x25x1.9,tors,519,467,bat_fR-taR,42,inglete 21°,seatR-smRR,58,inglete 29°,2100,160,-585,1660,160,-310
+5,seatL,smFL,PTR 25x25x1.9,tors,411,348,seatL-mh_loL,42,inglete 21°,seatFL-smFL,47,inglete 23°,1660,160,591,1360,160,310
+6,seatR,smFR,PTR 25x25x1.9,tors,411,348,seatR-mh_loR,42,inglete 21°,seatFR-smFR,47,inglete 23°,1660,160,-591,1360,160,-310
+7,bat_fL,bat_fR,PTR 32x32x1.9,batt,1170,1125,bat_fL-taL,80,inglete 40°,bat_fR-taR,80,inglete 40°,2100,160,585,2100,160,-585
+8,bat_rL,bat_rR,PTR 32x32x1.9,batt,972,933,bat_rL-r_loL,79,inglete 40°,bat_rR-r_loR,79,inglete 40°,2640,160,486,2640,160,-486
+9,bat_fL,coilL,PTR 32x32x1.9,tors,749,693,bat_fL-taL,48,inglete 24°,mh_hiL-coilL,77,destaje de silla,2100,160,585,2580,712,425
+10,bat_fR,coilR,PTR 32x32x1.9,tors,749,693,bat_fR-taR,48,inglete 24°,mh_hiR-coilR,77,destaje de silla,2100,160,-585,2580,712,-425
+11,tailL,tailR,PTR 32x32x1.9,gen,600,557,r_loL-tailL,61,inglete 31°,r_loR-tailR,61,inglete 31°,3000,350,300,3000,350,-300
+12,noseL,noseR,PTR 32x32x1.9,gen,560,511,noseL-fb_loL,51,inglete 25°,noseR-fb_loR,51,inglete 25°,100,300,280,100,300,-280
+13,dash_loL,fx_hiL,PTR 32x32x1.9,tors,475,414,dash_loL-seatFL,42,inglete 21°,fb_hiL-fx_hiL,42,inglete 21°,1100,160,580,750,480,550
+14,dash_loR,fx_hiR,PTR 32x32x1.9,tors,475,414,dash_loR-seatFR,42,inglete 21°,fb_hiR-fx_hiR,42,inglete 21°,1100,160,-580,750,480,-550
+15,smRL,cf2,PTR 32x32x1.9,asiento,310,310,seatL-smRL,180,recto,smRR-cf2,180,recto,1660,160,310,1660,160,0
+16,smRR,cf2,PTR 32x32x1.9,asiento,310,310,seatR-smRR,180,recto,smRL-cf2,180,recto,1660,160,-310,1660,160,0
+17,seatL,smRL,PTR 32x32x1.9,asiento,281,259,seatL-mh_loL,89,inglete 44°,smRL-cf2,180,recto,1660,160,591,1660,160,310
+18,seatR,smRR,PTR 32x32x1.9,asiento,281,259,seatR-mh_loR,89,inglete 44°,smRR-cf2,180,recto,1660,160,-591,1660,160,-310
+19,fx_hiL,fx_hiR,PTR 38x38x1.9,gen,1100,1061,fx_hiL-dash_hiL,75,inglete 38°,fx_hiR-dash_hiR,75,inglete 38°,750,480,550,750,480,-550
+20,fb_loL,fb_loR,PTR 38x38x1.9,gen,1000,956,fb_loL-fx_loL,83,inglete 41°,fb_loR-fx_loR,83,inglete 41°,350,200,500,350,200,-500
+21,fb_hiL,fb_hiR,PTR 38x38x1.9,gen,1000,953,noseL-fb_hiL,54,inglete 27°,noseR-fb_hiR,54,inglete 27°,350,480,500,350,480,-500
+22,r_loL,r_loR,PTR 38x38x1.9,gen,920,877,r_loL-tailL,61,inglete 31°,r_loR-tailR,61,inglete 31°,2780,160,460,2780,160,-460
+23,r_hiL,r_hiR,PTR 38x38x1.9,gen,840,789,coilL-r_hiL,89,destaje de silla,coilR-r_hiR,89,destaje de silla,2780,580,420,2780,580,-420
+24,dash_loL,dash_hiL,PTR 38x38x1.9,safe,522,470,dash_loL-seatFL,73,inglete 36°,dash_hiL-hdrL,76,destaje de silla,1100,160,580,950,650,480
+25,dash_loR,dash_hiR,PTR 38x38x1.9,safe,522,470,dash_loR-seatFR,73,inglete 36°,dash_hiR-hdrR,76,destaje de silla,1100,160,-580,950,650,-480
+26,r_loL,r_hiL,PTR 38x38x1.9,susp,422,367,r_loL-tailL,52,inglete 26°,coilL-r_hiL,57,destaje de silla,2780,160,460,2780,580,420
+27,r_loR,r_hiR,PTR 38x38x1.9,susp,422,367,r_loR-tailR,52,inglete 26°,coilR-r_hiR,57,destaje de silla,2780,160,-460,2780,580,-420
+28,fb_hiL,fx_hiL,PTR 38x38x1.9,susp,403,349,noseL-fb_hiL,43,inglete 22°,fx_hiL-dash_hiL,46,inglete 23°,350,480,500,750,480,550
+29,fb_hiR,fx_hiR,PTR 38x38x1.9,susp,403,349,noseR-fb_hiR,43,inglete 22°,fx_hiR-dash_hiR,46,inglete 23°,350,480,-500,750,480,-550
+30,noseL,fb_hiL,PTR 38x38x1.9,gen,379,324,noseL-fb_loL,45,inglete 23°,fb_hiL-fx_hiL,43,inglete 22°,100,300,280,350,480,500
+31,noseR,fb_hiR,PTR 38x38x1.9,gen,379,324,noseR-fb_loR,45,inglete 23°,fb_hiR-fx_hiR,43,inglete 22°,100,300,-280,350,480,-500
+32,taL,bat_rL,PTR 38x38x1.9,gen,366,366,bat_fL-taL,180,recto,bat_rL-r_loL,180,recto,2280,160,552,2640,160,486
+33,taR,bat_rR,PTR 38x38x1.9,gen,366,366,bat_fR-taR,180,recto,bat_rR-r_loR,180,recto,2280,160,-552,2640,160,-486
+34,fx_loL,dash_loL,PTR 38x38x1.9,gen,354,351,fb_loL-fx_loL,173,inglete 3°,dash_loL-seatFL,173,inglete 3°,750,200,550,1100,160,580
+35,fx_loR,dash_loR,PTR 38x38x1.9,gen,354,351,fb_loR-fx_loR,173,inglete 3°,dash_loR-seatFR,173,inglete 3°,750,200,-550,1100,160,-580
+36,noseL,fb_loL,PTR 38x38x1.9,gen,348,285,noseL-fb_hiL,45,inglete 23°,fb_loL-fx_loL,38,inglete 19°,100,300,280,350,200,500
+37,noseR,fb_loR,PTR 38x38x1.9,gen,348,285,noseR-fb_hiR,45,inglete 23°,fb_loR-fx_loR,38,inglete 19°,100,300,-280,350,200,-500
+38,r_hiL,tailL,PTR 38x38x1.9,gen,340,316,coilL-r_hiL,157,inglete 12°,r_loL-tailL,78,inglete 39°,2780,580,420,3000,350,300
+39,r_hiR,tailR,PTR 38x38x1.9,gen,340,316,coilR-r_hiR,157,inglete 12°,r_loR-tailR,78,inglete 39°,2780,580,-420,3000,350,-300
+40,r_loL,tailL,PTR 38x38x1.9,gen,332,284,bat_rL-r_loL,42,inglete 21°,r_hiL-tailL,78,inglete 39°,2780,160,460,3000,350,300
+41,r_loR,tailR,PTR 38x38x1.9,gen,332,284,bat_rR-r_loR,42,inglete 21°,r_hiR-tailR,78,inglete 39°,2780,160,-460,3000,350,-300
+42,fb_loL,fb_hiL,PTR 38x38x1.9,susp,280,236,fb_loL-fx_loL,90,inglete 45°,noseL-fb_hiL,62,inglete 31°,350,200,500,350,480,500
+43,fb_loR,fb_hiR,PTR 38x38x1.9,susp,280,236,fb_loR-fx_loR,90,inglete 45°,noseR-fb_hiR,62,inglete 31°,350,200,-500,350,480,-500
+44,fx_loL,fx_hiL,PTR 38x38x1.9,susp,280,234,fb_loL-fx_loL,90,inglete 45°,fx_hiL-dash_hiL,51,inglete 26°,750,200,550,750,480,550
+45,fx_loR,fx_hiR,PTR 38x38x1.9,susp,280,234,fb_loR-fx_loR,90,inglete 45°,fx_hiR-dash_hiR,51,inglete 26°,750,200,-550,750,480,-550
+46,fx_hiL,dash_hiL,PTR 38x38x1.9,safe,272,242,fb_hiL-fx_hiL,46,inglete 23°,dash_hiL-hdrL,168,inglete 6°,750,480,550,950,650,480
+47,fx_hiR,dash_hiR,PTR 38x38x1.9,safe,272,242,fb_hiR-fx_hiR,46,inglete 23°,dash_hiR-hdrR,168,inglete 6°,750,480,-550,950,650,-480
+48,bat_rL,r_loL,PTR 38x38x1.9,gen,142,114,taL-bat_rL,180,recto,r_loL-tailL,42,inglete 21°,2640,160,486,2780,160,460
+49,bat_rR,r_loR,PTR 38x38x1.9,gen,142,114,taR-bat_rR,180,recto,r_loR-tailR,42,inglete 21°,2640,160,-486,2780,160,-460
+50,mh_loL,bat_fL,PTR 38x38x1.9,gen,81,53,mh_loL-mh_beltL,88,destaje de silla,bat_fL-taL,180,recto,2020,160,600,2100,160,585
+51,mh_loR,bat_fR,PTR 38x38x1.9,gen,81,53,mh_loR-mh_beltR,88,destaje de silla,bat_fR-taR,180,recto,2020,160,-600,2100,160,-585
+52,mh_beltL,mh_beltR,PTR 38x38x3.0,safe,1012,954,mh_beltL-mh_hiL,79,destaje de silla,mh_beltR-mh_hiR,79,destaje de silla,2020,660,506,2020,660,-506
+53,fb_loL,fx_loL,PTR 44x44x1.9,susp,403,371,noseL-fb_loL,38,inglete 19°,fx_loL-dash_loL,173,inglete 3°,350,200,500,750,200,550
+54,fb_loR,fx_loR,PTR 44x44x1.9,susp,403,371,noseR-fb_loR,38,inglete 19°,fx_loR-dash_loR,173,inglete 3°,350,200,-500,750,200,-550
+55,seatL,mh_loL,PTR 44x44x1.9,gen,360,331,seatFL-seatL,179,recto,mh_loL-mh_beltL,90,destaje de silla,1660,160,591,2020,160,600
+56,seatR,mh_loR,PTR 44x44x1.9,gen,360,331,seatFR-seatR,179,recto,mh_loR-mh_beltR,90,destaje de silla,1660,160,-591,2020,160,-600
+57,smFL,cfF,PTR 44x44x1.9,asiento,310,310,seatFL-smFL,180,recto,smFR-cfF,180,recto,1360,160,310,1360,160,0
+58,smFR,cfF,PTR 44x44x1.9,asiento,310,310,seatFR-smFR,180,recto,smFL-cfF,180,recto,1360,160,-310,1360,160,0
+59,seatFL,seatL,PTR 44x44x1.9,gen,300,299,dash_loL-seatFL,178,inglete 1°,seatL-mh_loL,179,recto,1360,160,591,1660,160,591
+60,seatFR,seatR,PTR 44x44x1.9,gen,300,299,dash_loR-seatFR,178,inglete 1°,seatR-mh_loR,179,recto,1360,160,-591,1660,160,-591
+61,seatFL,smFL,PTR 44x44x1.9,asiento,281,259,dash_loL-seatFL,88,inglete 44°,smFL-cfF,180,recto,1360,160,591,1360,160,310
+62,seatFR,smFR,PTR 44x44x1.9,asiento,281,259,dash_loR-seatFR,88,inglete 44°,smFR-cfF,180,recto,1360,160,-591,1360,160,-310
+63,dash_loL,seatFL,PTR 44x44x1.9,gen,260,259,fx_loL-dash_loL,173,inglete 3°,seatFL-seatL,178,inglete 1°,1100,160,580,1360,160,591
+64,dash_loR,seatFR,PTR 44x44x1.9,gen,260,259,fx_loR-dash_loR,173,inglete 3°,seatFR-seatR,178,inglete 1°,1100,160,-580,1360,160,-591
+65,bat_fL,taL,PTR 44x44x1.9,gen,183,183,mh_loL-bat_fL,180,recto,taL-bat_rL,180,recto,2100,160,585,2280,160,552
+66,bat_fR,taR,PTR 44x44x1.9,gen,183,183,mh_loR-bat_fR,180,recto,taR-bat_rR,180,recto,2100,160,-585,2280,160,-552
+67,mh_hiL,coilL,RED 50.8x2.1,safe,635,601,mh_beltL-mh_hiL,63,destaje de silla,coilL-r_hiL,175,inglete 3°,2020,1010,440,2580,712,425
+68,mh_hiR,coilR,RED 50.8x2.1,safe,635,601,mh_beltR-mh_hiR,63,destaje de silla,coilR-r_hiR,175,inglete 3°,2020,1010,-440,2580,712,-425
+69,sp_fL,sp_fR,RED 50.8x2.1,safe,300,297,hdrL-sp_fL,174,inglete 3°,hdrR-sp_fR,174,inglete 3°,1450,965,150,1450,965,-150
+70,coilL,r_hiL,RED 50.8x2.1,safe,240,235,mh_hiL-coilL,175,inglete 3°,r_hiL-tailL,157,inglete 12°,2580,712,425,2780,580,420
+71,coilR,r_hiR,RED 50.8x2.1,safe,240,235,mh_hiR-coilR,175,inglete 3°,r_hiR-tailR,157,inglete 12°,2580,712,-425,2780,580,-420
+72,sp_rL,sp_rR,RED 50.8x3.2,safe,300,243,sp_rL-sp_fL,90,destaje de silla,sp_rR-sp_fR,90,destaje de silla,2020,1010,150,2020,1010,-150
+73,mh_hiL,sp_rL,RED 50.8x3.2,safe,290,232,mh_beltL-mh_hiL,79,destaje de silla,sp_rL-sp_fL,90,destaje de silla,2020,1010,440,2020,1010,150
+74,mh_hiR,sp_rR,RED 50.8x3.2,safe,290,232,mh_beltR-mh_hiR,79,destaje de silla,sp_rR-sp_fR,90,destaje de silla,2020,1010,-440,2020,1010,-150
+75,mh_loL,mh_beltL,RED 57.2x2.1,safe,509,487,seatL-mh_loL,90,inglete 45°,mh_beltL-mh_hiL,180,recto,2020,160,600,2020,660,506
+76,mh_loR,mh_beltR,RED 57.2x2.1,safe,509,487,seatR-mh_loR,90,inglete 45°,mh_beltR-mh_hiR,180,recto,2020,160,-600,2020,660,-506
+77,mh_beltL,mh_hiL,RED 57.2x2.1,safe,356,328,mh_loL-mh_beltL,180,recto,mh_hiL-coilL,63,destaje de silla,2020,660,506,2020,1010,440
+78,mh_beltR,mh_hiR,RED 57.2x2.1,safe,356,328,mh_loR-mh_beltR,180,recto,mh_hiR-coilR,63,destaje de silla,2020,660,-506,2020,1010,-440
+79,dash_hiL,hdrL,RED 57.2x3.2,safe,584,552,fx_hiL-dash_hiL,168,inglete 6°,hdrL-sp_fL,79,destaje de silla,950,650,480,1450,940,400
+80,dash_hiR,hdrR,RED 57.2x3.2,safe,584,552,fx_hiR-dash_hiR,168,inglete 6°,hdrR-sp_fR,79,destaje de silla,950,650,-480,1450,940,-400
+81,sp_rL,sp_fL,RED 57.2x3.2,safe,572,518,mh_hiL-sp_rL,90,destaje de silla,hdrL-sp_fL,90,destaje de silla,2020,1010,150,1450,965,150
+82,sp_rR,sp_fR,RED 57.2x3.2,safe,572,518,mh_hiR-sp_rR,90,destaje de silla,hdrR-sp_fR,90,destaje de silla,2020,1010,-150,1450,965,-150
+83,hdrL,sp_fL,RED 57.2x3.2,safe,251,194,dash_hiL-hdrL,79,destaje de silla,sp_rL-sp_fL,90,destaje de silla,1450,940,400,1450,965,150
+84,hdrR,sp_fR,RED 57.2x3.2,safe,251,194,dash_hiR-hdrR,79,destaje de silla,sp_rR-sp_fR,90,destaje de silla,1450,940,-400,1450,965,-150

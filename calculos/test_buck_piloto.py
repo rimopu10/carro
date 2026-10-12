@@ -11,9 +11,10 @@ def test_maniqui_es_adulto_real():
 
 def test_postura_nominal_cumple_el_diseno():
     m = B.metricas(B.postura(1.50, 0.26, 40.0))
+    assert m["espalda_barra"] >= 0.030
     assert m["holgura_techo"] >= 0.060       # coronilla vs límite útil del techo
     assert m["nuca_arco"] >= 0.080           # nuca vs cara delantera del arco
-    assert m["cabecera_grados"] >= 10.5      # borde inferior de la cabecera sobre el ojo
+    assert m["cabecera_grados"] >= 12.0      # borde inferior de la cabecera sobre el ojo (spec §6)
 
 
 def test_postura_vieja_no_cabe():
@@ -22,12 +23,18 @@ def test_postura_vieja_no_cabe():
 
 
 def test_recorrido_con_pedales_fijos():
-    # 1.85 m se sienta donde sus pies alcanzan el mismo pedal: nuca a >= 20 mm del arco
-    hx = B.cadera_para_pedal(1.85)
-    m = B.metricas(B.postura(hx, 0.26, 40.0, estatura=1.85))
+    # 1.80 m se sienta donde sus pies alcanzan el mismo pedal: nuca y espalda no tocan el arco
+    hx = B.cadera_para_pedal(1.80)
+    m = B.metricas(B.postura(hx, 0.26, 40.0, estatura=1.80))
     assert hx > B.NOMINAL["hx"]                    # el alto va más atrás
-    assert m["nuca_arco"] >= 0.020
+    assert m["nuca_arco"] >= 0.040
+    assert m["espalda_barra"] >= -0.005            # la espalda no toca la barra de cinturones
     assert B.RIELES[0] < B.NOMINAL["hx"] < B.RIELES[1]
+
+
+def test_1_85_ya_no_cabe_contra_la_barra():
+    m = B.metricas(B.postura(B.cadera_para_pedal(1.85), 0.26, 40.0, estatura=1.85))
+    assert m["espalda_barra"] < -0.010
 
 
 def test_1_60_se_sienta_adelante_y_cabe():

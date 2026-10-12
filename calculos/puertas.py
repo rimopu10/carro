@@ -19,7 +19,7 @@ VIENTO_N = 400.0            # N laterales, en el centro de la puerta abierta
 THETA_MAX = 65.0
 
 # eje: el riel del espinazo sp_f -> sp_r, lado izquierdo
-A_SF = np.array([1.45, 0.95, 0.15])
+A_SF = np.array([1.45, 0.965, 0.15])
 A_SR = np.array([2.02, 1.01, 0.15])
 EJE_A0 = A_SF.copy()
 EJE_U = (A_SR - A_SF) / np.linalg.norm(A_SR - A_SF)
@@ -27,7 +27,7 @@ S_H1, S_H2 = 0.12, 0.86     # estaciones de las 2 bisagras a lo largo del riel (
 
 CM_CERRADA = np.array([1.70, 0.72, 0.70])     # centro de masa de la puerta cerrada
 BORDE_INF = np.array([1.70, 0.28, 0.90])      # punto bajo del borde de la puerta
-SA = np.array([1.45, 0.938, 0.30])            # ancla del amortiguador en el chasis (cabecera, lado izq.)
+SA = np.array([1.45, 0.949, 0.30])            # ancla del amortiguador en el chasis (cabecera, lado izq.)
 
 
 def punto_riel(s):
@@ -145,7 +145,7 @@ def herraje():
     return {
         "bisagra_1": punto_riel(S_H1), "bisagra_2": punto_riel(S_H2),
         "amortiguador_chasis": SA.copy(), "amortiguador_puerta": PD.copy(),
-        "cierre_techo_delantero": np.array([1.45, 0.93, 0.40]),     # esquina de la cabecera
+        "cierre_techo_delantero": np.array([1.45, 0.94, 0.40]),     # esquina de la cabecera
         "cierre_estribo_delantero": np.array([1.40, 0.16, 0.59]),
         "cierre_estribo_trasero": np.array([1.90, 0.16, 0.59]),
         "cierre_trasero": np.array([2.02, 0.742, 0.492]),           # pierna del arco

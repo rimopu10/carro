@@ -86,15 +86,19 @@ NM("dash_lo", 1.10, 0.16, 0.58)
 # Pie del pilar A adelantado y cabecera atrasada: el parabrisas pasa de 44° a 65° de
 # la vertical (44° es ángulo de camioneta). No cuesta acero y el pilar más largo y
 # tumbado triangula mejor: la rigidez torsional sube de 12,496 a 13,830 N·m/°.
-NM("dash_hi", 0.95, 0.72, 0.48)
+# 2026-10-11: la piel de Tripo (cofre/pilar A) queda 27 mm más baja que la v3 en el cowl:
+# el pie del pilar A baja de 0.72 a 0.65 y la cabecera 20 mm y 20 mm hacia dentro, para
+# dejar >= 14 mm de aire bajo el cascarón de 12 mm (calculos/arreglar_chasis_tripo.py).
+# K_torsional sube 13,830 -> 14,177 y volcadura 1.61 -> 1.64.
+NM("dash_hi", 0.95, 0.65, 0.48)
 # Techo 70 mm más abajo (butacas recinadas 12°, escenario D). Baja el arco → palanca
 # más corta → el caso de volcadura MEJORA de 1.49 a 1.59.
-NM("hdr",   1.45, 0.95, 0.42)   # cabecera parabrisas (esquina del pilar A)
-NM("sp_f",  1.45, 0.95, 0.15)   # espinazo delantero — eje de bisagra de la gaviota
+NM("hdr",   1.45, 0.94, 0.40)   # cabecera parabrisas (esquina del pilar A)
+NM("sp_f",  1.45, 0.965, 0.15)   # espinazo delantero — eje de bisagra de la gaviota
 NM("sp_r",  2.02, 1.01, 0.15)   # espinazo trasero
 NM("seat",  1.62, 0.16, 0.591)  # punto de asiento sobre estribo
 NM("mh_lo", 2.02, 0.16, 0.60)   # arco principal pie
-NM("mh_belt",2.02, 0.742, 0.492) # nodo barra de cinturones (sobre la pierna del arco)
+NM("mh_belt",2.02, 0.660, 0.506) # barra de cinturones (sobre la pierna del arco). 2026-10-12: 0.742 -> 0.660 = altura real del hombro (maniquí de 1.75 m, buck_piloto.py)
 NM("mh_hi", 2.02, 1.01, 0.44)   # arco principal corona
 NM("bat_f", 2.10, 0.16, 0.585)  # cuna batería frente (sobre riel)
 NM("ta",    2.28, 0.16, 0.552)  # pivote brazo trasero (sobre riel)
@@ -160,6 +164,32 @@ MM("r_lo", "tail"); MM("r_hi", "tail"); CROSS("tail"); CROSS("r_hi"); CROSS("r_l
 CROSS("bat_f", tag="batt"); CROSS("bat_r", tag="batt")
 MM("bat_f", "bat_r", tag="batt")
 
+# ---------------- REDISEÑO 2026-10-11 (calculos/rediseno_chasis.py) ----------------
+# Si existe calculos/chasis_rediseno.json, ESE es el chasis: mismos nodos duros, hueco de puerta
+# libre (se quitó la diagonal dash_hi-mh_lo que cruzaba la entrada), tubos recolocados por
+# optimización de estructura y secciones bajadas donde sobraban. Borrar el JSON devuelve el
+# diseño anterior de arriba.
+_RED = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chasis_rediseno.json")
+if os.path.exists(_RED) and not os.environ.get("CHASIS_BASE"):   # CHASIS_BASE=1: el diseño de partida
+    import json as _json, re as _re
+    _d = _json.load(open(_RED, encoding="utf-8"))
+    def _sec(nombre):
+        t, dims = nombre.split(" ", 1)
+        v = [float(x) for x in dims.split("x")]
+        return sec_ptr(v[0]/1000, v[2]/1000) if t == "PTR" else sec_red(v[0]/1000, v[1]/1000)
+    for _n, _p in _d["nodos_nuevos"].items():
+        N(_n, *_p)
+    MEMBERS[:] = [(a, b, _sec(sn), tag) for a, b, sn, tag in _d["miembros"]]
+    _usados = {n for m in MEMBERS for n in m[:2]}
+    for _n in [n for n in NODES if n not in _usados]:      # nodo nuevo que la optimización dejó sin tubos
+        print(f"  (nodo {_n} sin tubos: se descarta)")
+        del NODES[_n]
+    for _n, _p in _d.get("nodos_movidos", {}).items():      # nodos del diseño base que el rediseño reubica
+        N(_n, *_p)
+    _MOVER = _d.get("masas_mover", {})
+else:
+    _MOVER = {}
+
 # ---------------- ensamble FEM viga 3D ----------------
 names = sorted(NODES)
 idx = {n: i for i, n in enumerate(names)}
@@ -223,6 +253,10 @@ MASAS = {  # kg aplicados en nodos (por nodo)
 MASA_TOTAL_CARRO = 690.0
 MASA_NO_SUSPENDIDA = 2 * 18.0 + 2 * 45.0
 MASA_SUSPENDIDA = MASA_TOTAL_CARRO - MASA_NO_SUSPENDIDA
+for _o, _t in _MOVER.items():       # el ocupante pesa donde se atornillan los rieles de su asiento
+    _m = MASAS.pop(_o)
+    for _n, _f in (_t.items() if isinstance(_t, dict) else [(_t, 1.0)]):
+        MASAS[_n] = MASAS.get(_n, 0.0) + _m * _f
 _falta = MASA_SUSPENDIDA - sum(MASAS.values())
 if _falta > 0:
     _tubo_por_nodo = {n: 0.0 for n in NODES}
@@ -301,6 +335,23 @@ resultados = {}
 resultados["LC1 Bache 3g"]   = analizar("LC1", F_vector(0, -3.0, 0))
 resultados["LC5 Volcadura (2.0W vert + 0.75W lat)"] = analizar("LC5", F_vuelco(2.0, 0.75))
 resultados["LC5b Volcadura FIA (7.5W + 5.5W)"] = analizar("LC5b", F_vuelco(7.5, 5.5))
+def F_vuelco_cabecera(nv, nl):
+    """LC5c: la volcadura también carga la cabecera del parabrisas (esquinas hdr), no sólo el arco."""
+    W = MASA_TOTAL_CARRO * g
+    F = np.zeros(ndof)
+    for n in ("hdrL", "hdrR"):
+        i = 6 * idx[n]
+        F[i + 1] -= nv * W / 2
+        F[i + 2] += nl * W / 2
+    return F
+
+resultados["LC5c Volcadura sobre la cabecera (1.0W vert + 0.5W lat)"] = analizar("LC5c", F_vuelco_cabecera(1.0, 0.5))
+if "h1L" in NODES:     # el rediseño trae bisagras y amortiguador: LC7 puertas abiertas a 65 grados
+    import puertas as _PU
+    _F7 = np.zeros(ndof)
+    for _n, _f in _PU.lc7().items():
+        _F7[6*idx[_n]:6*idx[_n]+3] += _f
+    resultados["LC7 Puertas abiertas a 65° (3g + viento 400 N + amortiguador)"] = analizar("LC7", _F7)
 resultados["LC3 Frenada 1g"] = analizar("LC3", F_vector(-1.0, -1.0, 0))
 resultados["LC4 Curva 1g"]   = analizar("LC4", F_vector(0, -1.0, 1.0))
 
@@ -315,6 +366,11 @@ Ut = solve(Fq, SUP_T)
 dyL = Ut[6*idx["fx_hiL"] + 1]; dyR = Ut[6*idx["fx_hiR"] + 1]
 theta = (dyL - dyR)/(2*brazo)
 K_tors = Par/np.degrees(theta)  # N·m/grado
+
+# LC6: resistencia a la torsión de un bache en UNA rueda a 3g ~ 3x el par de la prueba de rigidez
+Fq6 = 3.0 * Fq
+U6 = solve(Fq6, SUP_T)
+FS_TORS6 = min((FY / max(esfuerzo_max(e, U6)[0], 1.0)) for e in elems)
 
 # ---------------- informes ----------------
 os.makedirs(os.path.join(os.path.dirname(__file__), "..", "planos"), exist_ok=True)
@@ -351,8 +407,23 @@ with open(out_csv, "w", newline="", encoding="utf-8") as f:
     # En cada nudo, el tubo se topa contra el más grueso que llega ahí: se descuenta
     # c_vecino/sen(θ) y se corta a inglete θ/2 (o destaje de silla si el vecino es
     # redondo). CORREGIDO 2026-08-05: antes solo salía la longitud entre centros.
+    # Nodos VIRTUALES (bases de bisagra h1/h2 y ancla del amortiguador sa): en el FEM parten el tubo para aplicar la
+    # carga, pero en el taller son placas soldadas sobre UN tubo continuo -> en la lista de corte se fusionan.
+    VIRTUALES = {"h1L", "h2L", "saL", "h1R", "h2R", "saR"}
+    def fusionar(lista):
+        lista = list(lista)
+        for vn in VIRTUALES:
+            tocan = [e for e in lista if vn in (e["a"], e["b"])]
+            if len(tocan) == 2 and tocan[0]["sec"]["nombre"] == tocan[1]["sec"]["nombre"]:
+                e1, e2 = tocan
+                o1 = e1["b"] if e1["a"] == vn else e1["a"]
+                o2 = e2["b"] if e2["a"] == vn else e2["a"]
+                nuevo = dict(e1); nuevo["a"], nuevo["b"], nuevo["L"] = o1, o2, e1["L"] + e2["L"]
+                lista = [e for e in lista if e is not e1 and e is not e2] + [nuevo]
+        return lista
+    elems_corte = fusionar(elems)
     def vecinos(nodo, propio):
-        return [o for o in elems if o is not propio and nodo in (o["a"], o["b"])]
+        return [o for o in elems_corte if o is not propio and nodo in (o["a"], o["b"])]
     def dirv(e, desde):
         v = NODES[e["b"]] - NODES[e["a"]]
         return v / np.linalg.norm(v) * (1 if e["a"] == desde else -1)
@@ -361,7 +432,7 @@ with open(out_csv, "w", newline="", encoding="utf-8") as f:
                 "extremo_A_topa_contra", "angulo_A_grados", "corte_A",
                 "extremo_B_topa_contra", "angulo_B_grados", "corte_B",
                 "x1", "y1", "z1", "x2", "y2", "z2"])
-    for i, e in enumerate(sorted(elems, key=lambda e: (e["sec"]["nombre"], -e["L"])), 1):
+    for i, e in enumerate(sorted(elems_corte, key=lambda e: (e["sec"]["nombre"], -e["L"])), 1):
         pa, pb = NODES[e["a"]], NODES[e["b"]]
         det, desc = [], 0.0
         for nodo in (e["a"], e["b"]):
@@ -372,7 +443,19 @@ with open(out_csv, "w", newline="", encoding="utf-8") as f:
             mio = dirv(e, nodo)
             # se topa contra el vecino más grueso; si empatan, el más perpendicular
             best = max(vs, key=lambda o: (o["sec"]["c"], abs(float(np.dot(mio, dirv(o, nodo))))))
-            th = np.degrees(np.arccos(np.clip(abs(float(np.dot(mio, dirv(best, nodo)))), 0, 1)))
+            dot = float(np.dot(mio, dirv(best, nodo)))
+            phi = np.degrees(np.arccos(np.clip(dot, -1, 1)))
+            if phi > 150.0:
+                # CORREGIDO 2026-10-12 (auditoría): el vecino CONTINÚA en línea recta (o casi).
+                # Antes se tomaba abs(dot) -> ángulo 0 -> se subía a 12° -> se descontaban 4.8·c
+                # y salían cortes negativos. Un tubo que continúa a tope se corta recto (o a un
+                # inglete de (180-phi)/2) y sólo pierde r·tan((180-phi)/2).
+                defl = 180.0 - phi
+                desc += best["sec"]["c"] * np.tan(np.radians(defl / 2))
+                det += [f'{best["a"]}-{best["b"]}', f"{phi:.0f}",
+                        "recto" if defl < 2 else f"inglete {defl/2:.0f}°"]
+                continue
+            th = np.degrees(np.arccos(np.clip(abs(dot), 0, 1)))
             th = max(th, 12.0)
             desc += best["sec"]["c"] / np.sin(np.radians(th))
             redondo = best["sec"]["nombre"].startswith("RED")
@@ -386,3 +469,4 @@ print(f"OK  {len(elems)} miembros | masa chasis {masa_acero:.1f} kg | "
       f"tubo total {sum(e['L'] for e in elems):.1f} m | K_torsional {K_tors:,.0f} N·m/deg")
 for lc, (U, filas) in resultados.items():
     print(f"{lc}: FS_min = {filas[0][4]:.2f}  en  {filas[0][0]}")
+print(f"LC6 Torsion 4,500 N.m (bache en una rueda a 3g): FS_min = {FS_TORS6:.2f}")

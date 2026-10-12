@@ -22,12 +22,13 @@ PIERNA = 0.41          # rodilla -> tobillo
 Y_SUELA = 0.18         # suela sobre el tablero del piso (tubo del piso y=0.16 + radio)
 TOBILLO_ALTO = 0.08
 PIE_BOLA = 0.15        # tobillo -> bola del pie (hacia adelante)
+ESPALDA_CUBETA = 0.13  # del hombro a la cara trasera de la cubeta: 9 cm de espalda + 4 cm de cubeta
 
 # --- carrocería de Tripo medida (cara INTERIOR del techo, z=0.31) ---
 TECHO_INT = [(1.45, 0.998), (1.60, 1.025), (1.75, 1.045), (1.90, 1.053), (2.00, 1.048), (2.10, 1.039)]
 FORRO = 0.020
 ARCO_X_FRENTE = 2.02 - 0.0254      # cara delantera del arco (RED 50.8)
-CABECERA = (1.45, 0.934)           # eje de la cabecera sobre el piloto (x, y)
+CABECERA = (1.45, 0.949)           # eje de la cabecera sobre el piloto (x, y), a z=0.31 (hdr 0.94 -> sp_f 0.965)
 CABECERA_R = 0.0254
 
 
@@ -60,6 +61,7 @@ def metricas(p):
     return dict(
         holgura_techo=limite_techo(p["coronilla"][0]) - p["coronilla"][1],
         nuca_arco=ARCO_X_FRENTE - p["nuca"][0],
+        espalda_barra=ARCO_X_FRENTE - (p["hombro"][0] + ESPALDA_CUBETA),   # espalda + cubeta vs la barra de cinturones
         cabecera_grados=float(np.degrees(np.arctan((borde - ojo[1]) / (ojo[0] - CABECERA[0])))),
         pedal_x=float(p["bola"][0]),
         ojo=(float(ojo[0]), float(ojo[1])),
@@ -71,12 +73,13 @@ def capsulas(p, z=0.31):
     pueden pasar por ahí. Torso con holgura de respaldo de 4 cm."""
     def v(q):
         return np.array([q[0], q[1], z])
+    asiento = np.array([0.0, 0.05])      # el cuerpo descansa sobre el cojín, 5 cm sobre el travesaño del piso
     centro_cabeza = p["ojo"] + np.array([0.045, -0.04])
     return [
-        dict(nombre="muslo", a=v(p["cadera"]), b=v(p["rodilla"]), r=0.11),
+        dict(nombre="muslo", a=v(p["cadera"] + asiento), b=v(p["rodilla"] + asiento), r=0.095),
         dict(nombre="pierna", a=v(p["rodilla"]), b=v(p["tobillo"]), r=0.08),
         dict(nombre="pie", a=v(p["tobillo"]), b=v(p["bola"]), r=0.06),
-        dict(nombre="torso", a=v(p["cadera"]), b=v(p["hombro"]), r=0.17),
+        dict(nombre="torso", a=v(p["cadera"] + asiento), b=v(p["hombro"]), r=0.15),
         dict(nombre="cabeza", a=v(centro_cabeza), b=v(centro_cabeza + np.array([0.04, 0.0])), r=0.115),
     ]
 
@@ -108,12 +111,13 @@ def cadera_para_pedal(estatura, pedal_x=None, hy=None, recline=None):
     return (lo + hi) / 2
 
 
-# recorrido de la cadera en x con pedales fijos: de 1.60 m (extremo delantero) a 1.85 m (trasero)
-RIELES = (round(cadera_para_pedal(1.60), 2), round(cadera_para_pedal(1.85), 2))
+# recorrido de la cadera en x con pedales fijos: de 1.60 m (extremo delantero) a 1.80 m (trasero). Más alto no cabe:
+# a 1.85 m la espalda toca la barra de cinturones.
+RIELES = (round(cadera_para_pedal(1.60), 2), round(cadera_para_pedal(1.80), 2))
 
 
 if __name__ == "__main__":
-    for est, hx in ((1.60, RIELES[0]), (1.75, NOMINAL["hx"]), (1.85, RIELES[1])):
+    for est, hx in ((1.60, RIELES[0]), (1.75, NOMINAL["hx"]), (1.80, RIELES[1]), (1.85, round(cadera_para_pedal(1.85), 2))):
         m = metricas(postura(hx, NOMINAL["hy"], NOMINAL["recline"], estatura=est))
         print(f"{est:.2f} m, cadera x={hx:.2f}: techo {m['holgura_techo']*1000:+.0f} mm  nuca-arco {m['nuca_arco']*1000:+.0f} mm  "
-              f"cabecera {m['cabecera_grados']:+.1f}°  pedal x {m['pedal_x']:.2f}")
+              f"espalda-barra {m['espalda_barra']*1000:+.0f} mm  cabecera {m['cabecera_grados']:+.1f}°  pedal x {m['pedal_x']:.2f}")
