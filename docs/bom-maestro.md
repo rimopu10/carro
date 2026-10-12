@@ -35,17 +35,22 @@ No se compra todo junto. El orden lo dicta el tiempo de entrega, no el gusto:
 | F2 | Cargador | LiFePO4 96 V, 15-18 A, enchufable a 120 V | 1 pza | 2-4 semanas | $5,000–8,000 |
 | F2 | Caja de batería | Lámina/perfil + compresión de celdas + venteo + aislamiento. **CAD pendiente** (punto 8 de que-falta-para-construir) | 1 lote | — | $3,000–5,500 |
 
-### Estructura — $11,888 a $20,013
+### Estructura — $13,003 a $21,748
 
 | Fase | Item | Especificación de pedido | Cant. | Entrega | Estimado |
 |---|---|---|---|---|---|
-| F1 | Tubo PTR 25x25x1.5 | 2 tramos de 6 m = 14 kg (9 piezas, 9.0 m netos, +15% de merma) | 2 tramo 6 m | local, días | $452–706 |
-| F1 | Tubo PTR 38x38x1.9 | 5 tramos de 6 m = 68 kg (49 piezas, 23.9 m netos, +15% de merma) | 5 tramo 6 m | local, días | $2,176–3,401 |
-| F1 | Tubo RED 44.5x3.2 | 2 tramos de 6 m = 42 kg (15 piezas, 9.0 m netos — los arcos requieren ROLADO, +15% de merma) | 2 tramo 6 m | local, días | $1,770–2,739 |
+| F1 | Tubo PTR 25x25x1.9 | 1 tramos de 6 m = 9 kg (6 piezas, 3.4 m netos, +15% de merma) | 1 tramo 6 m | local, días | $286–447 |
+| F1 | Tubo PTR 38x38x1.9 | 4 tramos de 6 m = 54 kg (48 piezas, 20.8 m netos, +15% de merma) | 4 tramo 6 m | local, días | $1,741–2,720 |
+| F1 | Tubo PTR 38x38x3.0 | 1 tramos de 6 m = 21 kg (1 piezas, 1.0 m netos, +15% de merma) | 1 tramo 6 m | local, días | $687–1,074 |
+| F1 | Tubo PTR 44x44x1.9 | 1 tramos de 6 m = 16 kg (10 piezas, 3.2 m netos, +15% de merma) | 1 tramo 6 m | local, días | $504–788 |
+| F1 | Tubo RED 50.8x2.1 | 1 tramos de 6 m = 16 kg (7 piezas, 3.1 m netos — los arcos requieren ROLADO, +15% de merma) | 1 tramo 6 m | local, días | $663–1,026 |
+| F1 | Tubo RED 57.2x3.2 | 1 tramos de 6 m = 27 kg (11 piezas, 4.4 m netos — los arcos requieren ROLADO, +15% de merma) | 1 tramo 6 m | local, días | $1,138–1,760 |
 | F1 | Tubo PTR 70×50×4 | 1 tramo de 6 m = 45 kg — brazos tirados traseros (2 × 504 mm) y sobrante para ménsulas | 1 tramo 6 m | local, días | $1,447–2,261 |
 | F1 | Tubo RED 25.4×2.1 | 1 tramo de 6 m = 8 kg — horquillas delanteras (~2.1 m netos) | 1 tramo 6 m | local, días | $331–513 |
+| F1 | Tubo RED 16×1.2 | 3 tramo de 6 m = 9 kg — esqueleto de las 2 puertas (anillo + travesaño, ~11 m netos; se dobla con dobladora de tubo manual) | 3 tramo 6 m | local, días | $358–554 |
 | F1 | Placa de acero 8 mm | 1 hoja 300×600 mm = 11 kg — placas de torque (4) y dobladores (4), anidados | 1 hoja | local, días | $362–565 |
 | F1 | Placa de acero 4.7 mm | 1 hoja 600×1200 mm = 27 kg — cartelas y ménsulas | 1 hoja | local, días | $850–1,328 |
+| F1 | Placa de acero 3 mm | 1 hoja 300×600 mm = 4 kg — placas de las puertas: 4 de bisagra, 6 de cierre y 4 de amortiguador | 1 hoja | local, días | $136–212 |
 | F1 | Servicio de corte láser | 18 piezas con DXF listo + 10 por dibujar (ver §3). Mandar UN solo pedido: lo que pesa es el arranque, no el metro cortado | 1 servicio | 1-2 semanas | $1,500–3,000 |
 | F1 | Rolado de arcos | 2 arcos de tubo RED 44.5×2.1 al radio del plano — con dobladora de mandril, NO con dobladora de rodillos (aplasta la sección) | 2 pza | 1-2 semanas | $1,200–2,500 |
 | F1 | Consumibles de soldadura | Alambre MIG ER70S-6 Ø0.9 (5 kg) + gas 75/25 (renta y carga) + discos de corte y desbaste + boquillas de repuesto | 1 lote | local | $1,800–3,000 |
@@ -74,10 +79,11 @@ No se compra todo junto. El orden lo dicta el tiempo de entrega, no el gusto:
 | F1 | Terminales de dirección | 2 × terminal (rótula) + 2 × rótula axial de cremallera + tubo roscado derecha/izquierda para ajustar convergencia sin desmontar | 1 kit | local | $1,200–2,200 |
 | F1 | Llantas y rines | 2 × 175/70R13 delanteras + rines 13"; las traseras (175/70R14) vienen con el kit QS273 versión rin de carro | 2 pza | local | $3,000–5,200 |
 
-### Cabina — $14,400 a $27,000
+### Cabina — $16,000 a $30,200
 
 | Fase | Item | Especificación de pedido | Cant. | Entrega | Estimado |
 |---|---|---|---|---|---|
+| F2 | Rieles de asiento deslizables | 2 pares universales para butaca de cubeta, recorrido ≥ 120 mm (cadera x 1.43-1.52 m para 1.60-1.80 m de estatura), con cierre positivo. Se atornillan a los 2 travesaños de piso (x 1.36 y 1.66) | 2 par | local/ML, días | $1,600–3,200 |
 | F3 | Butacas | 2 × butaca comercial atornillada (deshuesadero o tipo bucket) | 2 pza | local | $3,000–7,000 |
 | F3 | Cinturones | 2 × arnés de 4 puntos con anclajes a la barra del frame | 2 pza | local | $2,400–4,000 |
 | F3 | Parabrisas | Laminado plano o semi-curvo tipo buggy + burlete | 1 pza | 2-3 semanas | $4,000–7,000 |
@@ -160,21 +166,21 @@ Todo lo de abajo está parametrizado en los scripts: si un dato cambia se ajusta
 
 | Sistema | BOM (estimado) | Presupuesto doc maestro | |
 |---|---|---|---|
-| Estructura | $11,888–20,013 | $7,200–11,000 | **se pasa** |
+| Estructura | $13,003–21,748 | $7,200–11,000 | **se pasa** |
 | Rodaje | $35,200–63,400 | $20,300–33,500 | **se pasa** |
 | Propulsión | $49,700–73,200 | $38,700–53,700 | dentro |
 | Batería | $40,000–58,500 | $35,000–49,000 | dentro |
 | Carrocería | $31,500–55,000 | $21,000–36,000 | dentro |
-| Cabina | $14,400–27,000 | $14,400–24,100 | dentro |
+| Cabina | $16,000–30,200 | $14,400–24,100 | dentro |
 | Luces | $7,000–12,000 | $7,000–12,000 | dentro |
-| **Total del carro** | **$189,700–309,100** | $143,600–219,300 | |
+| **Total del carro** | **$200,500–329,300** | $143,600–219,300 | |
 | Herramientas | $16,300–30,200 | $10,000–15,000 | |
 
 El rango es ancho a propósito: el **mínimo** es comprando bien y usando deshuesadero donde se puede; el **máximo** es todo nuevo a precio de mostrador. La realidad cae en medio y depende sobre todo de la suerte en el deshuesadero.
 
 ### De dónde viene el sobrecosto
 
-El BOM detallado sale **$189,700–309,100** contra los $143,600–219,300 del doc maestro. Solo se pasan dos sistemas, y hay una razón concreta en cada uno:
+El BOM detallado sale **$200,500–329,300** contra los $143,600–219,300 del doc maestro. Solo se pasan dos sistemas, y hay una razón concreta en cada uno:
 
 **Rodaje** es el grande. Desglosado por entregable:
 
@@ -187,9 +193,9 @@ El BOM detallado sale **$189,700–309,100** contra los $143,600–219,300 del d
 
 Los **frenos solos se comen casi la mitad del rodaje**, y es consecuencia directa de un hallazgo del cálculo: el freno del donante ATV no alcanza para 690 kg, así que hay que comprar discos de Ø220 y calipers de mayor área en vez de reusar los del donante. El doc maestro presupuestó dando por hecho que el freno venía con la mangueta.
 
-**Estructura** se pasa por los servicios, no por el acero: el acero puro son ~215 kg ($6,888–10,763), y lo que empuja son el corte láser, el rolado de los arcos y los consumibles de soldadura — que el presupuesto original no tenía desglosados.
+**Estructura** se pasa por los servicios, no por el acero: el acero puro son ~247 kg ($7,910–12,360), y lo que empuja son el corte láser, el rolado de los arcos y los consumibles de soldadura — que el presupuesto original no tenía desglosados.
 
-> Ojo con ese número: **215 kg es lo que se COMPRA**, no lo que pesa el carro. El frame soldado son 90.6 kg (`analisis_chasis.py`); la diferencia son los tramos comerciales de 6 m que sobran, la merma de corte y las placas. El sobrante sirve para el jig de soldadura y las ménsulas, así que no se tira.
+> Ojo con ese número: **247 kg es lo que se COMPRA**, no lo que pesa el carro. El frame soldado son 87.3 kg (`analisis_chasis.py`); la diferencia son los tramos comerciales de 6 m que sobran, la merma de corte y las placas. El sobrante sirve para el jig de soldadura y las ménsulas, así que no se tira.
 
 **Qué hacer con esto.** No es motivo de alarma: el carro sigue siendo un proyecto de rango medio y **se construye por fases**, así que el desembolso se reparte. Las palancas reales para bajarlo, en orden de efecto:
 
@@ -203,8 +209,8 @@ Los **frenos solos se comen casi la mitad del rodaje**, y es consecuencia direct
 | Fase | Qué es | Estimado |
 |---|---|---|
 | F0 | pedidos largos (motores y celdas) — **primero** | $70,700–98,700 |
-| F1 | chasis rodante: acero, suspensión, frenos, dirección | $47,100–83,400 |
-| F2 | tren eléctrico | $19,000–33,000 |
+| F1 | chasis rodante: acero, suspensión, frenos, dirección | $48,200–85,100 |
+| F2 | tren eléctrico | $28,600–51,500 |
 | F3 | pruebas y cabina | $14,400–27,000 |
 | F4 | carrocería | $19,500–35,000 |
 | F5 | acabado | $19,000–32,000 |

@@ -1,0 +1,655 @@
+{
+ "nodos_nuevos": {
+  "cf1": [
+   1.1,
+   0.16,
+   0.0
+  ],
+  "cfF": [
+   1.36,
+   0.16,
+   0.0
+  ],
+  "cf2": [
+   1.66,
+   0.16,
+   0.0
+  ],
+  "cf3": [
+   2.02,
+   0.16,
+   0.0
+  ],
+  "seatFL": [
+   1.36,
+   0.16,
+   0.591
+  ],
+  "seatFR": [
+   1.36,
+   0.16,
+   -0.591
+  ],
+  "smFL": [
+   1.36,
+   0.16,
+   0.31
+  ],
+  "smFR": [
+   1.36,
+   0.16,
+   -0.31
+  ],
+  "smRL": [
+   1.66,
+   0.16,
+   0.31
+  ],
+  "smRR": [
+   1.66,
+   0.16,
+   -0.31
+  ],
+  "h1L": [
+   1.55,
+   0.9728947368421053,
+   0.15
+  ],
+  "h2L": [
+   1.85,
+   0.996578947368421,
+   0.15
+  ],
+  "saL": [
+   1.45,
+   0.949,
+   0.3
+  ],
+  "h1R": [
+   1.55,
+   0.9728947368421053,
+   -0.15
+  ],
+  "h2R": [
+   1.85,
+   0.996578947368421,
+   -0.15
+  ],
+  "saR": [
+   1.45,
+   0.949,
+   -0.3
+  ]
+ },
+ "masas_mover": {
+  "seatL": {
+   "smFL": 0.5,
+   "smRL": 0.5
+  },
+  "seatR": {
+   "smFR": 0.5,
+   "smRR": 0.5
+  }
+ },
+ "nodos_movidos": {
+  "seatL": [
+   1.66,
+   0.16,
+   0.591
+  ],
+  "seatR": [
+   1.66,
+   0.16,
+   -0.591
+  ]
+ },
+ "miembros": [
+  [
+   "noseL",
+   "fb_loL",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "noseR",
+   "fb_loR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "noseL",
+   "fb_hiL",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "noseR",
+   "fb_hiR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "noseL",
+   "noseR",
+   "PTR 32x32x1.9",
+   "gen"
+  ],
+  [
+   "fb_loL",
+   "fb_hiL",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "fb_loR",
+   "fb_hiR",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "fx_loL",
+   "fx_hiL",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "fx_loR",
+   "fx_hiR",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "fb_loL",
+   "fx_loL",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "fb_loR",
+   "fx_loR",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "fb_hiL",
+   "fx_hiL",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "fb_hiR",
+   "fx_hiR",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "fb_loL",
+   "fb_loR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "fb_hiL",
+   "fb_hiR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "fx_hiL",
+   "fx_hiR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "fx_loL",
+   "dash_loL",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "fx_loR",
+   "dash_loR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "fx_hiL",
+   "dash_hiL",
+   "PTR 38x38x1.9",
+   "safe"
+  ],
+  [
+   "fx_hiR",
+   "dash_hiR",
+   "PTR 38x38x1.9",
+   "safe"
+  ],
+  [
+   "dash_loL",
+   "dash_hiL",
+   "PTR 38x38x1.9",
+   "safe"
+  ],
+  [
+   "dash_loR",
+   "dash_hiR",
+   "PTR 38x38x1.9",
+   "safe"
+  ],
+  [
+   "dash_loL",
+   "cf1",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "dash_loR",
+   "cf1",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "dash_hiL",
+   "hdrL",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "dash_hiR",
+   "hdrR",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "hdrL",
+   "saL",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "hdrR",
+   "saR",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "saL",
+   "sp_fL",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "saR",
+   "sp_fR",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "sp_fL",
+   "sp_fR",
+   "RED 50.8x2.1",
+   "safe"
+  ],
+  [
+   "sp_fL",
+   "h1L",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "sp_fR",
+   "h1R",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "h1L",
+   "h2L",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "h1R",
+   "h2R",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "h2L",
+   "sp_rL",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "h2R",
+   "sp_rR",
+   "RED 57.2x3.2",
+   "safe"
+  ],
+  [
+   "dash_loL",
+   "seatFL",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "dash_loR",
+   "seatFR",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "seatFL",
+   "seatL",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "seatFR",
+   "seatR",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "seatL",
+   "mh_loL",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "seatR",
+   "mh_loR",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "mh_loL",
+   "mh_beltL",
+   "RED 50.8x2.1",
+   "safe"
+  ],
+  [
+   "mh_loR",
+   "mh_beltR",
+   "RED 50.8x2.1",
+   "safe"
+  ],
+  [
+   "mh_beltL",
+   "mh_hiL",
+   "RED 57.2x2.1",
+   "safe"
+  ],
+  [
+   "mh_beltR",
+   "mh_hiR",
+   "RED 57.2x2.1",
+   "safe"
+  ],
+  [
+   "mh_hiL",
+   "sp_rL",
+   "RED 57.2x2.1",
+   "safe"
+  ],
+  [
+   "mh_hiR",
+   "sp_rR",
+   "RED 57.2x2.1",
+   "safe"
+  ],
+  [
+   "sp_rL",
+   "sp_rR",
+   "RED 50.8x3.2",
+   "safe"
+  ],
+  [
+   "mh_beltL",
+   "mh_beltR",
+   "PTR 38x38x3.0",
+   "safe"
+  ],
+  [
+   "mh_loL",
+   "bat_fL",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "mh_loR",
+   "bat_fR",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "bat_fL",
+   "taL",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "bat_fR",
+   "taR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "taL",
+   "bat_rL",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "taR",
+   "bat_rR",
+   "PTR 44x44x1.9",
+   "gen"
+  ],
+  [
+   "bat_rL",
+   "r_loL",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "bat_rR",
+   "r_loR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "mh_hiL",
+   "coilL",
+   "RED 50.8x2.1",
+   "safe"
+  ],
+  [
+   "mh_hiR",
+   "coilR",
+   "RED 50.8x2.1",
+   "safe"
+  ],
+  [
+   "coilL",
+   "r_hiL",
+   "RED 50.8x2.1",
+   "safe"
+  ],
+  [
+   "coilR",
+   "r_hiR",
+   "RED 50.8x2.1",
+   "safe"
+  ],
+  [
+   "r_loL",
+   "r_hiL",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "r_loR",
+   "r_hiR",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "r_loL",
+   "tailL",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "r_loR",
+   "tailR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "r_hiL",
+   "tailL",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "r_hiR",
+   "tailR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "tailL",
+   "tailR",
+   "PTR 32x32x1.9",
+   "gen"
+  ],
+  [
+   "r_hiL",
+   "r_hiR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "r_loL",
+   "r_loR",
+   "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "bat_fL",
+   "bat_fR",
+   "PTR 32x32x1.9",
+   "batt"
+  ],
+  [
+   "bat_rL",
+   "bat_rR",
+   "PTR 32x32x1.9",
+   "batt"
+  ],
+  [
+   "seatFL",
+   "smFL",
+   "PTR 38x38x1.9",
+   "asiento"
+  ],
+  [
+   "seatFR",
+   "smFR",
+   "PTR 38x38x1.9",
+   "asiento"
+  ],
+  [
+   "smFL",
+   "cfF",
+   "PTR 32x32x1.9",
+   "asiento"
+  ],
+  [
+   "smFR",
+   "cfF",
+   "PTR 32x32x1.9",
+   "asiento"
+  ],
+  [
+   "seatL",
+   "smRL",
+   "PTR 32x32x1.9",
+   "asiento"
+  ],
+  [
+   "seatR",
+   "smRR",
+   "PTR 32x32x1.9",
+   "asiento"
+  ],
+  [
+   "smRL",
+   "cf2",
+   "PTR 32x32x1.9",
+   "asiento"
+  ],
+  [
+   "smRR",
+   "cf2",
+   "PTR 32x32x1.9",
+   "asiento"
+  ],
+  [
+   "dash_loL",
+   "fx_hiL",
+   "PTR 25x25x1.9",
+   "tors"
+  ],
+  [
+   "dash_loR",
+   "fx_hiR",
+   "PTR 25x25x1.9",
+   "tors"
+  ],
+  [
+   "mh_loL",
+   "smRL",
+   "PTR 25x25x1.9",
+   "tors"
+  ],
+  [
+   "mh_loR",
+   "smRR",
+   "PTR 25x25x1.9",
+   "tors"
+  ],
+  [
+   "bat_fL",
+   "coilL",
+   "PTR 25x25x1.9",
+   "tors"
+  ],
+  [
+   "bat_fR",
+   "coilR",
+   "PTR 25x25x1.9",
+   "tors"
+  ],
+  [
+   "cf1",
+   "cfF",
+   "PTR 38x38x1.9",
+   "tors"
+  ]
+ ],
+ "resumen": {
+  "masa": 83.77588635519962,
+  "K_tors": 8022.277802935521,
+  "fs": {
+   "LC1": 2.8191474239529706,
+   "LC3": 2.578362714439172,
+   "LC4": 2.4503846768972997,
+   "LC5": 1.5238997693125316,
+   "LC5c": 1.6645882300453956,
+   "LC7": 26.873572535871705,
+   "LC6": 2.064762514689429
+  }
+ }
+}

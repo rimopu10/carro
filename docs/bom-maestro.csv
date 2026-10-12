@@ -2,13 +2,25 @@
 Propulsión,F0,Kit 2× motor de cubo + controladores,"QS273 8 kW 96 V, versión rin desmontable de carro 14"" (en 13"" no cabe), 2 controladores tipo APT96600 / Fardriver ND96530 con regen configurable, acelerador de pedal hall, selector F/N/R",1,kit,38700,53700,,,6-10 semanas,doc maestro §6 · resultados-suspension-trasera
 Batería,F0,Celdas LiFePO4,"30 × prismática 105 Ah grado A (EVE/CATL), mismo lote, con busbars y tornillería",30,pza,26000,36000,,,4-8 semanas,doc maestro §6
 Batería,F0,BMS,"30S LiFePO4, 250-300 A de descarga continua (crítico: menos capa los motores), balanceo activo, Bluetooth",1,pza,6000,9000,,,4-6 semanas,doc maestro §6
-Estructura,F1,Tubo PTR 25x25x1.5,"2 tramos de 6 m = 14 kg (9 piezas, 9.0 m netos, +15% de merma)",2,tramo 6 m,452,706,,,"local, días",planos/lista-corte-tubos.csv
-Estructura,F1,Tubo PTR 38x38x1.9,"5 tramos de 6 m = 68 kg (49 piezas, 23.9 m netos, +15% de merma)",5,tramo 6 m,2176,3401,,,"local, días",planos/lista-corte-tubos.csv
-Estructura,F1,Tubo RED 44.5x3.2,"2 tramos de 6 m = 42 kg (15 piezas, 9.0 m netos — los arcos requieren ROLADO, +15% de merma)",2,tramo 6 m,1770,2739,,,"local, días",planos/lista-corte-tubos.csv
+Estructura,F1,Tubo PTR 25x25x1.9,"1 tramos de 6 m = 9 kg (6 piezas, 3.4 m netos, +15% de merma)",1,tramo 6 m,286,447,,,"local, días",planos/lista-corte-tubos.csv
+Estructura,F1,Tubo PTR 38x38x1.9,"4 tramos de 6 m = 54 kg (48 piezas, 20.8 m netos, +15% de merma)",4,tramo 6 m,1741,2720,,,"local, días",planos/lista-corte-tubos.csv
+Estructura,F1,Tubo PTR 38x38x3.0,"1 tramos de 6 m = 21 kg (1 piezas, 1.0 m netos, +15% de merma)",1,tramo 6 m,687,1074,,,"local, días",planos/lista-corte-tubos.csv
+Estructura,F1,Tubo PTR 44x44x1.9,"1 tramos de 6 m = 16 kg (10 piezas, 3.2 m netos, +15% de merma)",1,tramo 6 m,504,788,,,"local, días",planos/lista-corte-tubos.csv
+Estructura,F1,Tubo RED 50.8x2.1,"1 tramos de 6 m = 16 kg (7 piezas, 3.1 m netos — los arcos requieren ROLADO, +15% de merma)",1,tramo 6 m,663,1026,,,"local, días",planos/lista-corte-tubos.csv
+Estructura,F1,Tubo RED 57.2x3.2,"1 tramos de 6 m = 27 kg (11 piezas, 4.4 m netos — los arcos requieren ROLADO, +15% de merma)",1,tramo 6 m,1138,1760,,,"local, días",planos/lista-corte-tubos.csv
 Estructura,F1,Tubo PTR 70×50×4,1 tramo de 6 m = 45 kg — brazos tirados traseros (2 × 504 mm) y sobrante para ménsulas,1,tramo 6 m,1447,2261,,,"local, días",resultados-suspension-trasera
 Estructura,F1,Tubo RED 25.4×2.1,1 tramo de 6 m = 8 kg — horquillas delanteras (~2.1 m netos),1,tramo 6 m,331,513,,,"local, días",resultados-suspension-delantera
+Estructura,F1,Tubo RED 16×1.2,"3 tramo de 6 m = 9 kg — esqueleto de las 2 puertas (anillo + travesaño, ~11 m netos; se dobla con dobladora de tubo manual)",3,tramo 6 m,358,554,,,"local, días",docs/herraje-puertas.md
 Estructura,F1,Placa de acero 8 mm,"1 hoja 300×600 mm = 11 kg — placas de torque (4) y dobladores (4), anidados",1,hoja,362,565,,,"local, días",resultados-placa-torque
 Estructura,F1,Placa de acero 4.7 mm,1 hoja 600×1200 mm = 27 kg — cartelas y ménsulas,1,hoja,850,1328,,,"local, días",planos/*.dxf
+Estructura,F1,Placa de acero 3 mm,"1 hoja 300×600 mm = 4 kg — placas de las puertas: 4 de bisagra, 6 de cierre y 4 de amortiguador",1,hoja,136,212,,,"local, días",docs/herraje-puertas.md
+Puertas,F2,Bisagras de acero forjado,"4 (2 por puerta), tipo bisagra de remolque/pivote de servicio pesado, perno Ø≥12 mm, con grasera. Se atornillan a ménsulas de placa de 3 mm que bajan del riel del espinazo hasta el eje (y=1.06 m), con agujeros ranurados para ajustar el encaje en 3 ejes",4,pza,1000,1800,,,"local/ML, días",docs/herraje-puertas.md
+Puertas,F2,Amortiguadores de gas 350 N,"2 (1 por puerta): fuerza nominal 350 N, carrera ≥ 160 mm, rótulas M8, Ø cilindro 14-16 mm. Sostienen la puerta a 65° con 10% de margen; esfuerzo de manija 50 N al abrir",2,pza,700,1400,,,"local/ML, días",calculos/puertas.py
+Puertas,F2,Cierres rotativos con perno ajustable,"6 cierres (3 por puerta: esquina de cabecera, estribo, pierna del arco) + 2 manijas exteriores al ras + 2 tiradores interiores + cable de liberación de emergencia. Pernos de cierre ajustables",1,lote,2400,4800,,,"local/ML, días",docs/herraje-puertas.md
+Puertas,F2,Policarbonato 3 mm,"Cristal fijo de las 2 puertas, ~0.9 m² en total, con protección UV y capa dura contra rayones",1,lote,900,1600,,,"local, días",docs/herraje-puertas.md
+Puertas,F2,Sello de goma tipo D (EPDM),"~12 m, para la brida del vano; holgura puerta-carrocería 5 ± 1 mm. Más 8 topes de goma de esquina",1,lote,850,1700,,,"local, días",docs/herraje-puertas.md
+Puertas,F2,Fibra de vidrio y núcleo de espuma,"Piel sándwich de 2 puertas (~2.5 m²): tela de vidrio 300 g/m² (~8 m²), resina poliéster/epóxica (~6 L) y espuma de celda cerrada de 5 mm (~2.5 m²)",1,lote,2200,4000,,,"local, días",docs/herraje-puertas.md
+Cabina,F2,Rieles de asiento deslizables,"2 pares universales para butaca de cubeta, recorrido ≥ 120 mm (cadera x 1.43-1.52 m para 1.60-1.80 m de estatura), con cierre positivo. Se atornillan a los 2 travesaños de piso (x 1.36 y 1.66)",2,par,1600,3200,,,"local/ML, días",calculos/buck_piloto.py
 Estructura,F1,Servicio de corte láser,"18 piezas con DXF listo + 10 por dibujar (ver §3). Mandar UN solo pedido: lo que pesa es el arranque, no el metro cortado",1,servicio,1500,3000,,,1-2 semanas,planos/*.dxf
 Estructura,F1,Rolado de arcos,"2 arcos de tubo RED 44.5×2.1 al radio del plano — con dobladora de mandril, NO con dobladora de rodillos (aplasta la sección)",2,pza,1200,2500,,,1-2 semanas,analisis_chasis
 Estructura,F1,Consumibles de soldadura,Alambre MIG ER70S-6 Ø0.9 (5 kg) + gas 75/25 (renta y carga) + discos de corte y desbaste + boquillas de repuesto,1,lote,1800,3000,,,local,—

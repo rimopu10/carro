@@ -139,7 +139,9 @@ for sec, cuantos, para, fuente in [
         ("PTR 70x50x4", 1, "brazos tirados traseros (2 × 504 mm) y sobrante para ménsulas",
          "resultados-suspension-trasera"),
         ("RED 25.4x2.1", 1, "horquillas delanteras (~2.1 m netos)",
-         "resultados-suspension-delantera")]:
+         "resultados-suspension-delantera"),
+        ("RED 16x1.2", tramos(11.0), "esqueleto de las 2 puertas (anillo + travesaño, ~11 m netos; se dobla "
+         "con dobladora de tubo manual)", "docs/herraje-puertas.md")]:
     kg = masa_tramo(sec) * cuantos
     acero_kg += kg
     pmin, pmax = precio_acero(kg, sec.startswith("RED"))
@@ -149,12 +151,41 @@ for sec, cuantos, para, fuente in [
 for esp, L, A, para, fuente in [
         (8.0, 0.30, 0.60, "placas de torque (4) y dobladores (4), anidados",
          "resultados-placa-torque"),
-        (4.7, 0.60, 1.20, "cartelas y ménsulas", "planos/*.dxf")]:
+        (4.7, 0.60, 1.20, "cartelas y ménsulas", "planos/*.dxf"),
+        (3.0, 0.30, 0.60, "placas de las puertas: 4 de bisagra, 6 de cierre y 4 de amortiguador", "docs/herraje-puertas.md")]:
     kg, (pmin, pmax) = precio_placa(L, A, esp)
     acero_kg += kg
     add("Estructura", f"Placa de acero {esp:g} mm",
         f"1 hoja {L*1000:.0f}×{A*1000:.0f} mm = {kg:.0f} kg — {para}",
         1, "hoja", pmin, pmax, "local, días", fuente, "F1")
+# --- PUERTAS DE GAVIOTA (docs/herraje-puertas.md; coordenadas y fuerzas de calculos/puertas.py) ---
+add("Puertas", "Bisagras de acero forjado",
+    "4 (2 por puerta), tipo bisagra de remolque/pivote de servicio pesado, perno Ø≥12 mm, con grasera. "
+    "Se atornillan a ménsulas de placa de 3 mm que bajan del riel del espinazo hasta el eje (y=1.06 m), con "
+    "agujeros ranurados para ajustar el encaje en 3 ejes",
+    4, "pza", 1000, 1800, "local/ML, días", "docs/herraje-puertas.md", "F2")
+add("Puertas", "Amortiguadores de gas 350 N",
+    "2 (1 por puerta): fuerza nominal **350 N**, carrera ≥ 160 mm, rótulas M8, Ø cilindro 14-16 mm. Sostienen la "
+    "puerta a 65° con 10% de margen; esfuerzo de manija 50 N al abrir",
+    2, "pza", 700, 1400, "local/ML, días", "calculos/puertas.py", "F2")
+add("Puertas", "Cierres rotativos con perno ajustable",
+    "6 cierres (3 por puerta: esquina de cabecera, estribo, pierna del arco) + 2 manijas exteriores al ras + 2 "
+    "tiradores interiores + cable de liberación de emergencia. Pernos de cierre ajustables",
+    1, "lote", 2400, 4800, "local/ML, días", "docs/herraje-puertas.md", "F2")
+add("Puertas", "Policarbonato 3 mm",
+    "Cristal fijo de las 2 puertas, ~0.9 m² en total, con protección UV y capa dura contra rayones",
+    1, "lote", 900, 1600, "local, días", "docs/herraje-puertas.md", "F2")
+add("Puertas", "Sello de goma tipo D (EPDM)",
+    "~12 m, para la brida del vano; holgura puerta-carrocería 5 ± 1 mm. Más 8 topes de goma de esquina",
+    1, "lote", 850, 1700, "local, días", "docs/herraje-puertas.md", "F2")
+add("Puertas", "Fibra de vidrio y núcleo de espuma",
+    "Piel sándwich de 2 puertas (~2.5 m²): tela de vidrio 300 g/m² (~8 m²), resina poliéster/epóxica (~6 L) y "
+    "espuma de celda cerrada de 5 mm (~2.5 m²)",
+    1, "lote", 2200, 4000, "local, días", "docs/herraje-puertas.md", "F2")
+add("Cabina", "Rieles de asiento deslizables",
+    "2 pares universales para butaca de cubeta, recorrido ≥ 120 mm (cadera x 1.43-1.52 m para 1.60-1.80 m de "
+    "estatura), con cierre positivo. Se atornillan a los 2 travesaños de piso (x 1.36 y 1.66)",
+    2, "par", 1600, 3200, "local/ML, días", "calculos/buck_piloto.py", "F2")
 add("Estructura", "Servicio de corte láser",
     f"{sum(c for _, c, _, _ in LASER)} piezas con DXF listo + "
     f"{sum(c for _, c, _, _ in laser_faltantes)} por dibujar (ver §3). "

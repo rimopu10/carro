@@ -62,6 +62,14 @@ CAT_PTR = sorted([ptr(25, 1.9), ptr(32, 1.9), ptr(38, 1.9), ptr(38, 3.0), ptr(44
 CAT_RED = sorted([red(44.5, 2.1), red(44.5, 3.2), red(50.8, 2.1), red(50.8, 3.2), red(57.2, 2.1),
                   red(57.2, 3.2)], key=lambda s: s["kg_m"])
 POR_NOMBRE = {s["nombre"]: s for s in CAT_PTR + CAT_RED}
+# PALETA="PTR 25x25x1.9,PTR 38x38x1.9,..." limita las secciones que se pueden comprar (menos pilas de tubo en el
+# taller). Un piso que no esté en la paleta sube a la siguiente sección más pesada que sí esté.
+# Por defecto 6 secciones (2026-10-12): 87.3 kg contra 83.8 kg con 9 secciones, 91.2 kg con 5. PALETA=todas las libera.
+PALETA_DEFECTO = ("PTR 25x25x1.9,PTR 38x38x1.9,PTR 38x38x3.0,PTR 44x44x1.9,RED 50.8x2.1,RED 57.2x3.2")
+if os.environ.get("PALETA", PALETA_DEFECTO) != "todas":
+    _pal = set(os.environ.get("PALETA", PALETA_DEFECTO).split(","))
+    CAT_PTR = [x for x in CAT_PTR if x["nombre"] in _pal]
+    CAT_RED = [x for x in CAT_RED if x["nombre"] in _pal]
 for _s in (ptr(25, 1.5), ptr(32, 1.5), ptr(38, 1.5)):        # secciones del diseño anterior (sólo lectura)
     POR_NOMBRE.setdefault(_s["nombre"], _s)
 
@@ -328,8 +336,8 @@ def evaluar(d):
 
 def piso_idx(d_):
     cat = CAT_RED if d_["clase"] == "cell" else CAT_PTR
-    nombre = PISO[d_["clase"]]
-    return cat, next(i for i, s in enumerate(cat) if s["nombre"] == nombre)
+    objetivo = POR_NOMBRE[PISO[d_["clase"]]]["kg_m"]
+    return cat, next((j for j, x in enumerate(cat) if x["kg_m"] >= objetivo - 1e-9), len(cat) - 1)
 
 
 def masa_par(d_):
