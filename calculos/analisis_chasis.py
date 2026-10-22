@@ -78,10 +78,15 @@ def NM(name, x, y, z):
     N(name + "R", x, y, -z)
 
 NM("nose",  0.10, 0.30, 0.28)
-NM("fb_lo", 0.35, 0.20, 0.50)   # bulkhead frontal inferior (anclaje susp.)
-NM("fb_hi", 0.35, 0.48, 0.50)   # bulkhead frontal superior (anclaje susp.)
-NM("fx_lo", 0.75, 0.20, 0.55)   # caja frontal trasera inferior
-NM("fx_hi", 0.75, 0.48, 0.55)   # caja frontal trasera superior (torre coilover del.)
+# 2026-10-21: los pivotes de los brazos (suspension_delantera.py: LA1/LA2/UA1/UA2) caían SOBRE el eje de estos tubos (o 30 mm
+# adentro) y los brazos, que salen hacia afuera, los atravesaban (hasta 31 mm; holguras.brazos_vs_chasis). Mover los pivotes
+# arruina la cinemática (bump steer 0.06 -> 1.2 deg/25 mm), así que se estrecha el chasis: cada tubo queda >= 35 mm (media
+# sección 19 + buje ~11 + 5) hacia ADENTRO del pivote que lo toca. Inferiores: 0.50->0.435 y 0.55->0.485; superiores: 0.50->0.465 y
+# 0.55->0.515. La ménsula del pivote sale del tubo hacia afuera.
+NM("fb_lo", 0.35, 0.20, 0.435)  # bulkhead frontal inferior (anclaje susp.)
+NM("fb_hi", 0.35, 0.48, 0.465)  # bulkhead frontal superior (anclaje susp.)
+NM("fx_lo", 0.75, 0.20, 0.485)  # caja frontal trasera inferior
+NM("fx_hi", 0.75, 0.48, 0.515)  # caja frontal trasera superior (torre coilover del.)
 NM("dash_lo", 1.10, 0.16, 0.58)
 # Pie del pilar A adelantado y cabecera atrasada: el parabrisas pasa de 44° a 65° de
 # la vertical (44° es ángulo de camioneta). No cuesta acero y el pilar más largo y
@@ -101,7 +106,11 @@ NM("mh_lo", 2.02, 0.16, 0.60)   # arco principal pie
 NM("mh_belt",2.02, 0.660, 0.506) # barra de cinturones (sobre la pierna del arco). 2026-10-12: 0.742 -> 0.660 = altura real del hombro (maniquí de 1.75 m, buck_piloto.py)
 NM("mh_hi", 2.02, 1.01, 0.44)   # arco principal corona
 NM("bat_f", 2.10, 0.16, 0.585)  # cuna batería frente (sobre riel)
-NM("ta",    2.28, 0.16, 0.552)  # pivote brazo trasero (sobre riel)
+# 2026-10-21: el pivote del brazo tirado (suspension_trasera.PIV, z=0.552) caía sobre el eje del riel y el brazo (PTR 70x50) nacía
+# DENTRO del tubo (-27 mm a 60 mm del pivote; auditoría independiente). El riel entra a z=0.488: su cara exterior (r 28.6 de RED 57.2)
+# queda en 0.517, justo antes de la oreja interior de la ménsula; el brazo (ancho 50, z 0.527-0.577) pasa entre las orejas. El nodo ta
+# ya no es el pivote: la ménsula lleva la carga con 64 mm de excentricidad (cargas_suspension.py).
+NM("ta",    2.28, 0.16, 0.488)  # nodo del riel junto al pivote del brazo trasero (el pivote real está en z=0.552)
 NM("bat_r", 2.64, 0.16, 0.486)  # cuna batería atrás (sobre riel)
 NM("coil",  2.58, 0.712, 0.425) # torre coilover trasera (sobre riel sup.)
 NM("r_lo",  2.78, 0.16, 0.46)
@@ -253,6 +262,18 @@ MASAS = {  # kg aplicados en nodos (por nodo)
 MASA_TOTAL_CARRO = 690.0
 MASA_NO_SUSPENDIDA = 2 * 18.0 + 2 * 45.0
 MASA_SUSPENDIDA = MASA_TOTAL_CARRO - MASA_NO_SUSPENDIDA
+# 2026-10-21: presupuesto de masas por componente (masas_modelo.py) en vez de 325 kg «fijos» + el resto repartido por longitud de tubo
+# (que daba un CG de 45% delante sin decidir dónde iba la batería). Sólo si el diseño cargado trae los nodos del rediseño.
+import sys as _sys
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    import masas_modelo as _MM
+    _exp = _MM.fijas(NODES)
+except ImportError:
+    _exp = None
+if _exp is not None:
+    MASAS = dict(_exp)
+    _MOVER = {}                     # los ocupantes ya están en los nodos sm* de sus rieles
 for _o, _t in _MOVER.items():       # el ocupante pesa donde se atornillan los rieles de su asiento
     _m = MASAS.pop(_o)
     for _n, _f in (_t.items() if isinstance(_t, dict) else [(_t, 1.0)]):
@@ -296,13 +317,18 @@ def esfuerzo_max(e, U):
     fl = e["kl"] @ ul
     s = e["sec"]
     Nax = abs(fl[0])
+    # CORREGIDO 2026-10-21 (auditoría): la torsión no entraba en la fluencia. Esfuerzo cortante tau = T*c/J (exacto en tubo
+    # redondo, conservador en cuadrado) combinado con von Mises: sigma_vm = sqrt(sigma^2 + 3 tau^2).
+    tau = max(abs(fl[3]), abs(fl[9])) * s["c"] / s["J"]
     sig = 0.0
     for end in (0, 1):
         My = abs(fl[4 + 6*end]); Mz = abs(fl[5 + 6*end])
         sb = My*s["c"]/s["Iy"] + Mz*s["c"]/s["Iz"]
         sig = max(sig, Nax/s["A"] + sb)
-    # pandeo Euler si compresión (fl[0] > 0 = compresión en convención local aquí: revisar signo)
-    Ncomp = fl[0] if fl[0] > 0 else fl[6] if fl[6] > 0 else 0.0
+    sig = float(np.sqrt(sig**2 + 3.0*tau**2))
+    # pandeo Euler: compresión = fl[0] > 0 (fuerza sobre el extremo a hacia b). ANTES: `fl[0] if fl[0] > 0 else fl[6] if fl[6] > 0`,
+    # que tomaba un tubo en TRACCION (fl[0]<0, fl[6]>0) como si estuviera en compresión.
+    Ncomp = max(fl[0], 0.0)
     Pcr = np.pi**2 * E * min(s["Iy"], s["Iz"]) / e["L"]**2
     fs_buck = Pcr/Ncomp if Ncomp > 1.0 else np.inf
     return sig, fs_buck
@@ -417,7 +443,8 @@ with open(out_csv, "w", newline="", encoding="utf-8") as f:
     # redondo). CORREGIDO 2026-08-05: antes solo salía la longitud entre centros.
     # Nodos VIRTUALES (bases de bisagra h1/h2 y ancla del amortiguador sa): en el FEM parten el tubo para aplicar la
     # carga, pero en el taller son placas soldadas sobre UN tubo continuo -> en la lista de corte se fusionan.
-    VIRTUALES = {"h1L", "h2L", "saL", "h1R", "h2R", "saR", "baL", "baR"}
+    # Los anclajes de suspensión (an*: pivotes de brazos, torre del amortiguador, cremallera; ver cargas_suspension.py) son igual.
+    VIRTUALES = {"h1L", "h2L", "saL", "h1R", "h2R", "saR", "baL", "baR"} | {n for n in NODES if n.startswith("an")}
     def fusionar(lista):
         lista = list(lista)
         for vn in VIRTUALES:

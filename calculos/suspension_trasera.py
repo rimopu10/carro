@@ -31,10 +31,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # Se diseña con la opción A (llanta de carro adelante y atrás, mismo compuesto).
 R_RUEDA = 0.3005          # m, 175/70R14 (Ø601 mm; adelante 13" Ø575 → nariz 1° abajo)
 MASA_TOTAL = 690.0        # kg con 2 ocupantes
-DIST_TRAS = 0.62          # fracción al eje trasero (doc maestro 38/62)
+DIST_TRAS = 0.53          # fracción al eje trasero. 2026-10-21: 0.62 -> 0.53 (batería en el túnel central; calculos/masas_cg.py)
 M_NOSUSP = 45.0           # kg no suspendidos por esquina: motor 27 + rueda 12 + ½brazo 6
 FREC_OBJ = 2.05           # Hz atrás (siempre un poco más que adelante: 1.9)
-H_CG = 0.33               # m, altura del centro de gravedad (batería y piso bajos)
+H_CG = 0.40               # m, altura del centro de gravedad. 2026-10-21: 0.33 -> 0.40 (presupuesto por componente; ocupantes, techo y puertas lo suben)
 
 m_esq = MASA_TOTAL * DIST_TRAS / 2
 m_susp = m_esq - M_NOSUSP

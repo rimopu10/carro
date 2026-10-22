@@ -111,13 +111,15 @@ def cadera_para_pedal(estatura, pedal_x=None, hy=None, recline=None):
     return (lo + hi) / 2
 
 
-# recorrido de la cadera en x con pedales fijos: de 1.60 m (extremo delantero) a 1.80 m (trasero). Más alto no cabe:
-# a 1.85 m la espalda toca la barra de cinturones.
-RIELES = (round(cadera_para_pedal(1.60), 2), round(cadera_para_pedal(1.80), 2))
+# recorrido de la cadera en x con pedales fijos: de 1.60 m (extremo delantero) a 1.77 m (TOPE trasero del riel).
+# 2026-10-21: antes llegaba a 1.80 m, pero ahí la espalda queda a +4 mm de la barra de cinturones (con cubeta y acolchado el
+# respaldo la toca: -16 mm en la cápsula). Se exigen >= 20 mm: 1.77 m da +24 mm. Más alto no cabe sin mover la barra.
+ESTATURA_MAX = 1.77
+RIELES = (round(cadera_para_pedal(1.60), 2), round(cadera_para_pedal(ESTATURA_MAX), 2))
 
 
 if __name__ == "__main__":
-    for est, hx in ((1.60, RIELES[0]), (1.75, NOMINAL["hx"]), (1.80, RIELES[1]), (1.85, round(cadera_para_pedal(1.85), 2))):
+    for est, hx in ((1.60, RIELES[0]), (1.75, NOMINAL["hx"]), (ESTATURA_MAX, RIELES[1]), (1.85, round(cadera_para_pedal(1.85), 2))):
         m = metricas(postura(hx, NOMINAL["hy"], NOMINAL["recline"], estatura=est))
         print(f"{est:.2f} m, cadera x={hx:.2f}: techo {m['holgura_techo']*1000:+.0f} mm  nuca-arco {m['nuca_arco']*1000:+.0f} mm  "
               f"espalda-barra {m['espalda_barra']*1000:+.0f} mm  cabecera {m['cabecera_grados']:+.1f}°  pedal x {m['pedal_x']:.2f}")

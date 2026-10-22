@@ -89,6 +89,51 @@
    2.02,
    0.66,
    -0.31
+  ],
+  "cfB": [
+   2.1,
+   0.16,
+   0.0
+  ],
+  "anUA1L": [
+   0.35,
+   0.41351324085750313,
+   0.4578764186633039
+  ],
+  "anUA2L": [
+   0.75,
+   0.41351324085750313,
+   0.5078764186633039
+  ],
+  "anAMORTL": [
+   0.75,
+   0.48,
+   0.4
+  ],
+  "anDIRECL": [
+   0.35,
+   0.3474148802017655,
+   0.45079445145018915
+  ],
+  "anUA1R": [
+   0.35,
+   0.41351324085750313,
+   -0.4578764186633039
+  ],
+  "anUA2R": [
+   0.75,
+   0.41351324085750313,
+   -0.5078764186633039
+  ],
+  "anAMORTR": [
+   0.75,
+   0.48,
+   -0.4
+  ],
+  "anDIRECR": [
+   0.35,
+   0.3474148802017655,
+   -0.45079445145018915
   ]
  },
  "masas_mover": {
@@ -146,24 +191,60 @@
   ],
   [
    "fb_loL",
+   "anDIRECL",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "anDIRECL",
+   "anUA1L",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "anUA1L",
    "fb_hiL",
    "PTR 38x38x1.9",
    "susp"
   ],
   [
    "fb_loR",
+   "anDIRECR",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "anDIRECR",
+   "anUA1R",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "anUA1R",
    "fb_hiR",
    "PTR 38x38x1.9",
    "susp"
   ],
   [
    "fx_loL",
+   "anUA2L",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "anUA2L",
    "fx_hiL",
    "PTR 38x38x1.9",
    "susp"
   ],
   [
    "fx_loR",
+   "anUA2R",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "anUA2R",
    "fx_hiR",
    "PTR 38x38x1.9",
    "susp"
@@ -206,8 +287,20 @@
   ],
   [
    "fx_hiL",
-   "fx_hiR",
+   "anAMORTL",
+   "PTR 38x38x3.0",
+   "gen"
+  ],
+  [
+   "anAMORTL",
+   "anAMORTR",
    "PTR 38x38x1.9",
+   "gen"
+  ],
+  [
+   "anAMORTR",
+   "fx_hiR",
+   "PTR 38x38x3.0",
    "gen"
   ],
   [
@@ -339,13 +432,13 @@
   [
    "dash_loL",
    "seatFL",
-   "PTR 44x44x1.9",
+   "RED 57.2x3.2",
    "gen"
   ],
   [
    "dash_loR",
    "seatFR",
-   "PTR 44x44x1.9",
+   "RED 57.2x3.2",
    "gen"
   ],
   [
@@ -375,13 +468,13 @@
   [
    "mh_loL",
    "mh_beltL",
-   "RED 57.2x3.2",
+   "RED 57.2x4.0",
    "safe"
   ],
   [
    "mh_loR",
    "mh_beltR",
-   "RED 57.2x3.2",
+   "RED 57.2x4.0",
    "safe"
   ],
   [
@@ -447,25 +540,25 @@
   [
    "bat_fL",
    "taL",
-   "PTR 38x38x1.9",
+   "PTR 38x38x3.0",
    "gen"
   ],
   [
    "bat_fR",
    "taR",
-   "PTR 38x38x1.9",
+   "PTR 38x38x3.0",
    "gen"
   ],
   [
    "taL",
    "bat_rL",
-   "PTR 38x38x1.9",
+   "PTR 38x38x3.0",
    "gen"
   ],
   [
    "taR",
    "bat_rR",
-   "PTR 38x38x1.9",
+   "PTR 38x38x3.0",
    "gen"
   ],
   [
@@ -559,12 +652,6 @@
    "gen"
   ],
   [
-   "bat_fL",
-   "bat_fR",
-   "PTR 38x38x1.9",
-   "batt"
-  ],
-  [
    "bat_rL",
    "bat_rR",
    "PTR 38x38x1.9",
@@ -573,25 +660,25 @@
   [
    "seatFL",
    "smFL",
-   "PTR 38x38x1.9",
+   "PTR 38x38x3.0",
    "asiento"
   ],
   [
    "seatFR",
    "smFR",
-   "PTR 38x38x1.9",
+   "PTR 38x38x3.0",
    "asiento"
   ],
   [
    "smFL",
    "cfF",
-   "PTR 38x38x1.9",
+   "PTR 38x38x3.0",
    "asiento"
   ],
   [
    "smFR",
    "cfF",
-   "PTR 38x38x1.9",
+   "PTR 38x38x3.0",
    "asiento"
   ],
   [
@@ -659,20 +746,80 @@
    "cf2",
    "PTR 44x44x1.9",
    "tors"
+  ],
+  [
+   "bat_fL",
+   "cfB",
+   "PTR 38x38x1.9",
+   "batt"
+  ],
+  [
+   "cfB",
+   "bat_fR",
+   "PTR 38x38x1.9",
+   "batt"
+  ],
+  [
+   "anAMORTL",
+   "fx_loL",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "anAMORTR",
+   "fx_loR",
+   "PTR 38x38x1.9",
+   "susp"
+  ],
+  [
+   "cf2",
+   "cfB",
+   "PTR 38x38x1.9",
+   "batt"
+  ],
+  [
+   "mh_loL",
+   "mh_loR",
+   "PTR 38x38x1.9",
+   "safe"
   ]
  ],
  "resumen": {
-  "masa": 90.11233970449426,
-  "K_tors": 8702.21640015227,
+  "masa": 99.00992724565879,
+  "K_tors": 9748.05399027818,
   "fs": {
-   "LC1": 3.162124282021426,
-   "LC3": 2.658620690013477,
-   "LC4": 2.896286376597165,
-   "LC5": 1.7170066570621252,
-   "LC5c": 1.768051153582861,
-   "LC7": 7.022608109286022,
-   "LC8": 2.175687485096308,
-   "LC6": 2.1336904897773517
+   "LC1": 2.0402372750035616,
+   "LC3": 2.962403886624913,
+   "LC4": 3.7634912359072827,
+   "LC5": 1.8346225914390666,
+   "LC5c": 1.8360163743893025,
+   "LC7": 7.143425237011248,
+   "LC8": 2.0245135309498155,
+   "LC6": 2.3864306725606785
+  },
+  "suspension": {
+   "S1 bache 3 g": 2.0348164241109905,
+   "S2 frenada 1 g": 4.148188376316434,
+   "S3 curva 1 g": 2.4434219373781,
+   "S4 bache 3 g en rueda del. izq.": 2.3608596309080863,
+   "S5 bache 3 g + curva 1 g": 1.542714872438109,
+   "S6 bache 3 g con alabeo diagonal": 1.794114826507846,
+   "S1 bache 3 g [axial 0/0]": 2.034802290063143,
+   "S1 bache 3 g [axial 1/1]": 2.034830557729716,
+   "S1 bache 3 g [axial 0/1]": 2.0347621572099657,
+   "S1 bache 3 g [axial 1/0]": 2.034870693348444,
+   "S4 bache 3 g en rueda del. izq. [axial 0/0]": 2.3030694217116205,
+   "S4 bache 3 g en rueda del. izq. [axial 1/1]": 2.4215775891188014,
+   "S4 bache 3 g en rueda del. izq. [axial 0/1]": 2.3008240220638467,
+   "S4 bache 3 g en rueda del. izq. [axial 1/0]": 2.4240709079638774,
+   "S5 bache 3 g + curva 1 g [axial 0/0]": 1.5427576470800703,
+   "S5 bache 3 g + curva 1 g [axial 1/1]": 1.5426720971274661,
+   "S5 bache 3 g + curva 1 g [axial 0/1]": 1.5428244102576345,
+   "S5 bache 3 g + curva 1 g [axial 1/0]": 1.5426053425264656,
+   "S6 bache 3 g con alabeo diagonal [axial 0/0]": 1.7940649022697204,
+   "S6 bache 3 g con alabeo diagonal [axial 1/1]": 1.794164752846764,
+   "S6 bache 3 g con alabeo diagonal [axial 0/1]": 1.794045155726278,
+   "S6 bache 3 g con alabeo diagonal [axial 1/0]": 1.7941845021226144
   }
  }
 }

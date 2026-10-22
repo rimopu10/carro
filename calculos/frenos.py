@@ -39,9 +39,9 @@ G = 9.81
 # 1. DATOS DEL CARRO (de los entregables ya cerrados)
 # ============================================================================
 MASA      = 690.0     # kg con 2 ocupantes (doc maestro)
-DIST_TRAS = 0.62      # fracción estática al eje trasero (38/62)
+DIST_TRAS = 0.53      # fracción estática al eje trasero (47/53; 2026-10-21, antes 38/62: batería en el túnel central)
 BATALLA   = 2.13      # m (suspension_trasera.py)
-H_CG      = 0.33      # m
+H_CG      = 0.40      # m (2026-10-21, antes 0.33: presupuesto por componente)
 R_DEL     = 0.2875    # m, 175/70R13 (Ø575)
 R_TRAS    = 0.3005    # m, 175/70R14 (Ø601)
 A_OBJ     = 1.0       # g, deceleración de diseño (objetivo declarado del proyecto)
@@ -66,11 +66,11 @@ DISCO_DEL_MAX = 0.250 # m, lo que cabe en un rin 13" dejando lugar al caliper
 # radio efectivo ≈ 0.42·Ø  (centro de pastilla en un disco de auto/moto típico)
 def r_ef(d_ext): return 0.42 * d_ext
 # pistón de caliper realista: por debajo de Ø26 no hay donantes, por arriba de Ø46 tampoco
-D_PISTON_MIN, D_PISTON_MAX = 0.026, 0.046
+D_PISTON_MIN, D_PISTON_MAX = 0.0254, 0.046   # 2026-10-21: 0.026 -> 0.0254 (pistón de 1", el estándar de los calipers de ATV): con 47/53 el trasero pide Ø25.6
 
 # --- bombas y pedal candidatos ---
 BOMBAS = [0.0143, 0.0159, 0.0175, 0.01905]   # m, calibres comunes (9/16", 5/8", 11/16", 3/4")
-RATIOS = [4.5, 5.0, 5.5, 6.0]
+RATIOS = [4.5, 5.0, 5.5, 6.0, 6.5, 7.0]   # 2026-10-21: hasta 7:1 (pedalera ajustable estándar); con 47/53 y CG 0.40 nada cumple con 6:1
 
 # ============================================================================
 # 2. REPARTO DINÁMICO DE PESO Y REPARTO DE FRENADO IDEAL

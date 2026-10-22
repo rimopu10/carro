@@ -48,3 +48,12 @@ def test_capsulas_cubren_piernas_y_cabeza():
     caps = B.capsulas(B.postura(1.50, 0.26, 40.0), z=0.31)
     nombres = {c["nombre"] for c in caps}
     assert {"muslo", "pierna", "pie", "torso", "cabeza"} <= nombres
+
+
+def test_tope_del_riel_deja_20_mm_a_la_barra():
+    """ESTATURA_MAX es la mayor estatura que conserva >= 20 mm entre espalda (con cubeta y acolchado) y la barra de cinturones;
+    1.80 m ya no los conserva (auditoría de cabina 2026-10-21)."""
+    m = B.metricas(B.postura(B.RIELES[1], 0.26, 40.0, estatura=B.ESTATURA_MAX))
+    assert m["espalda_barra"] >= 0.020
+    m180 = B.metricas(B.postura(B.cadera_para_pedal(1.80), 0.26, 40.0, estatura=1.80))
+    assert m180["espalda_barra"] < 0.020

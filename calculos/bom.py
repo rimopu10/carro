@@ -95,7 +95,7 @@ laser_faltantes = [
      "posición nueva x=370 / z=±504, barrenos ovalados — DXF pendiente"),
     ("ménsula de caliper delantero", 2, 8.0,
      "adapta el caliper elegido a la mangueta ATV — DXF pendiente"),
-    ("adaptador de disco Ø220 a maza ATV", 2, 8.0,
+    ("adaptador de disco Ø240 a maza ATV", 2, 8.0,
      "el disco del donante no da el par necesario — DXF pendiente"),
 ]
 existentes = {os.path.basename(p) for p in glob.glob(os.path.join(PLANOS, "*.dxf"))}
@@ -172,8 +172,22 @@ add("Puertas", f"Amortiguadores de gas {_PU.FUERZA_NOMINAL:.0f} N",
     2, "pza", 700, 1400, "local/ML, días", "calculos/puertas.py", "F2")
 add("Puertas", "Cierres rotativos con perno ajustable",
     "6 cierres (3 por puerta: esquina de cabecera, estribo, pierna del arco) + 2 manijas exteriores al ras + 2 "
-    "tiradores interiores + cable de liberación de emergencia. Pernos de cierre ajustables",
+    "tiradores interiores + cable de liberación de emergencia. Pernos de cierre ajustables. **De pestillo de puerta de auto con "
+    "segunda posición de seguridad** (cerrojo primario y secundario, de deshuesadero)",
     1, "lote", 2400, 4800, "local/ML, días", "docs/herraje-puertas.md", "F2")
+add("Puertas", "Viga de impacto lateral (2)",
+    "2 × tubo RED 50.8×2.1 de 0.72 m (sale del sobrante de los tramos de 6 m del chasis), soldado a las placas de cierre de 3 mm con "
+    "2 pernos M8 8.8 por placa. Colapsa a 6.9 kN (pide 4.5 kN, referencia FMVSS 214 estática). Ver docs/seguridad-puertas.md",
+    1, "lote", 150, 300, "local, días", "docs/seguridad-puertas.md", "F2")
+add("Puertas", "Pasadores de bisagra de extracción rápida",
+    "4 pasadores de bolas Ø10 (uno por bisagra) con aro y cordón rojo: salida de emergencia en volcadura y desmontaje de la puerta en 1 minuto",
+    4, "pza", 200, 400, "local/ML, días", "docs/seguridad-puertas.md", "F2")
+add("Puertas", "Manijas de emergencia y varillas de apoyo",
+    "2 manijas rojas de emergencia en el larguero del techo (cable de acero que libera los cierres) + 2 varillas de apoyo Ø8 con clip (respaldo del amortiguador de gas)",
+    1, "lote", 500, 1000, "local, días", "docs/seguridad-puertas.md", "F2")
+add("Puertas", "Sensores de puerta abierta",
+    "2 interruptores magnéticos tipo reed: la tablet avisa \"puerta abierta\" e inhibe el par de los motores",
+    2, "pza", 60, 150, "local/ML, días", "docs/seguridad-puertas.md", "F2")
 add("Puertas", "Policarbonato 3 mm",
     "Cristal fijo de las 2 puertas, ~0.9 m² en total, con protección UV y capa dura contra rayones",
     1, "lote", 900, 1600, "local, días", "docs/herraje-puertas.md", "F2")
@@ -214,15 +228,15 @@ add("Rodaje", "Kit buje poliuretano Ø16 + manga",
     "Pivote de brazo tirado trasero, base ancha ≥150 mm",
     2, "kit", 800, 1400, "local", "resultados-suspension-trasera", "F1")
 add("Rodaje", "Coilover delantero",
-    "Resorte **270 lb/in** · pedir ~**380 mm extendido, carrera ≥96 mm** (ojo a ojo "
-    "estático 342 mm) · amortiguación ajustable por clicks (ζ 0.5-0.7) · 5,703 N en "
-    "bache 3g · **especificar Ø del ojo y ancho de montaje**",
+    "Resorte **397 lb/in** · pedir ~**430 mm extendido, carrera ≥91 mm** (ojo a ojo "
+    "estático 390 mm) · amortiguación ajustable por clicks (ζ 0.5-0.7) · 7,804 N en "
+    "bache 3g · **especificar Ø del ojo y ancho de montaje**. OJO: cambió (era 270 lb/in y 342 mm): el ojo superior se movió "
+    "80 mm hacia adentro (caja estrecha) y la batería pasó al túnel central, así que el eje delantero carga 47% y no 38% (2026-10-21)",
     2, "pza", 4000, 7000, "2-4 semanas", "resultados-suspension-delantera", "F1")
 add("Rodaje", "Coilover trasero",
-    "Resorte **292 lb/in** · pedir ~**540 mm extendido, carrera ≥117 mm** (ojo a ojo "
-    "estático 482 mm) · ajustable · 6,710 N en bache 3g · **especificar Ø del ojo**. "
-    "OJO: cambió respecto a versiones previas del BOM (era 351 lb/in) al corregir el "
-    "anclaje inferior, que estaba fuera del brazo",
+    "Resorte **238 lb/in** · pedir ~**540 mm extendido, carrera ≥117 mm** (ojo a ojo "
+    "estático 482 mm) · ajustable · 5,476 N en bache 3g · **especificar Ø del ojo**. "
+    "OJO: cambió (era 292 lb/in): con la batería en el túnel central el eje trasero carga 53% y no 62% (2026-10-21)",
     2, "pza", 4500, 7500, "2-4 semanas", "resultados-suspension-trasera", "F1")
 add("Rodaje", "Tornillería 10.9 de placa de torque",
     "**8** × M12 10.9 + tuerca autoblocante (4 por rueda, atraviesan las dos placas) "
@@ -232,24 +246,24 @@ add("Rodaje", "Tornillería 10.9 de placa de torque",
 
 # --- FRENOS ---
 add("Rodaje", "Disco de freno delantero",
-    "Ø220 × 5 mm macizo. **El disco del donante ATV (Ø180-200) NO da el par** — con él "
+    "Ø240 × 5 mm macizo (antes Ø220: con 47/53 y CG 0.40 el delantero frena 70%). **El disco del donante ATV (Ø180-200) NO da el par** — con él "
     "ninguna pedalera cumple",
     2, "pza", 1200, 2200, "local", "resultados-frenos §2", "F1")
 add("Rodaje", "Caliper delantero",
-    "Área de pistón ≥ **938 mm²** (equivale a un pistón de Ø35 mm) — de compacto o de "
+    "Área de pistón ≥ **1,056 mm²** (equivale a un pistón de Ø37 mm) — de compacto o de "
     "moto deportiva de 2-4 pistones",
     2, "pza", 2000, 4000, "deshuesadero/local", "resultados-frenos §2", "F1")
 add("Rodaje", "Caliper trasero CON palanca de freno de mano",
-    "Área de pistón ≥ **740 mm²** (Ø31 mm equivalente), palanca mecánica integrada. "
+    "Área de pistón ≥ **516 mm²** (Ø26 mm equivalente; pistón de 1\"), palanca mecánica integrada. "
     "**Verificar patrón de barrenos: 82 mm a radio 110** o se re-corre placa_torque.py. "
     "El disco lo trae el QS273",
     2, "pza", 2400, 4200, "deshuesadero/local", "resultados-frenos §2 y §6", "F1")
 add("Rodaje", "Bombas de freno + barra de balance",
-    "2 × bomba Ø14.3 mm (9/16\") + barra de balance ajustable + 2 depósitos. "
+    "bomba delantera Ø15.9 mm (5/8\") y trasera Ø14.3 mm (9/16\") + barra de balance ajustable + 2 depósitos. "
     "Doble circuito: una bomba por eje",
     1, "kit", 3500, 6000, "2-3 semanas", "resultados-frenos §3", "F1")
 add("Rodaje", "Pedal de freno",
-    "Relación **6.0:1** (da 428 N de pie para 1g sin booster)",
+    "Relación **6.5:1** ajustable (da 442 N de pie y 65 mm de recorrido para 1g sin booster; con 6:1 ya no cumple)",
     1, "pza", 1200, 2500, "local", "resultados-frenos §3", "F1")
 add("Rodaje", "Pastillas de freno",
     "**Semi-metálicas o sinterizadas, NO las más baratas** — con µ 0.45 el pedal baja de "
@@ -536,7 +550,7 @@ with open(md_path, "w", encoding="utf-8") as f:
         f.write(f"| {etiqueta} | ${a:,.0f}–{b:,.0f} | |\n")
     f.write("\nLos **frenos solos se comen casi la mitad del rodaje**, y es consecuencia "
             "directa de un hallazgo del cálculo: el freno del donante ATV no alcanza para "
-            "690 kg, así que hay que comprar discos de Ø220 y calipers de mayor área en vez de "
+            "690 kg, así que hay que comprar discos de Ø240 y calipers de mayor área en vez de "
             "reusar los del donante. El doc maestro presupuestó dando por hecho que el freno "
             "venía con la mangueta.\n\n")
     f.write("**Estructura** se pasa por los servicios, no por el acero: el acero puro son "

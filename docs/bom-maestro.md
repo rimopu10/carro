@@ -35,16 +35,17 @@ No se compra todo junto. El orden lo dicta el tiempo de entrega, no el gusto:
 | F2 | Cargador | LiFePO4 96 V, 15-18 A, enchufable a 120 V | 1 pza | 2-4 semanas | $5,000–8,000 |
 | F2 | Caja de batería | Lámina/perfil + compresión de celdas + venteo + aislamiento. **CAD pendiente** (punto 8 de que-falta-para-construir) | 1 lote | — | $3,000–5,500 |
 
-### Estructura — $14,140 a $23,509
+### Estructura — $15,562 a $25,710
 
 | Fase | Item | Especificación de pedido | Cant. | Entrega | Estimado |
 |---|---|---|---|---|---|
 | F1 | Tubo PTR 25x25x1.9 | 1 tramos de 6 m = 9 kg (6 piezas, 3.6 m netos, +15% de merma) | 1 tramo 6 m | local, días | $286–447 |
-| F1 | Tubo PTR 38x38x1.9 | 4 tramos de 6 m = 54 kg (47 piezas, 20.6 m netos, +15% de merma) | 4 tramo 6 m | local, días | $1,741–2,720 |
-| F1 | Tubo PTR 38x38x3.0 | 1 tramos de 6 m = 21 kg (2 piezas, 0.2 m netos, +15% de merma) | 1 tramo 6 m | local, días | $687–1,074 |
-| F1 | Tubo PTR 44x44x1.9 | 1 tramos de 6 m = 16 kg (9 piezas, 3.1 m netos, +15% de merma) | 1 tramo 6 m | local, días | $504–788 |
+| F1 | Tubo PTR 38x38x1.9 | 4 tramos de 6 m = 54 kg (44 piezas, 19.9 m netos, +15% de merma) | 4 tramo 6 m | local, días | $1,741–2,720 |
+| F1 | Tubo PTR 38x38x3.0 | 1 tramos de 6 m = 21 kg (12 piezas, 2.7 m netos, +15% de merma) | 1 tramo 6 m | local, días | $687–1,074 |
+| F1 | Tubo PTR 44x44x1.9 | 1 tramos de 6 m = 16 kg (7 piezas, 2.5 m netos, +15% de merma) | 1 tramo 6 m | local, días | $504–788 |
 | F1 | Tubo RED 50.8x2.1 | 1 tramos de 6 m = 16 kg (5 piezas, 2.0 m netos — los arcos requieren ROLADO, +15% de merma) | 1 tramo 6 m | local, días | $663–1,026 |
-| F1 | Tubo RED 57.2x3.2 | 2 tramos de 6 m = 54 kg (14 piezas, 6.4 m netos — los arcos requieren ROLADO, +15% de merma) | 2 tramo 6 m | local, días | $2,275–3,521 |
+| F1 | Tubo RED 57.2x3.2 | 2 tramos de 6 m = 54 kg (14 piezas, 5.9 m netos — los arcos requieren ROLADO, +15% de merma) | 2 tramo 6 m | local, días | $2,275–3,521 |
+| F1 | Tubo RED 57.2x4.0 | 1 tramos de 6 m = 34 kg (2 piezas, 1.0 m netos — los arcos requieren ROLADO, +15% de merma) | 1 tramo 6 m | local, días | $1,422–2,201 |
 | F1 | Tubo PTR 70×50×4 | 1 tramo de 6 m = 45 kg — brazos tirados traseros (2 × 504 mm) y sobrante para ménsulas | 1 tramo 6 m | local, días | $1,447–2,261 |
 | F1 | Tubo RED 25.4×2.1 | 1 tramo de 6 m = 8 kg — horquillas delanteras (~2.1 m netos) | 1 tramo 6 m | local, días | $331–513 |
 | F1 | Tubo RED 16×1.2 | 3 tramo de 6 m = 9 kg — esqueleto de las 2 puertas (anillo + travesaño, ~11 m netos; se dobla con dobladora de tubo manual) | 3 tramo 6 m | local, días | $358–554 |
@@ -62,14 +63,14 @@ No se compra todo junto. El orden lo dicta el tiempo de entrega, no el gusto:
 | F1 | Rótula cónica ATV | Tipo Honda TRX300/Rancher — LBJ y UBJ por lado. **Verificar el cono contra la mangueta donante antes de comprar** | 4 pza | local/importado | $1,400–2,400 |
 | F1 | Buje de poliuretano Ø12 + tubo interno | Pivotes de horquillas delanteras | 8 pza | local | $1,600–2,800 |
 | F1 | Kit buje poliuretano Ø16 + manga | Pivote de brazo tirado trasero, base ancha ≥150 mm | 2 kit | local | $800–1,400 |
-| F1 | Coilover delantero | Resorte **270 lb/in** · pedir ~**380 mm extendido, carrera ≥96 mm** (ojo a ojo estático 342 mm) · amortiguación ajustable por clicks (ζ 0.5-0.7) · 5,703 N en bache 3g · **especificar Ø del ojo y ancho de montaje** | 2 pza | 2-4 semanas | $4,000–7,000 |
-| F1 | Coilover trasero | Resorte **292 lb/in** · pedir ~**540 mm extendido, carrera ≥117 mm** (ojo a ojo estático 482 mm) · ajustable · 6,710 N en bache 3g · **especificar Ø del ojo**. OJO: cambió respecto a versiones previas del BOM (era 351 lb/in) al corregir el anclaje inferior, que estaba fuera del brazo | 2 pza | 2-4 semanas | $4,500–7,500 |
+| F1 | Coilover delantero | Resorte **397 lb/in** · pedir ~**430 mm extendido, carrera ≥91 mm** (ojo a ojo estático 390 mm) · amortiguación ajustable por clicks (ζ 0.5-0.7) · 7,804 N en bache 3g · **especificar Ø del ojo y ancho de montaje**. OJO: cambió (era 270 lb/in y 342 mm): el ojo superior se movió 80 mm hacia adentro (caja estrecha) y la batería pasó al túnel central, así que el eje delantero carga 47% y no 38% (2026-10-21) | 2 pza | 2-4 semanas | $4,000–7,000 |
+| F1 | Coilover trasero | Resorte **238 lb/in** · pedir ~**540 mm extendido, carrera ≥117 mm** (ojo a ojo estático 482 mm) · ajustable · 5,476 N en bache 3g · **especificar Ø del ojo**. OJO: cambió (era 292 lb/in): con la batería en el túnel central el eje trasero carga 53% y no 62% (2026-10-21) | 2 pza | 2-4 semanas | $4,500–7,500 |
 | F1 | Tornillería 10.9 de placa de torque | **8** × M12 10.9 + tuerca autoblocante (4 por rueda, atraviesan las dos placas) y **8** × camisa de acero soldada a través del PTR (sin camisa, el apriete aplasta el tubo) · apretar a 95 N·m | 1 lote | local | $900–1,500 |
-| F1 | Disco de freno delantero | Ø220 × 5 mm macizo. **El disco del donante ATV (Ø180-200) NO da el par** — con él ninguna pedalera cumple | 2 pza | local | $1,200–2,200 |
-| F1 | Caliper delantero | Área de pistón ≥ **938 mm²** (equivale a un pistón de Ø35 mm) — de compacto o de moto deportiva de 2-4 pistones | 2 pza | deshuesadero/local | $2,000–4,000 |
-| F1 | Caliper trasero CON palanca de freno de mano | Área de pistón ≥ **740 mm²** (Ø31 mm equivalente), palanca mecánica integrada. **Verificar patrón de barrenos: 82 mm a radio 110** o se re-corre placa_torque.py. El disco lo trae el QS273 | 2 pza | deshuesadero/local | $2,400–4,200 |
-| F1 | Bombas de freno + barra de balance | 2 × bomba Ø14.3 mm (9/16") + barra de balance ajustable + 2 depósitos. Doble circuito: una bomba por eje | 1 kit | 2-3 semanas | $3,500–6,000 |
-| F1 | Pedal de freno | Relación **6.0:1** (da 428 N de pie para 1g sin booster) | 1 pza | local | $1,200–2,500 |
+| F1 | Disco de freno delantero | Ø240 × 5 mm macizo (antes Ø220: con 47/53 y CG 0.40 el delantero frena 70%). **El disco del donante ATV (Ø180-200) NO da el par** — con él ninguna pedalera cumple | 2 pza | local | $1,200–2,200 |
+| F1 | Caliper delantero | Área de pistón ≥ **1,056 mm²** (equivale a un pistón de Ø37 mm) — de compacto o de moto deportiva de 2-4 pistones | 2 pza | deshuesadero/local | $2,000–4,000 |
+| F1 | Caliper trasero CON palanca de freno de mano | Área de pistón ≥ **516 mm²** (Ø26 mm equivalente; pistón de 1"), palanca mecánica integrada. **Verificar patrón de barrenos: 82 mm a radio 110** o se re-corre placa_torque.py. El disco lo trae el QS273 | 2 pza | deshuesadero/local | $2,400–4,200 |
+| F1 | Bombas de freno + barra de balance | bomba delantera Ø15.9 mm (5/8") y trasera Ø14.3 mm (9/16") + barra de balance ajustable + 2 depósitos. Doble circuito: una bomba por eje | 1 kit | 2-3 semanas | $3,500–6,000 |
+| F1 | Pedal de freno | Relación **6.5:1** ajustable (da 442 N de pie y 65 mm de recorrido para 1g sin booster; con 6:1 ya no cumple) | 1 pza | local | $1,200–2,500 |
 | F1 | Pastillas de freno | **Semi-metálicas o sinterizadas, NO las más baratas** — con µ 0.45 el pedal baja de 428 a 381 N. Juego para cada caliper elegido | 4 juego | local | $1,200–2,400 |
 | F1 | Líneas de freno | 4 tramos de manguera flexible DOT con malla + línea rígida de acero + niples + líquido DOT4 | 1 lote | local | $1,800–3,000 |
 | F1 | Palanca de freno de mano + cables | Palanca con trinquete + cable doble + tensores (2.7 kN de apriete necesarios) | 1 kit | local | $900–1,600 |
@@ -132,7 +133,7 @@ No se compra todo junto. El orden lo dicta el tiempo de entrega, no el gusto:
 | ménsula de pivote superior delantero ❌ | 4 | 4.7 mm | baja el eje 63 mm bajo el tubo superior — DXF pendiente |
 | ménsula de cremallera al mamparo ❌ | 2 | 6.0 mm | posición nueva x=370 / z=±504, barrenos ovalados — DXF pendiente |
 | ménsula de caliper delantero ❌ | 2 | 8.0 mm | adapta el caliper elegido a la mangueta ATV — DXF pendiente |
-| adaptador de disco Ø220 a maza ATV ❌ | 2 | 8.0 mm | el disco del donante no da el par necesario — DXF pendiente |
+| adaptador de disco Ø240 a maza ATV ❌ | 2 | 8.0 mm | el disco del donante no da el par necesario — DXF pendiente |
 
 **18 piezas ya tienen su DXF listo para el cortador; 10 faltan por dibujar** — todas son ménsulas simples, pero conviene juntarlas y mandar un solo pedido de corte porque el costo de arranque es lo que pesa.
 
@@ -166,21 +167,21 @@ Todo lo de abajo está parametrizado en los scripts: si un dato cambia se ajusta
 
 | Sistema | BOM (estimado) | Presupuesto doc maestro | |
 |---|---|---|---|
-| Estructura | $14,140–23,509 | $7,200–11,000 | **se pasa** |
+| Estructura | $15,562–25,710 | $7,200–11,000 | **se pasa** |
 | Rodaje | $35,200–63,400 | $20,300–33,500 | **se pasa** |
 | Propulsión | $49,700–73,200 | $38,700–53,700 | dentro |
 | Batería | $40,000–58,500 | $35,000–49,000 | dentro |
 | Carrocería | $31,500–55,000 | $21,000–36,000 | dentro |
 | Cabina | $16,000–30,200 | $14,400–24,100 | dentro |
 | Luces | $7,000–12,000 | $7,000–12,000 | dentro |
-| **Total del carro** | **$201,600–331,100** | $143,600–219,300 | |
+| **Total del carro** | **$203,900–335,200** | $143,600–219,300 | |
 | Herramientas | $16,300–30,200 | $10,000–15,000 | |
 
 El rango es ancho a propósito: el **mínimo** es comprando bien y usando deshuesadero donde se puede; el **máximo** es todo nuevo a precio de mostrador. La realidad cae en medio y depende sobre todo de la suerte en el deshuesadero.
 
 ### De dónde viene el sobrecosto
 
-El BOM detallado sale **$201,600–331,100** contra los $143,600–219,300 del doc maestro. Solo se pasan dos sistemas, y hay una razón concreta en cada uno:
+El BOM detallado sale **$203,900–335,200** contra los $143,600–219,300 del doc maestro. Solo se pasan dos sistemas, y hay una razón concreta en cada uno:
 
 **Rodaje** es el grande. Desglosado por entregable:
 
@@ -191,11 +192,11 @@ El BOM detallado sale **$201,600–331,100** contra los $143,600–219,300 del d
 | Dirección | $4,800–9,700 | |
 | Llantas y rines | $3,000–5,200 | |
 
-Los **frenos solos se comen casi la mitad del rodaje**, y es consecuencia directa de un hallazgo del cálculo: el freno del donante ATV no alcanza para 690 kg, así que hay que comprar discos de Ø220 y calipers de mayor área en vez de reusar los del donante. El doc maestro presupuestó dando por hecho que el freno venía con la mangueta.
+Los **frenos solos se comen casi la mitad del rodaje**, y es consecuencia directa de un hallazgo del cálculo: el freno del donante ATV no alcanza para 690 kg, así que hay que comprar discos de Ø240 y calipers de mayor área en vez de reusar los del donante. El doc maestro presupuestó dando por hecho que el freno venía con la mangueta.
 
-**Estructura** se pasa por los servicios, no por el acero: el acero puro son ~274 kg ($8,777–13,714), y lo que empuja son el corte láser, el rolado de los arcos y los consumibles de soldadura — que el presupuesto original no tenía desglosados.
+**Estructura** se pasa por los servicios, no por el acero: el acero puro son ~308 kg ($9,860–15,407), y lo que empuja son el corte láser, el rolado de los arcos y los consumibles de soldadura — que el presupuesto original no tenía desglosados.
 
-> Ojo con ese número: **274 kg es lo que se COMPRA**, no lo que pesa el carro. El frame soldado son 90.1 kg (`analisis_chasis.py`); la diferencia son los tramos comerciales de 6 m que sobran, la merma de corte y las placas. El sobrante sirve para el jig de soldadura y las ménsulas, así que no se tira.
+> Ojo con ese número: **308 kg es lo que se COMPRA**, no lo que pesa el carro. El frame soldado son 99.0 kg (`analisis_chasis.py`); la diferencia son los tramos comerciales de 6 m que sobran, la merma de corte y las placas. El sobrante sirve para el jig de soldadura y las ménsulas, así que no se tira.
 
 **Qué hacer con esto.** No es motivo de alarma: el carro sigue siendo un proyecto de rango medio y **se construye por fases**, así que el desembolso se reparte. Las palancas reales para bajarlo, en orden de efecto:
 
@@ -209,8 +210,8 @@ Los **frenos solos se comen casi la mitad del rodaje**, y es consecuencia direct
 | Fase | Qué es | Estimado |
 |---|---|---|
 | F0 | pedidos largos (motores y celdas) — **primero** | $70,700–98,700 |
-| F1 | chasis rodante: acero, suspensión, frenos, dirección | $49,300–86,900 |
-| F2 | tren eléctrico | $28,600–51,500 |
+| F1 | chasis rodante: acero, suspensión, frenos, dirección | $50,800–89,100 |
+| F2 | tren eléctrico | $29,600–53,400 |
 | F3 | pruebas y cabina | $14,400–27,000 |
 | F4 | carrocería | $19,500–35,000 |
 | F5 | acabado | $19,000–32,000 |

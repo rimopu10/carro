@@ -20,6 +20,9 @@ import tempfile
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+import sys as _sys
+_sys.path.insert(0, HERE)
+import masas_modelo as _MM
 _src = open(os.path.join(HERE, "analisis_chasis.py"), encoding="utf-8").read()
 _ns = {"__name__": "base", "__file__": os.path.join(tempfile.gettempdir(), "fakeproj", "calculos", "a.py")}
 with contextlib.redirect_stdout(io.StringIO()):
@@ -71,9 +74,10 @@ def _sup_t():
 
 
 def _masas(miembros):
-    """Masa por nodo: las fijas + el faltante repartido por tubo que llega a cada nodo
-    (igual que analisis_chasis.py)."""
-    m = dict(_MASAS_FIJAS)
+    """Masa por nodo: las fijas (presupuesto por componente de masas_modelo.py si el diseño trae los nodos del rediseño; si no, las de
+    antes) + el faltante (el propio chasis) repartido por tubo que llega a cada nodo (igual que analisis_chasis.py)."""
+    _fx = _MM.fijas(NODES)
+    m = dict(_fx) if _fx is not None else dict(_MASAS_FIJAS)
     falta = MASA_SUSP - sum(m.values())
     tubo = {n: 0.0 for n in NODES}
     for a, b, s, tag in miembros:

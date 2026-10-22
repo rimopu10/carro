@@ -28,7 +28,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 R_RUEDA = 0.2876          # m, radio de la llanta
 ANCHO_LLANTA = 0.177
 MASA_TOTAL = 690.0        # kg: 540 en vacío + 2 ocupantes (150)
-DIST_DEL = 0.38           # fracción de peso al eje delantero (doc maestro: 38/62)
+DIST_DEL = 0.47           # fracción de peso al eje delantero. 2026-10-21: 0.38 -> 0.47 al llevar la batería al túnel central (calculos/masas_cg.py,
+                          # docs/masas-y-bateria.md); el doc maestro suponía 38/62 con la batería sobre el eje trasero
 M_NOSUSP = 18.0           # kg no suspendidos por esquina del. (rueda+mangueta+freno+½brazos)
 FREC_OBJ = 1.9            # Hz, frecuencia de rebote objetivo (deportivo cómodo p/ topes)
 
@@ -94,7 +95,10 @@ S0 = W0 + 0.10 * a0                      # punto del eje del husillo (define cam
 # se atravesaban. Se movió a (700,480,480), sobre una ménsula 50 mm adelante y 70 mm
 # adentro del nodo, que da 62 mm de holgura contra brazos y tubos (`holguras.py`) y
 # CONSERVA el motion ratio en 0.59, así que el resorte de 270 lb/in no cambia.
-SHK_SUP = np.array([0.70, 0.48, 0.48])   # ménsula sobre el travesaño fx_hi
+# 2026-10-21: z 0.48 -> 0.40. Al estrechar la caja (analisis_chasis.py) el riel superior fb_hi-fx_hi quedó a 28 mm del ojo superior y
+# el amortiguador (resorte R36) lo atravesaba 33 mm en el recorrido (auditoría independiente). Con z=0.40 hay +13 mm; el motion ratio
+# baja de 0.60 a 0.54 y el resorte sube de 44 a 54.5 N/mm (la cinemática de los brazos no cambia).
+SHK_SUP = np.array([float(v) for v in os.environ.get("SUSP_SHK_SUP", "0.70,0.48,0.40").split(",")])   # ménsula sobre el travesaño fx_hi
 SHK_INF0 = np.array([0.58, 0.215, 0.66]) # sobre el brazo inferior, al 75% hacia la rótula
 
 # ---------------- cinemática de cuerpo rígido ----------------

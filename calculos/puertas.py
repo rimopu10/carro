@@ -13,7 +13,8 @@ import itertools
 import numpy as np
 
 G = 9.81
-MASA_PUERTA = 12.0          # kg de DISEÑO (objetivo 9-10 kg: piel sándwich + esqueleto Ø16 + cristal PC + herraje; margen 20%)
+MASA_PUERTA = 13.5          # kg de DISEÑO. 2026-10-21: 12.0 -> 13.5 al añadir viga de impacto lateral (RED 50.8x2.1, ~1.5 kg), aros de extracción de
+                            # pasadores y gancho secundario (seguridad_puertas.py); antes objetivo 9-10 kg: piel sándwich + esqueleto Ø16 + cristal PC + herraje
 FACTOR_BACHE = 3.0          # la puerta abierta recibe 3 g al pasar un bache / un portazo
 VIENTO_N = 400.0            # N laterales, en el centro de la puerta abierta
 THETA_MAX = 65.0
@@ -203,6 +204,8 @@ def herraje():
         "cierre_estribo_delantero": np.array([1.40, 0.16, 0.59]),
         "cierre_estribo_trasero": np.array([1.90, 0.16, 0.59]),
         "cierre_trasero": np.array([2.02, 0.660, 0.506]),           # pierna del arco (nodo mh_belt)
+        "viga_impacto_a": np.array([1.40, 0.34, 0.66]),             # viga de impacto lateral (seguridad_puertas.py), puerta cerrada
+        "viga_impacto_b": np.array([2.00, 0.60, 0.62]),
     }
 
 

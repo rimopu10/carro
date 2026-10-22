@@ -3,6 +3,12 @@
 **Fecha:** 2026-10-12 (revisado tras dos auditorías cruzadas) · Diseño: `docs/superpowers/specs/2026-10-12-cabina-y-puertas-design.md`
 · Números de `calculos/puertas.py` y `calculos/buck_piloto.py` (se regeneran con `python calculos/puertas.py`).
 
+> **Actualización 2026-10-21 — seguridad de las puertas** (detalle y cálculos en `docs/seguridad-puertas.md`): viga de impacto lateral de tubo redondo
+> RED 50.8×2.1 (colapsa a 7.6 kN, pide 4.5 kN), cierres con segunda posición, **pasadores de bisagra de extracción rápida** (salida de emergencia en volcadura y
+> desmontaje en 1 minuto), manijas rojas de emergencia, varilla de apoyo contra falla del amortiguador y sensor de puerta que inhibe el par. La masa de diseño de la
+> puerta pasa de 12 a **13.5 kg** (amortiguador de gas de 500 N, esfuerzo de manija +88 N al empezar a abrir; LC7 del chasis queda en FS 6.8). Las cifras de arriba de
+> LC7 (1,300 N, etc.) son de la versión de 12 kg: se regeneran con `python calculos/puertas.py`.
+
 Ejes: x hacia **atrás**, y arriba, z lateral (**z>0 = izquierda, lado del piloto**). Todo en metros. El lado derecho es el
 espejo en z.
 

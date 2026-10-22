@@ -16,7 +16,7 @@ Horquillas dobles + coilover a la torre `fx_hi`. Cinemática 3D exacta de cuerpo
 | Terminal dirección | 430 | 350 | 695 | en brazo de mangueta |
 | Centro de rueda | 550 | 288 | 750 | 175/70R13 |
 | Coilover inferior | 580 | 215 | 660 | sobre brazo inf., 75% a la rótula |
-| Coilover superior | 700 | 480 | 480 | torre fx_hi (nodo del FEM) |
+| Coilover superior | 700 | 480 | 400 | torre fx_hi (nodo del FEM) |
 
 ## Alineación estática
 
@@ -35,15 +35,15 @@ Horquillas dobles + coilover a la torre `fx_hi`. Cinemática 3D exacta de cuerpo
 - Ganancia de camber: **-0.59°/25 mm** en compresión (la rueda se inclina hacia adentro al comprimir: correcto).
 - Bump steer máximo: **0.064°/25 mm** en ±50 mm — excelente (<0.1).
 - Cambio de semitrocha: -13.4 a 0.0 mm.
-- Motion ratio del coilover: **0.60** (shock/rueda) — casi constante en el recorrido.
+- Motion ratio del coilover: **0.54** (shock/rueda) — casi constante en el recorrido.
 
 ## Resortes y coilover (especificación de compra)
 
-- Masa por esquina: 131 kg (113 suspendida) · frecuencia objetivo 1.9 Hz.
-- Tasa en rueda 16.1 N/mm → **resorte 44 N/mm ≈ 252 lb/in**.
-- Largo ojo-a-ojo estático: **342 mm** · carrera usada: 85 mm → pedir coilover ~380 mm extendido, carrera ≥100 mm.
-- Carga estática por shock: 1837 N · en bache 3g: **5510 N** (carga de diseño de la ménsula en la torre, con FS 2 soldar para 11.0 kN).
-- Amortiguación crítica en rueda 2700 N·s/m → ajustar ζ≈0.5–0.7 (coilover con clicks).
+- Masa por esquina: 162 kg (144 suspendida) · frecuencia objetivo 1.9 Hz.
+- Tasa en rueda 20.5 N/mm → **resorte 70 N/mm ≈ 397 lb/in**.
+- Largo ojo-a-ojo estático: **390 mm** · carrera usada: 76 mm → pedir coilover ~430 mm extendido, carrera ≥91 mm.
+- Carga estática por shock: 2601 N · en bache 3g: **7804 N** (carga de diseño de la ménsula en la torre, con FS 2 soldar para 15.6 kN).
+- Amortiguación crítica en rueda 3442 N·s/m → ajustar ζ≈0.5–0.7 (coilover con clicks).
 
 ## Largos de fabricación de brazos (centro a centro, mm)
 

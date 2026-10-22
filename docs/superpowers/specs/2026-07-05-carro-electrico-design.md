@@ -158,3 +158,10 @@ carro/
 2. Proveedor final de celdas y kit motor (cotizar 3 en F0).
 3. Limpiaparabrisas: tratamiento hidrofóbico vs brazo manual (probar en F3).
 4. Donante exacto de cremallera y manguetas (según disponibilidad de deshuesadero local).
+
+
+## Enmienda 2026-10-21 — ubicación de la batería y reparto de peso
+Las decisiones 5 y 6 de la tabla de §3 («batería central-trasera» y «electrónica en la nariz → ~38/62») quedan reemplazadas, tras medir el presupuesto
+de masas por componente (`calculos/masas_cg.py`, `docs/masas-y-bateria.md`): la cuna estaba sobre el eje trasero y el CG real queda a 0.40 m.
+**Nueva decisión:** las 30 celdas en una sola caja en el túnel central entre las butacas (peso delante 46.7%, inercia de guiñada −26%), y la electrónica de
+potencia atrás junto a los motores de cubo. Consecuencias: resortes 397/238 lb/in, disco delantero Ø240, pedal 6.5:1, chasis 99.0 kg.
