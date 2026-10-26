@@ -56,7 +56,7 @@ python calculos/bom.py                             # regenera docs/bom-maestro.m
 python calculos/cargas_suspension.py               # S1..S4 con las ruedas por los brazos; reescribe docs/cargas-suspension.md
 python calculos/auditoria_cabina.py                # cuerpo/asiento/vista; dibuja docs/auditoria-cabina/*.png
 ```
-`python -m pytest calculos -q` son ahora **29** pruebas (incluye `test_masas.py` — reparto y CG de resortes/frenos = presupuesto de masas — y `test_cargas_suspension.py`: equilibrio de fuerzas y momentos, ningún anclaje flota, FS por niveles, distancia entre segmentos contra fuerza bruta).
+`python -m pytest calculos -q` son ahora **33** pruebas (`test_puertas::test_la_puerta_abierta_deja_pasar_agachado` falla si falta `cad/_gaviota-1a20/`, que no va en git: regenerar con `tripo_gaviota.py`) (incluye `test_masas.py` — reparto y CG de resortes/frenos = presupuesto de masas — y `test_cargas_suspension.py`: equilibrio de fuerzas y momentos, ningún anclaje flota, FS por niveles, distancia entre segmentos contra fuerza bruta).
 **Orden si se rehace la topología:** `rediseno_chasis.py` → **`reforzar_suspension.py`** (reescribe `chasis_rediseno.json`, idempotente) → `analisis_chasis.py` → resto. El optimizador NO conoce las cargas de suspensión: sin el paso de refuerzo los tubos junto a las ruedas quedan en FS ~1.3.
 
 ## 4. Cómo se cambia el chasis (no editar los tubos a mano)
@@ -104,7 +104,7 @@ corte lateral, grupos de tubos, asientos de cubeta, suspensión/ménsulas y tubo
 7. **Aplicar los topes**: vientre central a ~126 mm + placa de sacrificio (ver `calculos/topes.py`).
 8. **Torre del amortiguador delantero:** una tornapunta de la ménsula a `fx_lo` (PTR 38x38x1.9) ahorraba ~1 kg medido con la caja anterior; falta rehacer la prueba con la caja estrecha y comprobar que no roce el buje del brazo inferior. Verificar localmente la pared del tubo en cada ménsula.
 9. **DXF de las ~14 placas de herraje de las puertas** (3 mm; ahora llevan 2 pernos M8 por cierre) y diseño detallado de la puerta (el visor usa las piezas del juguete 1:20). Seguridad de la puerta ya definida: `docs/seguridad-puertas.md` (viga de impacto, salida de emergencia, retención); falta fijar la posición real de la viga contra el vano y un ensayo estático.
-10. **Mini 1:5**: generador con parámetro `escala` (lista de corte con tubo 8×8×1, plantilla de soldadura en tabla, paneles ≤206 mm para la Ender 3 V3 SE).
+10. **Mini 1:5** — *chasis hecho (2026-10-26), falta carrocería y mecanismos.* `python calculos/mini.py [--escala 5] [--stock 1000]` lee `planos/lista-corte-tubos.csv` (la fuente a tamaño real: **nunca se dibuja nada aparte**), divide las coordenadas entre la escala, usa tubo único 8×8×1 y recalcula los cortes con la misma regla que `analisis_chasis.py`; escribe `planos/mini-1a5/` (lista de corte, nodos, barras de 1 m, `plantilla-lado/planta.pdf` a 1:1 para soldar sobre papel, `resumen.md`). `test_mini.py` comprueba que con escala 1 reproduce el CSV real. Resultado: 90 tubos, 7.0 m, 8 barras, 0 choques a escala; 4 cortes < 20 mm (#59–62). **Falta:** paneles de carrocería ≤206 mm para la Ender (necesita `cad/carroceria-tripo-solida-mm.stl`, que no va en git), y mecanismos (suspensión/puertas/dirección) con la misma regla: se diseñan a tamaño real y se escalan.
 11. Rehacer las **ruedas** (las de Tripo son de IA) y volver a medir los tubos cerca de las ruedas (marcados con `(*)` en `verificar_piel_tripo.py`).
 12. Puerta del juguete impreso: es una simplificación (contorno trazado a mano, cristal rehecho, sin panel interior, bisagra añadida), no tolerancias.
 
@@ -146,6 +146,7 @@ corte lateral, grupos de tubos, asientos de cubeta, suspensión/ménsulas y tubo
 | `calculos/auditoria_cabina.py` | cuerpo/asiento/vista vs tubos; imágenes en `docs/auditoria-cabina/` |
 | `calculos/masas_cg.py`, `masas_modelo.py`, `test_masas.py` | presupuesto de masas por componente; masas explícitas del FEM; amarre de reparto/CG (`docs/masas-y-bateria.md`) |
 | `calculos/espacios_libres.py` | volúmenes libres bajo la piel: frunk 36 L, bandeja 45 L, maletero 175 L (`docs/espacios-y-cajuela.md`) |
+| `calculos/mini.py`, `test_mini.py` | prototipo 1:N desde el CSV real → `planos/mini-1a5/` |
 | `calculos/seguridad_puertas.py` | viga de impacto, retención, salida de emergencia de las puertas (`docs/seguridad-puertas.md`) |
 | `calculos/cabina_mandos.py` | posición del volante y trazo de la columna (`docs/mandos-cabina.md`) |
 | `calculos/visor_tripo_chasis.py` → `carro-tripo-chasis-3d.html` | visor 3D |
